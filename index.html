@@ -1,11 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Gestión Taller</title>
+
 
   <style>
 
@@ -13,212 +19,451 @@
       box-sizing: border-box;
     }
 
+
     body {
+
       margin: 0;
+
       font-family: Arial, sans-serif;
+
       background: #f2f2f2;
+
       color: #222;
+
     }
+
 
     .contenedor {
+
       max-width: 800px;
+
       margin: 0 auto;
+
       padding: 20px;
+
     }
+
 
     h1 {
+
       text-align: center;
+
       margin-bottom: 25px;
+
     }
+
 
     .tarjeta {
+
       background: white;
+
       padding: 20px;
+
       margin-bottom: 20px;
+
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.08);
+
     }
 
+
     .tarjeta h2 {
+
       margin-top: 0;
+
     }
+
 
     input,
     select,
     textarea,
     button {
+
       width: 100%;
+
       padding: 12px;
+
       margin-top: 8px;
+
       margin-bottom: 12px;
+
       border-radius: 8px;
+
       border: 1px solid #ccc;
+
       font-size: 16px;
+
     }
+
 
     textarea {
+
       min-height: 90px;
+
       resize: vertical;
+
     }
+
 
     button {
+
       background: #222;
+
       color: white;
+
       border: none;
+
       cursor: pointer;
+
       font-weight: bold;
+
     }
 
+
     button:hover {
+
       opacity: 0.9;
+
     }
+
 
     /* =========================
        MENÚ PRINCIPAL
     ========================= */
 
     .menu-principal {
+
       display: flex;
+
       flex-direction: column;
+
       gap: 12px;
+
     }
+
 
     .boton-menu {
+
       padding: 18px;
+
       font-size: 18px;
+
       margin: 0;
+
       border-radius: 10px;
+
     }
 
+
     .boton-volver {
+
       background: #666;
+
       margin-top: 5px;
+
     }
+
 
     /* =========================
        SECCIONES
     ========================= */
 
     .seccion {
+
       display: none;
+
     }
 
+
     .seccion.activa {
+
       display: block;
+
     }
+
 
     /* =========================
        INFORMACIÓN VEHÍCULO
     ========================= */
 
     .datos-vehiculo {
+
       background: #f7f7f7;
+
       padding: 15px;
+
       border-radius: 10px;
+
       margin-top: 15px;
+
     }
 
+
     .dato {
+
       margin-bottom: 10px;
+
       line-height: 1.4;
+
     }
+
 
     /* =========================
        HISTORIAL
     ========================= */
 
     .historial {
+
       margin-top: 20px;
+
     }
+
 
     .pestanas-historial {
+
       display: flex;
+
       gap: 8px;
+
       overflow-x: auto;
+
       padding: 5px 2px 12px 2px;
+
       margin-bottom: 5px;
+
     }
+
 
     .pestana {
+
       width: auto;
+
       min-width: 130px;
+
       margin: 0;
+
       padding: 12px 15px;
+
       white-space: nowrap;
+
       background: #e9e9e9;
+
       color: #222;
+
       border: 1px solid #ccc;
+
       border-radius: 8px;
+
       flex-shrink: 0;
+
     }
+
 
     .pestana:hover {
+
       background: #ddd;
+
     }
 
+
     .pestana.activa {
+
       background: #222;
+
       color: white;
+
       border-color: #222;
+
     }
+
 
     /* =========================
        DETALLE INTERVENCIÓN
     ========================= */
 
     .detalle-intervencion {
+
       background: #f7f7f7;
+
       border-radius: 10px;
+
       padding: 18px;
+
       margin-top: 10px;
+
       border: 1px solid #ddd;
+
     }
+
 
     .detalle-intervencion h3 {
+
       margin-top: 0;
+
     }
 
+
     /* =========================
-       FOTOS
+       FOTOS GUARDADAS
     ========================= */
 
     .fotos {
+
       margin-top: 20px;
+
     }
+
 
     .galeria-fotos {
+
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
       gap: 10px;
+
       margin-top: 10px;
+
     }
+
 
     .foto-historial {
+
       width: 100%;
+
       height: 180px;
+
       object-fit: cover;
+
       border-radius: 10px;
+
       border: 1px solid #ccc;
+
       cursor: pointer;
+
       background: #eee;
+
     }
 
+
     .sin-fotos {
+
       color: #666;
+
       font-style: italic;
+
       padding: 10px 0;
+
     }
+
+
+    /* =========================
+       VISTA PREVIA DE FOTOS
+    ========================= */
+
+    .vista-previa-fotos {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 10px;
+
+      margin-top: 15px;
+
+      margin-bottom: 15px;
+
+    }
+
+
+    .previsualizacion-foto {
+
+      position: relative;
+
+      border-radius: 10px;
+
+      overflow: hidden;
+
+      border: 1px solid #ccc;
+
+      background: #eee;
+
+    }
+
+
+    .previsualizacion-foto img {
+
+      width: 100%;
+
+      height: 160px;
+
+      object-fit: cover;
+
+      display: block;
+
+    }
+
+
+    .boton-eliminar-foto {
+
+      position: absolute;
+
+      top: 8px;
+
+      right: 8px;
+
+      width: 40px;
+
+      height: 40px;
+
+      padding: 0;
+
+      margin: 0;
+
+      border-radius: 50%;
+
+      background: #d00000;
+
+      color: white;
+
+      border: none;
+
+      font-size: 18px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+    }
+
+
+    .boton-eliminar-foto:hover {
+
+      background: #a00000;
+
+    }
+
 
     /* =========================
        MENSAJES
     ========================= */
 
     .mensaje {
+
       padding: 12px;
+
       border-radius: 8px;
+
       background: #f1f1f1;
+
       margin-top: 10px;
+
     }
+
 
     /* =========================
        MÓVIL
@@ -227,15 +472,37 @@
     @media (max-width: 600px) {
 
       .contenedor {
+
         padding: 12px;
+
       }
+
 
       .galeria-fotos {
+
         grid-template-columns: 1fr;
+
       }
 
+
       .foto-historial {
+
         height: 230px;
+
+      }
+
+
+      .vista-previa-fotos {
+
+        grid-template-columns: 1fr;
+
+      }
+
+
+      .previsualizacion-foto img {
+
+        height: 230px;
+
       }
 
     }
@@ -247,6 +514,7 @@
 
 <body>
 
+
 <div class="contenedor">
 
 
@@ -254,15 +522,21 @@
        MENÚ PRINCIPAL
   ====================================== -->
 
-  <div id="menuPrincipal" class="seccion activa">
+  <div
+    id="menuPrincipal"
+    class="seccion activa"
+  >
 
     <h1>🔧 Gestión Taller</h1>
+
 
     <div class="tarjeta">
 
       <h2>¿Qué desea hacer?</h2>
 
+
       <div class="menu-principal">
+
 
         <button
           class="boton-menu"
@@ -271,6 +545,7 @@
           🔎 Buscar vehículo
         </button>
 
+
         <button
           class="boton-menu"
           onclick="mostrarSeccion('nuevoVehiculo')"
@@ -278,12 +553,14 @@
           🚗 Nuevo vehículo
         </button>
 
+
         <button
           class="boton-menu"
           onclick="mostrarSeccion('nuevaIntervencion')"
         >
           🛠️ Nueva intervención
         </button>
+
 
       </div>
 
@@ -296,11 +573,16 @@
        BUSCAR VEHÍCULO
   ====================================== -->
 
-  <div id="buscar" class="seccion">
+  <div
+    id="buscar"
+    class="seccion"
+  >
 
     <h1>🔎 Buscar vehículo</h1>
 
+
     <div class="tarjeta">
+
 
       <input
         type="text"
@@ -308,9 +590,13 @@
         placeholder="Ingrese la patente"
       >
 
-      <button onclick="buscarVehiculo()">
+
+      <button
+        onclick="buscarVehiculo()"
+      >
         Buscar vehículo
       </button>
+
 
       <button
         class="boton-volver"
@@ -319,6 +605,7 @@
         ⬅️ Volver al inicio
       </button>
 
+
     </div>
 
 
@@ -326,10 +613,14 @@
 
       <h2>📋 Información del vehículo</h2>
 
+
       <div id="resultado">
 
         <div class="mensaje">
-          Ingrese una patente para buscar un vehículo.
+
+          Ingrese una patente para buscar
+          un vehículo.
+
         </div>
 
       </div>
@@ -343,11 +634,16 @@
        NUEVO VEHÍCULO
   ====================================== -->
 
-  <div id="nuevoVehiculo" class="seccion">
+  <div
+    id="nuevoVehiculo"
+    class="seccion"
+  >
 
     <h1>🚗 Nuevo vehículo</h1>
 
+
     <div class="tarjeta">
+
 
       <input
         type="text"
@@ -355,11 +651,13 @@
         placeholder="Patente"
       >
 
+
       <input
         type="text"
         id="marca"
         placeholder="Marca"
       >
+
 
       <input
         type="text"
@@ -367,11 +665,13 @@
         placeholder="Modelo"
       >
 
+
       <input
         type="number"
         id="anio"
         placeholder="Año"
       >
+
 
       <input
         type="number"
@@ -379,11 +679,13 @@
         placeholder="Kilometraje"
       >
 
+
       <input
         type="text"
         id="cliente"
         placeholder="Nombre del cliente"
       >
+
 
       <input
         type="text"
@@ -391,9 +693,13 @@
         placeholder="Teléfono"
       >
 
-      <button onclick="agregarVehiculo()">
+
+      <button
+        onclick="agregarVehiculo()"
+      >
         💾 Guardar vehículo
       </button>
+
 
       <button
         class="boton-volver"
@@ -401,6 +707,7 @@
       >
         ⬅️ Volver al inicio
       </button>
+
 
     </div>
 
@@ -411,11 +718,16 @@
        NUEVA INTERVENCIÓN
   ====================================== -->
 
-  <div id="nuevaIntervencion" class="seccion">
+  <div
+    id="nuevaIntervencion"
+    class="seccion"
+  >
 
     <h1>🛠️ Nueva intervención</h1>
 
+
     <div class="tarjeta">
+
 
       <input
         type="text"
@@ -423,10 +735,12 @@
         placeholder="Patente del vehículo"
       >
 
+
       <input
         type="date"
         id="fecha"
       >
+
 
       <select id="tipo">
 
@@ -468,26 +782,31 @@
 
       </select>
 
+
       <input
         type="number"
         id="kmIntervencion"
         placeholder="Kilometraje"
       >
 
+
       <textarea
         id="motivo"
         placeholder="Motivo del ingreso"
       ></textarea>
+
 
       <textarea
         id="trabajo"
         placeholder="Trabajo realizado"
       ></textarea>
 
+
       <textarea
         id="repuestos"
         placeholder="Repuestos utilizados"
       ></textarea>
+
 
       <textarea
         id="observaciones"
@@ -495,27 +814,52 @@
       ></textarea>
 
 
-      <!-- FOTOS -->
+      <!-- =================================
+           FOTOS
+      ================================== -->
+
 
       <label>
-        <strong>📷 Fotos de la intervención</strong>
+
+        <strong>
+          📷 Fotos de la intervención
+        </strong>
+
       </label>
+
 
       <input
         type="file"
         id="fotos"
         accept="image/*"
         multiple
+        onchange="seleccionarFotos()"
       >
 
+
       <small>
+
         Podés seleccionar una o varias fotos.
+        Antes de guardar podés revisar y
+        eliminar las que no quieras.
+
       </small>
 
 
-      <button onclick="agregarIntervencion()">
+      <!-- VISTA PREVIA -->
+
+      <div
+        id="vistaPreviaFotos"
+        class="vista-previa-fotos"
+      ></div>
+
+
+      <button
+        onclick="agregarIntervencion()"
+      >
         💾 Guardar intervención
       </button>
+
 
       <button
         class="boton-volver"
@@ -523,6 +867,7 @@
       >
         ⬅️ Volver al inicio
       </button>
+
 
     </div>
 
@@ -539,17 +884,29 @@
    DATOS
 ========================================== */
 
+
 let vehiculos =
+
   JSON.parse(
     localStorage.getItem("vehiculos")
   ) || [];
 
+
 let historialActual = [];
+
+
+/*
+  Fotos seleccionadas pero todavía
+  NO guardadas.
+*/
+
+let fotosSeleccionadas = [];
 
 
 /* ==========================================
    GUARDAR DATOS
 ========================================== */
+
 
 function guardarDatos() {
 
@@ -565,23 +922,38 @@ function guardarDatos() {
    CAMBIAR SECCIÓN
 ========================================== */
 
+
 function mostrarSeccion(nombre) {
 
   const secciones =
-    document.querySelectorAll(".seccion");
+    document.querySelectorAll(
+      ".seccion"
+    );
+
 
   secciones.forEach(
     seccion => {
-      seccion.classList.remove("activa");
+
+      seccion.classList.remove(
+        "activa"
+      );
+
     }
   );
 
 
   const seccion =
-    document.getElementById(nombre);
+    document.getElementById(
+      nombre
+    );
+
 
   if (seccion) {
-    seccion.classList.add("activa");
+
+    seccion.classList.add(
+      "activa"
+    );
+
   }
 
 }
@@ -591,21 +963,33 @@ function mostrarSeccion(nombre) {
    VOLVER AL INICIO
 ========================================== */
 
+
 function volverInicio() {
 
   const secciones =
-    document.querySelectorAll(".seccion");
+    document.querySelectorAll(
+      ".seccion"
+    );
+
 
   secciones.forEach(
     seccion => {
-      seccion.classList.remove("activa");
+
+      seccion.classList.remove(
+        "activa"
+      );
+
     }
   );
 
 
   document
-    .getElementById("menuPrincipal")
-    .classList.add("activa");
+    .getElementById(
+      "menuPrincipal"
+    )
+    .classList.add(
+      "activa"
+    );
 
 }
 
@@ -614,21 +998,45 @@ function volverInicio() {
    ESCAPAR HTML
 ========================================== */
 
+
 function escaparHTML(texto) {
 
   if (
     texto === null ||
     texto === undefined
   ) {
+
     return "";
+
   }
 
+
   return String(texto)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
@@ -637,25 +1045,37 @@ function escaparHTML(texto) {
    FORMATO FECHA
 ========================================== */
 
+
 function formatearFecha(fecha) {
 
   if (!fecha) {
+
     return "Sin fecha";
+
   }
+
 
   const partes =
     fecha.split("-");
 
-  if (partes.length !== 3) {
+
+  if (
+    partes.length !== 3
+  ) {
+
     return fecha;
+
   }
 
+
   return (
+
     partes[2] +
     "/" +
     partes[1] +
     "/" +
     partes[0]
+
   );
 
 }
@@ -665,118 +1085,329 @@ function formatearFecha(fecha) {
    COMPRIMIR FOTO
 ========================================== */
 
+
 function comprimirFoto(archivo) {
 
   return new Promise(
+
     (resolve, reject) => {
+
 
       const lector =
         new FileReader();
 
 
-      lector.onload = function(evento) {
-
-        const imagen =
-          new Image();
+      lector.onload =
+        function(evento) {
 
 
-        imagen.onload = function() {
-
-          const MAXIMO = 1200;
-
-          let ancho =
-            imagen.width;
-
-          let alto =
-            imagen.height;
+          const imagen =
+            new Image();
 
 
-          if (ancho > MAXIMO) {
-
-            alto =
-              alto *
-              MAXIMO /
-              ancho;
-
-            ancho =
-              MAXIMO;
-
-          }
+          imagen.onload =
+            function() {
 
 
-          if (alto > MAXIMO) {
-
-            ancho =
-              ancho *
-              MAXIMO /
-              alto;
-
-            alto =
-              MAXIMO;
-
-          }
+              const MAXIMO =
+                1200;
 
 
-          const canvas =
-            document.createElement(
-              "canvas"
-            );
+              let ancho =
+                imagen.width;
 
 
-          canvas.width =
-            ancho;
-
-          canvas.height =
-            alto;
+              let alto =
+                imagen.height;
 
 
-          const contexto =
-            canvas.getContext(
-              "2d"
-            );
+              if (
+                ancho > MAXIMO
+              ) {
+
+                alto =
+                  alto *
+                  MAXIMO /
+                  ancho;
 
 
-          contexto.drawImage(
-            imagen,
-            0,
-            0,
-            ancho,
-            alto
-          );
+                ancho =
+                  MAXIMO;
+
+              }
 
 
-          const fotoComprimida =
-            canvas.toDataURL(
-              "image/jpeg",
-              0.70
-            );
+              if (
+                alto > MAXIMO
+              ) {
+
+                ancho =
+                  ancho *
+                  MAXIMO /
+                  alto;
 
 
-          resolve(
-            fotoComprimida
-          );
+                alto =
+                  MAXIMO;
+
+              }
+
+
+              const canvas =
+                document.createElement(
+                  "canvas"
+                );
+
+
+              canvas.width =
+                ancho;
+
+
+              canvas.height =
+                alto;
+
+
+              const contexto =
+                canvas.getContext(
+                  "2d"
+                );
+
+
+              contexto.drawImage(
+
+                imagen,
+
+                0,
+
+                0,
+
+                ancho,
+
+                alto
+
+              );
+
+
+              const fotoComprimida =
+                canvas.toDataURL(
+
+                  "image/jpeg",
+
+                  0.70
+
+                );
+
+
+              resolve(
+                fotoComprimida
+              );
+
+            };
+
+
+          imagen.onerror =
+            reject;
+
+
+          imagen.src =
+            evento.target.result;
 
         };
 
 
-        imagen.onerror =
-          reject;
-
-        imagen.src =
-          evento.target.result;
-
-      };
-
-
       lector.onerror =
         reject;
+
 
       lector.readAsDataURL(
         archivo
       );
 
     }
+
   );
+
+}
+
+
+/* ==========================================
+   SELECCIONAR FOTOS
+========================================== */
+
+
+function seleccionarFotos() {
+
+
+  const input =
+    document.getElementById(
+      "fotos"
+    );
+
+
+  const archivos =
+    Array.from(
+      input.files
+    );
+
+
+  archivos.forEach(
+    archivo => {
+
+
+      /*
+        Evita agregar dos veces
+        exactamente el mismo archivo.
+      */
+
+
+      const yaExiste =
+        fotosSeleccionadas.some(
+
+          foto =>
+
+            foto.name ===
+              archivo.name &&
+
+            foto.size ===
+              archivo.size &&
+
+            foto.lastModified ===
+              archivo.lastModified
+
+        );
+
+
+      if (!yaExiste) {
+
+        fotosSeleccionadas.push(
+          archivo
+        );
+
+      }
+
+    }
+  );
+
+
+  mostrarVistaPreviaFotos();
+
+
+  /*
+    Limpiamos el input para que
+    se puedan seleccionar más fotos
+    posteriormente.
+  */
+
+
+  input.value = "";
+
+}
+
+
+/* ==========================================
+   MOSTRAR VISTA PREVIA DE FOTOS
+========================================== */
+
+
+function mostrarVistaPreviaFotos() {
+
+
+  const contenedor =
+    document.getElementById(
+      "vistaPreviaFotos"
+    );
+
+
+  contenedor.innerHTML = "";
+
+
+  fotosSeleccionadas.forEach(
+
+    (archivo, indice) => {
+
+
+      const lector =
+        new FileReader();
+
+
+      lector.onload =
+        function(evento) {
+
+
+          const elemento =
+            document.createElement(
+              "div"
+            );
+
+
+          elemento.className =
+            "previsualizacion-foto";
+
+
+          elemento.innerHTML = `
+
+            <img
+              src="${evento.target.result}"
+              alt="Vista previa"
+            >
+
+            <button
+              type="button"
+              class="boton-eliminar-foto"
+              onclick="eliminarFotoSeleccionada(${indice})"
+              title="Eliminar foto"
+            >
+              🗑️
+            </button>
+
+          `;
+
+
+          contenedor.appendChild(
+            elemento
+          );
+
+        };
+
+
+      lector.readAsDataURL(
+        archivo
+      );
+
+    }
+
+  );
+
+}
+
+
+/* ==========================================
+   ELIMINAR FOTO ANTES DE GUARDAR
+========================================== */
+
+
+function eliminarFotoSeleccionada(
+  indice
+) {
+
+
+  if (
+    indice < 0 ||
+    indice >= fotosSeleccionadas.length
+  ) {
+
+    return;
+
+  }
+
+
+  fotosSeleccionadas.splice(
+    indice,
+    1
+  );
+
+
+  mostrarVistaPreviaFotos();
 
 }
 
@@ -785,54 +1416,77 @@ function comprimirFoto(archivo) {
    AGREGAR VEHÍCULO
 ========================================== */
 
+
 function agregarVehiculo() {
 
+
   const patente =
+
     document
-      .getElementById("patente")
+      .getElementById(
+        "patente"
+      )
       .value
       .trim()
       .toUpperCase();
 
 
   const marca =
+
     document
-      .getElementById("marca")
+      .getElementById(
+        "marca"
+      )
       .value
       .trim();
 
 
   const modelo =
+
     document
-      .getElementById("modelo")
+      .getElementById(
+        "modelo"
+      )
       .value
       .trim();
 
 
   const anio =
+
     document
-      .getElementById("anio")
+      .getElementById(
+        "anio"
+      )
       .value
       .trim();
 
 
   const kilometraje =
+
     document
-      .getElementById("kilometraje")
+      .getElementById(
+        "kilometraje"
+      )
       .value
       .trim();
 
 
   const cliente =
+
     document
-      .getElementById("cliente")
+      .getElementById(
+        "cliente"
+      )
       .value
       .trim();
 
 
   const telefono =
+
     document
-      .getElementById("telefono")
+      .getElementById(
+        "telefono"
+      )
       .value
       .trim();
 
@@ -844,13 +1498,19 @@ function agregarVehiculo() {
     );
 
     return;
+
   }
 
 
   const existe =
+
     vehiculos.some(
+
       vehiculo =>
-        vehiculo.patente === patente
+
+        vehiculo.patente ===
+        patente
+
     );
 
 
@@ -861,19 +1521,35 @@ function agregarVehiculo() {
     );
 
     return;
+
   }
 
 
   const nuevoVehiculo = {
 
-    patente: patente,
-    marca: marca,
-    modelo: modelo,
-    anio: anio,
-    kilometraje: kilometraje,
-    cliente: cliente,
-    telefono: telefono,
-    historial: []
+    patente:
+      patente,
+
+    marca:
+      marca,
+
+    modelo:
+      modelo,
+
+    anio:
+      anio,
+
+    kilometraje:
+      kilometraje,
+
+    cliente:
+      cliente,
+
+    telefono:
+      telefono,
+
+    historial:
+      []
 
   };
 
@@ -895,25 +1571,31 @@ function agregarVehiculo() {
     "patente"
   ).value = "";
 
+
   document.getElementById(
     "marca"
   ).value = "";
+
 
   document.getElementById(
     "modelo"
   ).value = "";
 
+
   document.getElementById(
     "anio"
   ).value = "";
+
 
   document.getElementById(
     "kilometraje"
   ).value = "";
 
+
   document.getElementById(
     "cliente"
   ).value = "";
+
 
   document.getElementById(
     "telefono"
@@ -929,9 +1611,12 @@ function agregarVehiculo() {
    AGREGAR INTERVENCIÓN
 ========================================== */
 
+
 async function agregarIntervencion() {
 
+
   const patente =
+
     document
       .getElementById(
         "patenteIntervencion"
@@ -942,18 +1627,21 @@ async function agregarIntervencion() {
 
 
   const fecha =
+
     document.getElementById(
       "fecha"
     ).value;
 
 
   const tipo =
+
     document.getElementById(
       "tipo"
     ).value;
 
 
   const km =
+
     document
       .getElementById(
         "kmIntervencion"
@@ -963,6 +1651,7 @@ async function agregarIntervencion() {
 
 
   const motivo =
+
     document
       .getElementById(
         "motivo"
@@ -972,6 +1661,7 @@ async function agregarIntervencion() {
 
 
   const trabajo =
+
     document
       .getElementById(
         "trabajo"
@@ -981,6 +1671,7 @@ async function agregarIntervencion() {
 
 
   const repuestos =
+
     document
       .getElementById(
         "repuestos"
@@ -990,6 +1681,7 @@ async function agregarIntervencion() {
 
 
   const observaciones =
+
     document
       .getElementById(
         "observaciones"
@@ -998,18 +1690,27 @@ async function agregarIntervencion() {
       .trim();
 
 
+  /*
+    IMPORTANTE:
+    usamos solamente las fotos
+    que quedaron después de
+    eliminar las equivocadas.
+  */
+
+
   const archivos =
-    document
-      .getElementById(
-        "fotos"
-      )
-      .files;
+    fotosSeleccionadas;
 
 
   const vehiculo =
+
     vehiculos.find(
+
       v =>
-        v.patente === patente
+
+        v.patente ===
+        patente
+
     );
 
 
@@ -1020,6 +1721,7 @@ async function agregarIntervencion() {
     );
 
     return;
+
   }
 
 
@@ -1030,6 +1732,7 @@ async function agregarIntervencion() {
     );
 
     return;
+
   }
 
 
@@ -1040,6 +1743,7 @@ async function agregarIntervencion() {
     );
 
     return;
+
   }
 
 
@@ -1047,31 +1751,47 @@ async function agregarIntervencion() {
      PROCESAR FOTOS
   ======================================== */
 
+
   const fotos = [];
 
 
-  if (archivos.length > 0) {
+  if (
+    archivos.length > 0
+  ) {
+
 
     for (
+
       let i = 0;
+
       i < archivos.length;
+
       i++
+
     ) {
 
+
       try {
+
 
         const foto =
           await comprimirFoto(
             archivos[i]
           );
 
-        fotos.push(foto);
+
+        fotos.push(
+          foto
+        );
+
 
       } catch (error) {
+
 
         alert(
           "No se pudo procesar una de las fotos."
         );
+
 
         return;
 
@@ -1086,23 +1806,40 @@ async function agregarIntervencion() {
      CREAR INTERVENCIÓN
   ======================================== */
 
+
   const intervencion = {
 
-    fecha: fecha,
 
-    tipo: tipo,
+    fecha:
+      fecha,
 
-    kilometraje: km,
 
-    motivo: motivo,
+    tipo:
+      tipo,
 
-    trabajo: trabajo,
 
-    repuestos: repuestos,
+    kilometraje:
+      km,
 
-    observaciones: observaciones,
 
-    fotos: fotos
+    motivo:
+      motivo,
+
+
+    trabajo:
+      trabajo,
+
+
+    repuestos:
+      repuestos,
+
+
+    observaciones:
+      observaciones,
+
+
+    fotos:
+      fotos
 
   };
 
@@ -1114,18 +1851,24 @@ async function agregarIntervencion() {
 
   try {
 
+
     guardarDatos();
+
 
   } catch (error) {
 
+
     alert(
-      "No se pudieron guardar los datos. Es posible que el navegador se haya quedado sin espacio para las fotos."
+
+      "No se pudieron guardar los datos. " +
+      "Es posible que el navegador se haya " +
+      "quedado sin espacio para las fotos."
+
     );
 
-    /* Sacamos la intervención
-       que acabamos de agregar */
 
     vehiculo.historial.pop();
+
 
     return;
 
@@ -1141,41 +1884,64 @@ async function agregarIntervencion() {
      LIMPIAR FORMULARIO
   ======================================== */
 
+
   document.getElementById(
     "patenteIntervencion"
   ).value = "";
+
 
   document.getElementById(
     "fecha"
   ).value = "";
 
+
   document.getElementById(
     "tipo"
   ).value = "";
+
 
   document.getElementById(
     "kmIntervencion"
   ).value = "";
 
+
   document.getElementById(
     "motivo"
   ).value = "";
+
 
   document.getElementById(
     "trabajo"
   ).value = "";
 
+
   document.getElementById(
     "repuestos"
   ).value = "";
+
 
   document.getElementById(
     "observaciones"
   ).value = "";
 
+
   document.getElementById(
     "fotos"
   ).value = "";
+
+
+  /*
+    MUY IMPORTANTE:
+    vaciamos las fotos temporales.
+  */
+
+
+  fotosSeleccionadas = [];
+
+
+  document.getElementById(
+    "vistaPreviaFotos"
+  ).innerHTML = "";
 
 
   volverInicio();
@@ -1187,14 +1953,20 @@ async function agregarIntervencion() {
    MOSTRAR INTERVENCIÓN
 ========================================== */
 
-function mostrarIntervencion(indice) {
+
+function mostrarIntervencion(
+  indice
+) {
+
 
   const intervencion =
     historialActual[indice];
 
 
   if (!intervencion) {
+
     return;
+
   }
 
 
@@ -1205,15 +1977,22 @@ function mostrarIntervencion(indice) {
 
 
   botones.forEach(
+
     (boton, i) => {
 
-      if (i === indice) {
+
+      if (
+        i === indice
+      ) {
+
 
         boton.classList.add(
           "activa"
         );
 
+
       } else {
+
 
         boton.classList.remove(
           "activa"
@@ -1222,6 +2001,7 @@ function mostrarIntervencion(indice) {
       }
 
     }
+
   );
 
 
@@ -1232,7 +2012,9 @@ function mostrarIntervencion(indice) {
 
 
   if (!detalle) {
+
     return;
+
   }
 
 
@@ -1240,9 +2022,13 @@ function mostrarIntervencion(indice) {
 
 
   if (
+
     intervencion.fotos &&
+
     intervencion.fotos.length > 0
+
   ) {
+
 
     fotosHTML = `
 
@@ -1258,7 +2044,9 @@ function mostrarIntervencion(indice) {
 
 
     intervencion.fotos.forEach(
+
       foto => {
+
 
         fotosHTML += `
 
@@ -1271,6 +2059,7 @@ function mostrarIntervencion(indice) {
         `;
 
       }
+
     );
 
 
@@ -1282,7 +2071,9 @@ function mostrarIntervencion(indice) {
 
     `;
 
+
   } else {
+
 
     fotosHTML = `
 
@@ -1293,7 +2084,10 @@ function mostrarIntervencion(indice) {
         </h3>
 
         <div class="sin-fotos">
-          No hay fotos cargadas en esta intervención.
+
+          No hay fotos cargadas
+          en esta intervención.
+
         </div>
 
       </div>
@@ -1311,58 +2105,90 @@ function mostrarIntervencion(indice) {
         🛠️ Detalle de la intervención
       </h3>
 
+
       <div class="dato">
+
         <strong>📅 Fecha:</strong>
+
         ${escaparHTML(
           formatearFecha(
             intervencion.fecha
           )
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>🔧 Tipo:</strong>
+
         ${escaparHTML(
           intervencion.tipo
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>📏 Kilometraje:</strong>
+
         ${escaparHTML(
           intervencion.kilometraje
-        )} km
+        )}
+
+        km
+
       </div>
 
+
       <div class="dato">
+
         <strong>📝 Motivo:</strong>
+
         ${escaparHTML(
           intervencion.motivo
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>🛠️ Trabajo realizado:</strong>
+
         ${escaparHTML(
           intervencion.trabajo
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>🧰 Repuestos:</strong>
+
         ${escaparHTML(
           intervencion.repuestos
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>📌 Observaciones:</strong>
+
         ${escaparHTML(
           intervencion.observaciones
         )}
+
       </div>
 
+
       ${fotosHTML}
+
 
     </div>
 
@@ -1375,18 +2201,24 @@ function mostrarIntervencion(indice) {
    ABRIR FOTO GRANDE
 ========================================== */
 
+
 function abrirFoto(foto) {
+
 
   const ventana =
     window.open();
 
+
   if (!ventana) {
+
 
     alert(
       "El navegador bloqueó la apertura de la foto."
     );
 
+
     return;
+
   }
 
 
@@ -1396,28 +2228,44 @@ function abrirFoto(foto) {
 
       <head>
 
-        <title>Foto - Gestión Taller</title>
+        <title>
+          Foto - Gestión Taller
+        </title>
+
 
         <style>
 
           body {
+
             margin: 0;
+
             background: #000;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             min-height: 100vh;
+
           }
 
+
           img {
+
             max-width: 100%;
+
             max-height: 100vh;
+
             object-fit: contain;
+
           }
 
         </style>
 
       </head>
+
 
       <body>
 
@@ -1436,9 +2284,12 @@ function abrirFoto(foto) {
    BUSCAR VEHÍCULO
 ========================================== */
 
+
 function buscarVehiculo() {
 
+
   const patente =
+
     document
       .getElementById(
         "patenteBuscar"
@@ -1455,13 +2306,19 @@ function buscarVehiculo() {
 
 
   const vehiculo =
+
     vehiculos.find(
+
       v =>
-        v.patente === patente
+
+        v.patente ===
+        patente
+
     );
 
 
   if (!vehiculo) {
+
 
     historialActual = [];
 
@@ -1474,26 +2331,38 @@ function buscarVehiculo() {
         con la patente
 
         <strong>
-          ${escaparHTML(patente)}
+
+          ${escaparHTML(
+            patente
+          )}
+
         </strong>.
 
       </div>
 
     `;
 
+
     return;
 
   }
 
 
-  /* Ordenar historial
-     del más reciente al más antiguo */
+  /*
+    Ordenar historial
+    del más reciente al más antiguo
+  */
+
 
   const historialOrdenado =
+
     [...vehiculo.historial].sort(
+
       (a, b) =>
+
         new Date(b.fecha) -
         new Date(a.fecha)
+
     );
 
 
@@ -1505,58 +2374,90 @@ function buscarVehiculo() {
      INFORMACIÓN DEL VEHÍCULO
   ======================================== */
 
+
   let html = `
 
     <div class="datos-vehiculo">
 
+
       <div class="dato">
+
         <strong>🚗 Patente:</strong>
+
         ${escaparHTML(
           vehiculo.patente
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>🏭 Marca:</strong>
+
         ${escaparHTML(
           vehiculo.marca
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>🚘 Modelo:</strong>
+
         ${escaparHTML(
           vehiculo.modelo
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>📅 Año:</strong>
+
         ${escaparHTML(
           vehiculo.anio
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>📏 Kilometraje:</strong>
+
         ${escaparHTML(
           vehiculo.kilometraje
-        )} km
+        )}
+
+        km
+
       </div>
 
+
       <div class="dato">
+
         <strong>👤 Cliente:</strong>
+
         ${escaparHTML(
           vehiculo.cliente
         )}
+
       </div>
 
+
       <div class="dato">
+
         <strong>📞 Teléfono:</strong>
+
         ${escaparHTML(
           vehiculo.telefono
         )}
+
       </div>
+
 
     </div>
 
@@ -1567,9 +2468,11 @@ function buscarVehiculo() {
      HISTORIAL
   ======================================== */
 
+
   if (
     historialOrdenado.length === 0
   ) {
+
 
     html += `
 
@@ -1578,6 +2481,7 @@ function buscarVehiculo() {
         <h3>
           📋 Historial
         </h3>
+
 
         <div class="mensaje">
 
@@ -1590,7 +2494,9 @@ function buscarVehiculo() {
 
     `;
 
+
   } else {
+
 
     html += `
 
@@ -1600,13 +2506,16 @@ function buscarVehiculo() {
           📋 Historial
         </h3>
 
+
         <div class="pestanas-historial">
 
     `;
 
 
     historialOrdenado.forEach(
+
       (intervencion, indice) => {
+
 
         html += `
 
@@ -1615,16 +2524,21 @@ function buscarVehiculo() {
             class="pestana"
             onclick="mostrarIntervencion(${indice})"
           >
-            📅 ${escaparHTML(
+
+            📅
+
+            ${escaparHTML(
               formatearFecha(
                 intervencion.fecha
               )
             )}
+
           </button>
 
         `;
 
       }
+
     );
 
 
@@ -1632,9 +2546,17 @@ function buscarVehiculo() {
 
         </div>
 
-        <!-- El detalle empieza vacío -->
 
-        <div id="detalleHistorial"></div>
+        <!--
+          El detalle empieza vacío
+          hasta tocar una fecha.
+        -->
+
+
+        <div
+          id="detalleHistorial"
+        ></div>
+
 
       </div>
 
@@ -1646,6 +2568,7 @@ function buscarVehiculo() {
   resultado.innerHTML =
     html;
 
+
   /*
     NO abrimos ninguna intervención
     automáticamente.
@@ -1653,7 +2576,10 @@ function buscarVehiculo() {
 
 }
 
+
 </script>
 
+
 </body>
+
 </html>
