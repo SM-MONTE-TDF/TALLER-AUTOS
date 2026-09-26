@@ -4,350 +4,781 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión Taller</title>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
       background: #f2f2f2;
-      margin: 0;
+      color: #222;
+    }
+
+    .contenedor {
+      max-width: 800px;
+      margin: 0 auto;
       padding: 20px;
     }
-    .contenedor {
-      max-width: 900px;
-      margin: auto;
-    }
+
     h1 {
       text-align: center;
+      margin-bottom: 25px;
     }
+
     .tarjeta {
       background: white;
       padding: 20px;
-      margin-top: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-    input, select, textarea, button {
+
+    .tarjeta h2 {
+      margin-top: 0;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
       width: 100%;
-      box-sizing: border-box;
       padding: 12px;
-      margin: 6px 0;
-      font-size: 16px;
-      border-radius: 6px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border-radius: 8px;
       border: 1px solid #ccc;
+      font-size: 16px;
     }
+
     textarea {
       min-height: 90px;
       resize: vertical;
     }
+
     button {
       background: #222;
       color: white;
       border: none;
       cursor: pointer;
+      font-weight: bold;
     }
+
     button:hover {
-      background: #444;
+      opacity: 0.9;
     }
+
     .datos-vehiculo {
-      background: #f8f8f8;
+      background: #f7f7f7;
       padding: 15px;
+      border-radius: 10px;
       margin-top: 15px;
-      border-radius: 8px;
     }
-    .historial {
-      border-top: 1px solid #ddd;
-      margin-top: 15px;
-      padding-top: 15px;
-    }
-    .registro {
-      background: white;
-      border: 1px solid #ddd;
-      padding: 15px;
-      margin-top: 10px;
-      border-radius: 8px;
-    }
+
     .dato {
-      margin: 8px 0;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .historial {
+      margin-top: 20px;
+    }
+
+    /* PESTAÑAS DE FECHAS */
+    .pestanas-historial {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 5px 2px 12px 2px;
+      margin-bottom: 10px;
+    }
+
+    .pestana {
+      width: auto;
+      min-width: 125px;
+      margin: 0;
+      padding: 12px 15px;
+      white-space: nowrap;
+      background: #e9e9e9;
+      color: #222;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .pestana.activa {
+      background: #222;
+      color: white;
+      border-color: #222;
+    }
+
+    .detalle-intervencion {
+      background: #f7f7f7;
+      border-radius: 10px;
+      padding: 18px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+    }
+
+    .detalle-intervencion h3 {
+      margin-top: 0;
+    }
+
+    .mensaje {
+      padding: 12px;
+      border-radius: 8px;
+      background: #f1f1f1;
+      margin-top: 10px;
     }
   </style>
 </head>
+
 <body>
-<div class="contenedor">
-  <h1>🔧 Gestión Taller</h1>
-  <div class="tarjeta">
-    <h2>🔎 Buscar vehículo</h2>
-    <input
-      type="text"
-      id="patenteBuscar"
-      placeholder="Ingresá la patente"
-    >
-    <button onclick="buscarVehiculo()">
-      Buscar vehículo
-    </button>
-  </div>
-  <div class="tarjeta">
-    <h2>🚗 Nuevo vehículo</h2>
-    <input type="text" id="patente" placeholder="Patente">
-    <input type="text" id="marca" placeholder="Marca">
-    <input type="text" id="modelo" placeholder="Modelo">
-    <input type="number" id="anio" placeholder="Año">
-    <input type="number" id="kilometraje" placeholder="Kilometraje">
-    <input type="text" id="cliente" placeholder="Nombre del cliente">
-    <input type="tel" id="telefono" placeholder="Teléfono">
-    <button onclick="agregarVehiculo()">
-      ➕ Agregar vehículo
-    </button>
-  </div>
-  <div class="tarjeta">
-    <h2>🛠️ Nueva intervención</h2>
-    <input
-      type="text"
-      id="patenteIntervencion"
-      placeholder="Patente del vehículo"
-    >
-    <input
-      type="date"
-      id="fecha"
-    >
-    <select id="tipo">
-      <option value="">Seleccioná el tipo</option>
-      <option value="Servicio">Servicio</option>
-      <option value="Reparación">Reparación</option>
-      <option value="Diagnóstico">Diagnóstico</option>
-    </select>
-    <input
-      type="number"
-      id="kmIntervencion"
-      placeholder="Kilometraje"
-    >
-    <input
-      type="text"
-      id="motivo"
-      placeholder="Motivo de ingreso"
-    >
-    <textarea
-      id="trabajo"
-      placeholder="Trabajo realizado"
-    ></textarea>
-    <textarea
-      id="repuestos"
-      placeholder="Repuestos utilizados"
-    ></textarea>
-    <textarea
-      id="observaciones"
-      placeholder="Observaciones"
-    ></textarea>
-    <button onclick="agregarIntervencion()">
-      ➕ Guardar intervención
-    </button>
-  </div>
-  <div class="tarjeta">
-    <h2>📋 Información del vehículo</h2>
-    <div id="resultado">
-      Buscá una patente para ver la información.
+
+  <div class="contenedor">
+
+    <h1>🔧 Gestión Taller</h1>
+
+    <!-- BUSCAR VEHÍCULO -->
+    <div class="tarjeta">
+      <h2>🔎 Buscar vehículo</h2>
+
+      <input
+        type="text"
+        id="patenteBuscar"
+        placeholder="Ingrese la patente"
+      >
+
+      <button onclick="buscarVehiculo()">
+        Buscar vehículo
+      </button>
     </div>
-  </div>
-</div>
-<script>
-  // Cargar los datos guardados al abrir la página
-  let vehiculos = JSON.parse(localStorage.getItem("vehiculos")) || [];
-  // Guardar todos los datos en el navegador
-  function guardarDatos() {
-    localStorage.setItem("vehiculos", JSON.stringify(vehiculos));
-  }
-  function agregarVehiculo() {
-    const patente =
-      document.getElementById("patente").value.trim().toUpperCase();
-    const marca =
-      document.getElementById("marca").value.trim();
-    const modelo =
-      document.getElementById("modelo").value.trim();
-    const anio =
-      document.getElementById("anio").value;
-    const kilometraje =
-      document.getElementById("kilometraje").value;
-    const cliente =
-      document.getElementById("cliente").value.trim();
-    const telefono =
-      document.getElementById("telefono").value.trim();
-    if (!patente) {
-      alert("Ingresá una patente.");
-      return;
-    }
-    // Evitar cargar dos veces la misma patente
-    const existe = vehiculos.find(v => v.patente === patente);
-    if (existe) {
-      alert("Ya existe un vehículo con esa patente.");
-      return;
-    }
-    const vehiculo = {
-      patente: patente,
-      marca: marca,
-      modelo: modelo,
-      anio: anio,
-      kilometraje: kilometraje,
-      cliente: cliente,
-      telefono: telefono,
-      historial: []
-    };
-    vehiculos.push(vehiculo);
-    // Guardar permanentemente en el navegador
-    guardarDatos();
-    alert("Vehículo agregado correctamente.");
-    document.getElementById("patente").value = "";
-    document.getElementById("marca").value = "";
-    document.getElementById("modelo").value = "";
-    document.getElementById("anio").value = "";
-    document.getElementById("kilometraje").value = "";
-    document.getElementById("cliente").value = "";
-    document.getElementById("telefono").value = "";
-  }
-  function agregarIntervencion() {
-    const patente =
-      document
-      .getElementById("patenteIntervencion")
-      .value
-      .trim()
-      .toUpperCase();
-    const fecha =
-      document.getElementById("fecha").value;
-    const tipo =
-      document.getElementById("tipo").value;
-    const km =
-      document.getElementById("kmIntervencion").value;
-    const motivo =
-      document.getElementById("motivo").value.trim();
-    const trabajo =
-      document.getElementById("trabajo").value.trim();
-    const repuestos =
-      document.getElementById("repuestos").value.trim();
-    const observaciones =
-      document.getElementById("observaciones").value.trim();
-    if (!patente) {
-      alert("Ingresá la patente.");
-      return;
-    }
-    const vehiculo =
-      vehiculos.find(v => v.patente === patente);
-    if (!vehiculo) {
-      alert("No existe un vehículo con esa patente.");
-      return;
-    }
-    if (!fecha || !tipo) {
-      alert("Ingresá la fecha y el tipo de intervención.");
-      return;
-    }
-    const intervencion = {
-      fecha: fecha,
-      tipo: tipo,
-      kilometraje: km,
-      motivo: motivo,
-      trabajo: trabajo,
-      repuestos: repuestos,
-      observaciones: observaciones
-    };
-    vehiculo.historial.push(intervencion);
-    // Guardar la intervención
-    guardarDatos();
-    alert("Intervención guardada correctamente.");
-    document.getElementById("patenteIntervencion").value = "";
-    document.getElementById("fecha").value = "";
-    document.getElementById("tipo").value = "";
-    document.getElementById("kmIntervencion").value = "";
-    document.getElementById("motivo").value = "";
-    document.getElementById("trabajo").value = "";
-    document.getElementById("repuestos").value = "";
-    document.getElementById("observaciones").value = "";
-  }
-  function buscarVehiculo() {
-    const patente =
-      document
-      .getElementById("patenteBuscar")
-      .value
-      .trim()
-      .toUpperCase();
-    const resultado =
-      document.getElementById("resultado");
-    const vehiculo =
-      vehiculos.find(v => v.patente === patente);
-    if (!vehiculo) {
-      resultado.innerHTML =
-        "<p>❌ No se encontró ningún vehículo con esa patente.</p>";
-      return;
-    }
-    let historialHTML = "";
-    const historialOrdenado =
-      [...vehiculo.historial].sort(
-        (a, b) => new Date(b.fecha) - new Date(a.fecha)
-      );
-    if (historialOrdenado.length === 0) {
-      historialHTML =
-        "<p>Este vehículo todavía no tiene intervenciones registradas.</p>";
-    } else {
-      historialHTML =
-        "<div class='historial'><h3>📅 Historial</h3>";
-      historialOrdenado.forEach(intervencion => {
-        historialHTML += `
-          <div class="registro">
-            <div class="dato">
-              <strong>📅 Fecha:</strong>
-              ${intervencion.fecha}
-            </div>
-            <div class="dato">
-              <strong>🔧 Tipo:</strong>
-              ${intervencion.tipo}
-            </div>
-            <div class="dato">
-              <strong>📏 Kilometraje:</strong>
-              ${intervencion.kilometraje} km
-            </div>
-            <div class="dato">
-              <strong>📝 Motivo:</strong>
-              ${intervencion.motivo}
-            </div>
-            <div class="dato">
-              <strong>🛠️ Trabajo realizado:</strong>
-              ${intervencion.trabajo}
-            </div>
-            <div class="dato">
-              <strong>🧰 Repuestos:</strong>
-              ${intervencion.repuestos}
-            </div>
-            <div class="dato">
-              <strong>📌 Observaciones:</strong>
-              ${intervencion.observaciones}
-            </div>
-          </div>
-        `;
-      });
-      historialHTML += "</div>";
-    }
-    resultado.innerHTML = `
-      <div class="datos-vehiculo">
-        <h3>🚗 ${vehiculo.marca} ${vehiculo.modelo}</h3>
-        <div class="dato">
-          <strong>Patente:</strong>
-          ${vehiculo.patente}
-        </div>
-        <div class="dato">
-          <strong>Año:</strong>
-          ${vehiculo.anio}
-        </div>
-        <div class="dato">
-          <strong>Kilometraje:</strong>
-          ${vehiculo.kilometraje} km
-        </div>
-        <div class="dato">
-          <strong>Cliente:</strong>
-          ${vehiculo.cliente}
-        </div>
-        <div class="dato">
-          <strong>Teléfono:</strong>
-          ${vehiculo.telefono}
+
+
+    <!-- NUEVO VEHÍCULO -->
+    <div class="tarjeta">
+      <h2>🚗 Nuevo vehículo</h2>
+
+      <input
+        type="text"
+        id="patente"
+        placeholder="Patente"
+      >
+
+      <input
+        type="text"
+        id="marca"
+        placeholder="Marca"
+      >
+
+      <input
+        type="text"
+        id="modelo"
+        placeholder="Modelo"
+      >
+
+      <input
+        type="number"
+        id="anio"
+        placeholder="Año"
+      >
+
+      <input
+        type="number"
+        id="kilometraje"
+        placeholder="Kilometraje"
+      >
+
+      <input
+        type="text"
+        id="cliente"
+        placeholder="Nombre del cliente"
+      >
+
+      <input
+        type="text"
+        id="telefono"
+        placeholder="Teléfono"
+      >
+
+      <button onclick="agregarVehiculo()">
+        Guardar vehículo
+      </button>
+    </div>
+
+
+    <!-- NUEVA INTERVENCIÓN -->
+    <div class="tarjeta">
+      <h2>🛠️ Nueva intervención</h2>
+
+      <input
+        type="text"
+        id="patenteIntervencion"
+        placeholder="Patente del vehículo"
+      >
+
+      <input
+        type="date"
+        id="fecha"
+      >
+
+      <select id="tipo">
+        <option value="">Seleccione tipo de trabajo</option>
+        <option value="Service">Service</option>
+        <option value="Cambio de aceite">Cambio de aceite</option>
+        <option value="Frenos">Frenos</option>
+        <option value="Motor">Motor</option>
+        <option value="Suspensión">Suspensión</option>
+        <option value="Electricidad">Electricidad</option>
+        <option value="Diagnóstico">Diagnóstico</option>
+        <option value="Otro">Otro</option>
+      </select>
+
+      <input
+        type="number"
+        id="kmIntervencion"
+        placeholder="Kilometraje"
+      >
+
+      <textarea
+        id="motivo"
+        placeholder="Motivo del ingreso"
+      ></textarea>
+
+      <textarea
+        id="trabajo"
+        placeholder="Trabajo realizado"
+      ></textarea>
+
+      <textarea
+        id="repuestos"
+        placeholder="Repuestos utilizados"
+      ></textarea>
+
+      <textarea
+        id="observaciones"
+        placeholder="Observaciones"
+      ></textarea>
+
+      <button onclick="agregarIntervencion()">
+        Guardar intervención
+      </button>
+    </div>
+
+
+    <!-- INFORMACIÓN DEL VEHÍCULO -->
+    <div class="tarjeta">
+      <h2>📋 Información del vehículo</h2>
+
+      <div id="resultado">
+        <div class="mensaje">
+          Busque un vehículo para ver su información.
         </div>
       </div>
-      ${historialHTML}
-    `;
-  }
-</script>
+    </div>
+
+  </div>
+
+
+  <script>
+
+    // ==========================================
+    // DATOS GUARDADOS
+    // ==========================================
+
+    let vehiculos =
+      JSON.parse(localStorage.getItem("vehiculos")) || [];
+
+    // Historial del vehículo que estamos viendo
+    let historialActual = [];
+
+
+    // ==========================================
+    // GUARDAR DATOS
+    // ==========================================
+
+    function guardarDatos() {
+      localStorage.setItem(
+        "vehiculos",
+        JSON.stringify(vehiculos)
+      );
+    }
+
+
+    // ==========================================
+    // ESCAPAR HTML
+    // ==========================================
+
+    function escaparHTML(texto) {
+
+      if (texto === null || texto === undefined) {
+        return "";
+      }
+
+      return String(texto)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    // ==========================================
+    // FORMATO DE FECHA
+    // ==========================================
+
+    function formatearFecha(fecha) {
+
+      if (!fecha) {
+        return "Sin fecha";
+      }
+
+      const partes = fecha.split("-");
+
+      if (partes.length !== 3) {
+        return fecha;
+      }
+
+      return partes[2] + "/" + partes[1] + "/" + partes[0];
+    }
+
+
+    // ==========================================
+    // AGREGAR VEHÍCULO
+    // ==========================================
+
+    function agregarVehiculo() {
+
+      const patente =
+        document.getElementById("patente").value
+          .trim()
+          .toUpperCase();
+
+      const marca =
+        document.getElementById("marca").value.trim();
+
+      const modelo =
+        document.getElementById("modelo").value.trim();
+
+      const anio =
+        document.getElementById("anio").value.trim();
+
+      const kilometraje =
+        document.getElementById("kilometraje").value.trim();
+
+      const cliente =
+        document.getElementById("cliente").value.trim();
+
+      const telefono =
+        document.getElementById("telefono").value.trim();
+
+
+      if (!patente) {
+        alert("Ingrese la patente.");
+        return;
+      }
+
+
+      const existe =
+        vehiculos.some(
+          vehiculo => vehiculo.patente === patente
+        );
+
+
+      if (existe) {
+        alert("Ya existe un vehículo con esa patente.");
+        return;
+      }
+
+
+      const nuevoVehiculo = {
+
+        patente: patente,
+        marca: marca,
+        modelo: modelo,
+        anio: anio,
+        kilometraje: kilometraje,
+        cliente: cliente,
+        telefono: telefono,
+        historial: []
+
+      };
+
+
+      vehiculos.push(nuevoVehiculo);
+
+      guardarDatos();
+
+
+      alert("Vehículo guardado correctamente.");
+
+
+      document.getElementById("patente").value = "";
+      document.getElementById("marca").value = "";
+      document.getElementById("modelo").value = "";
+      document.getElementById("anio").value = "";
+      document.getElementById("kilometraje").value = "";
+      document.getElementById("cliente").value = "";
+      document.getElementById("telefono").value = "";
+    }
+
+
+    // ==========================================
+    // AGREGAR INTERVENCIÓN
+    // ==========================================
+
+    function agregarIntervencion() {
+
+      const patente =
+        document.getElementById("patenteIntervencion").value
+          .trim()
+          .toUpperCase();
+
+      const fecha =
+        document.getElementById("fecha").value;
+
+      const tipo =
+        document.getElementById("tipo").value;
+
+      const km =
+        document.getElementById("kmIntervencion").value.trim();
+
+      const motivo =
+        document.getElementById("motivo").value.trim();
+
+      const trabajo =
+        document.getElementById("trabajo").value.trim();
+
+      const repuestos =
+        document.getElementById("repuestos").value.trim();
+
+      const observaciones =
+        document.getElementById("observaciones").value.trim();
+
+
+      const vehiculo =
+        vehiculos.find(
+          v => v.patente === patente
+        );
+
+
+      if (!vehiculo) {
+        alert("No existe un vehículo con esa patente.");
+        return;
+      }
+
+
+      if (!fecha) {
+        alert("Seleccione una fecha.");
+        return;
+      }
+
+
+      if (!tipo) {
+        alert("Seleccione el tipo de trabajo.");
+        return;
+      }
+
+
+      const intervencion = {
+
+        fecha: fecha,
+        tipo: tipo,
+        kilometraje: km,
+        motivo: motivo,
+        trabajo: trabajo,
+        repuestos: repuestos,
+        observaciones: observaciones
+
+      };
+
+
+      vehiculo.historial.push(intervencion);
+
+      guardarDatos();
+
+
+      alert("Intervención guardada correctamente.");
+
+
+      document.getElementById("patenteIntervencion").value = "";
+      document.getElementById("fecha").value = "";
+      document.getElementById("tipo").value = "";
+      document.getElementById("kmIntervencion").value = "";
+      document.getElementById("motivo").value = "";
+      document.getElementById("trabajo").value = "";
+      document.getElementById("repuestos").value = "";
+      document.getElementById("observaciones").value = "";
+    }
+
+
+    // ==========================================
+    // MOSTRAR UNA INTERVENCIÓN
+    // ==========================================
+
+    function mostrarIntervencion(indice) {
+
+      const intervencion =
+        historialActual[indice];
+
+      if (!intervencion) {
+        return;
+      }
+
+
+      // Activar la pestaña seleccionada
+
+      const botones =
+        document.querySelectorAll(".pestana");
+
+      botones.forEach((boton, i) => {
+
+        if (i === indice) {
+          boton.classList.add("activa");
+        } else {
+          boton.classList.remove("activa");
+        }
+
+      });
+
+
+      const detalle =
+        document.getElementById("detalleHistorial");
+
+
+      detalle.innerHTML = `
+
+        <div class="detalle-intervencion">
+
+          <h3>
+            🛠️ Detalle de la intervención
+          </h3>
+
+          <div class="dato">
+            <strong>📅 Fecha:</strong>
+            ${escaparHTML(formatearFecha(intervencion.fecha))}
+          </div>
+
+          <div class="dato">
+            <strong>🔧 Tipo:</strong>
+            ${escaparHTML(intervencion.tipo)}
+          </div>
+
+          <div class="dato">
+            <strong>📏 Kilometraje:</strong>
+            ${escaparHTML(intervencion.kilometraje)} km
+          </div>
+
+          <div class="dato">
+            <strong>📝 Motivo:</strong>
+            ${escaparHTML(intervencion.motivo)}
+          </div>
+
+          <div class="dato">
+            <strong>🛠️ Trabajo realizado:</strong>
+            ${escaparHTML(intervencion.trabajo)}
+          </div>
+
+          <div class="dato">
+            <strong>🧰 Repuestos:</strong>
+            ${escaparHTML(intervencion.repuestos)}
+          </div>
+
+          <div class="dato">
+            <strong>📌 Observaciones:</strong>
+            ${escaparHTML(intervencion.observaciones)}
+          </div>
+
+        </div>
+
+      `;
+    }
+
+
+    // ==========================================
+    // BUSCAR VEHÍCULO
+    // ==========================================
+
+    function buscarVehiculo() {
+
+      const patente =
+        document.getElementById("patenteBuscar").value
+          .trim()
+          .toUpperCase();
+
+
+      const resultado =
+        document.getElementById("resultado");
+
+
+      const vehiculo =
+        vehiculos.find(
+          v => v.patente === patente
+        );
+
+
+      if (!vehiculo) {
+
+        resultado.innerHTML = `
+
+          <div class="mensaje">
+            ❌ No se encontró ningún vehículo
+            con la patente
+            <strong>${escaparHTML(patente)}</strong>.
+          </div>
+
+        `;
+
+        historialActual = [];
+
+        return;
+      }
+
+
+      // Ordenar historial desde el más reciente
+      // hasta el más antiguo
+
+      const historialOrdenado =
+        [...vehiculo.historial].sort(
+          (a, b) =>
+            new Date(b.fecha) - new Date(a.fecha)
+        );
+
+
+      // Guardamos el historial que estamos viendo
+
+      historialActual = historialOrdenado;
+
+
+      // ==========================================
+      // INFORMACIÓN DEL VEHÍCULO
+      // ==========================================
+
+      let html = `
+
+        <div class="datos-vehiculo">
+
+          <div class="dato">
+            <strong>🚗 Patente:</strong>
+            ${escaparHTML(vehiculo.patente)}
+          </div>
+
+          <div class="dato">
+            <strong>🏭 Marca:</strong>
+            ${escaparHTML(vehiculo.marca)}
+          </div>
+
+          <div class="dato">
+            <strong>🚘 Modelo:</strong>
+            ${escaparHTML(vehiculo.modelo)}
+          </div>
+
+          <div class="dato">
+            <strong>📅 Año:</strong>
+            ${escaparHTML(vehiculo.anio)}
+          </div>
+
+          <div class="dato">
+            <strong>📏 Kilometraje:</strong>
+            ${escaparHTML(vehiculo.kilometraje)} km
+          </div>
+
+          <div class="dato">
+            <strong>👤 Cliente:</strong>
+            ${escaparHTML(vehiculo.cliente)}
+          </div>
+
+          <div class="dato">
+            <strong>📞 Teléfono:</strong>
+            ${escaparHTML(vehiculo.telefono)}
+          </div>
+
+        </div>
+
+      `;
+
+
+      // ==========================================
+      // HISTORIAL
+      // ==========================================
+
+      if (historialOrdenado.length === 0) {
+
+        html += `
+
+          <div class="historial">
+
+            <h3>📋 Historial</h3>
+
+            <div class="mensaje">
+              Este vehículo todavía no tiene
+              intervenciones registradas.
+            </div>
+
+          </div>
+
+        `;
+
+      } else {
+
+        html += `
+
+          <div class="historial">
+
+            <h3>📋 Historial</h3>
+
+            <div class="pestanas-historial">
+        `;
+
+
+        historialOrdenado.forEach(
+          (intervencion, indice) => {
+
+            html += `
+
+              <button
+                class="pestana"
+                onclick="mostrarIntervencion(${indice})"
+              >
+                📅 ${escaparHTML(
+                  formatearFecha(intervencion.fecha)
+                )}
+              </button>
+
+            `;
+
+          }
+        );
+
+
+        html += `
+
+            </div>
+
+            <div id="detalleHistorial"></div>
+
+          </div>
+
+        `;
+      }
+
+
+      resultado.innerHTML = html;
+
+
+      // Mostrar automáticamente
+      // la intervención más reciente
+
+      if (historialOrdenado.length > 0) {
+        mostrarIntervencion(0);
+      }
+
+    }
+
+  </script>
+
 </body>
 </html>
