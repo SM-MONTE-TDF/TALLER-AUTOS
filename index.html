@@ -416,23 +416,25 @@
 
       right: 8px;
 
-      width: 40px;
+      width: 45px !important;
 
-      height: 40px;
+      height: 45px !important;
 
-      padding: 0;
+      min-width: 45px;
 
-      margin: 0;
+      padding: 0 !important;
+
+      margin: 0 !important;
 
       border-radius: 50%;
 
-      background: #d00000;
+      background: #d00000 !important;
 
       color: white;
 
       border: none;
 
-      font-size: 18px;
+      font-size: 20px;
 
       font-weight: bold;
 
@@ -443,7 +445,45 @@
 
     .boton-eliminar-foto:hover {
 
-      background: #a00000;
+      background: #a00000 !important;
+
+    }
+
+
+    /* =========================
+       BOTÓN AGREGAR FOTOS
+    ========================= */
+
+    .boton-agregar-fotos {
+
+      background: #222;
+
+      color: white;
+
+      text-align: center;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+      display: block;
+
+      width: 100%;
+
+      padding: 12px;
+
+      margin-top: 8px;
+
+      margin-bottom: 12px;
+
+      border-radius: 8px;
+
+    }
+
+
+    .boton-agregar-fotos:hover {
+
+      opacity: 0.9;
 
     }
 
@@ -818,7 +858,6 @@
            FOTOS
       ================================== -->
 
-
       <label>
 
         <strong>
@@ -828,25 +867,44 @@
       </label>
 
 
+      <!--
+        Este input queda oculto.
+        El usuario usa el botón
+        "Agregar fotos".
+      -->
+
       <input
         type="file"
         id="fotos"
         accept="image/*"
         multiple
+        style="display:none;"
         onchange="seleccionarFotos()"
       >
 
 
+      <button
+        type="button"
+        class="boton-agregar-fotos"
+        onclick="document.getElementById('fotos').click()"
+      >
+        📷 Agregar fotos
+      </button>
+
+
       <small>
 
-        Podés seleccionar una o varias fotos.
-        Antes de guardar podés revisar y
-        eliminar las que no quieras.
+        Podés agregar varias fotos.
+        Antes de guardar podés eliminar
+        las que no quieras.
 
       </small>
 
 
-      <!-- VISTA PREVIA -->
+      <!--
+        Acá aparecen las fotos
+        seleccionadas.
+      -->
 
       <div
         id="vistaPreviaFotos"
@@ -894,11 +952,6 @@ let vehiculos =
 
 let historialActual = [];
 
-
-/*
-  Fotos seleccionadas pero todavía
-  NO guardadas.
-*/
 
 let fotosSeleccionadas = [];
 
@@ -1237,7 +1290,6 @@ function comprimirFoto(archivo) {
 
 function seleccionarFotos() {
 
-
   const input =
     document.getElementById(
       "fotos"
@@ -1252,13 +1304,6 @@ function seleccionarFotos() {
 
   archivos.forEach(
     archivo => {
-
-
-      /*
-        Evita agregar dos veces
-        exactamente el mismo archivo.
-      */
-
 
       const yaExiste =
         fotosSeleccionadas.some(
@@ -1293,11 +1338,9 @@ function seleccionarFotos() {
 
 
   /*
-    Limpiamos el input para que
-    se puedan seleccionar más fotos
-    posteriormente.
+    Limpiamos el input para permitir
+    agregar más fotos posteriormente.
   */
-
 
   input.value = "";
 
@@ -1305,12 +1348,11 @@ function seleccionarFotos() {
 
 
 /* ==========================================
-   MOSTRAR VISTA PREVIA DE FOTOS
+   MOSTRAR VISTA PREVIA
 ========================================== */
 
 
 function mostrarVistaPreviaFotos() {
-
 
   const contenedor =
     document.getElementById(
@@ -1325,14 +1367,12 @@ function mostrarVistaPreviaFotos() {
 
     (archivo, indice) => {
 
-
       const lector =
         new FileReader();
 
 
       lector.onload =
         function(evento) {
-
 
           const elemento =
             document.createElement(
@@ -1348,7 +1388,7 @@ function mostrarVistaPreviaFotos() {
 
             <img
               src="${evento.target.result}"
-              alt="Vista previa"
+              alt="Foto seleccionada"
             >
 
             <button
@@ -1382,14 +1422,11 @@ function mostrarVistaPreviaFotos() {
 
 
 /* ==========================================
-   ELIMINAR FOTO ANTES DE GUARDAR
+   ELIMINAR FOTO
 ========================================== */
 
 
-function eliminarFotoSeleccionada(
-  indice
-) {
-
+function eliminarFotoSeleccionada(indice) {
 
   if (
     indice < 0 ||
@@ -1418,7 +1455,6 @@ function eliminarFotoSeleccionada(
 
 
 function agregarVehiculo() {
-
 
   const patente =
 
@@ -1614,7 +1650,6 @@ function agregarVehiculo() {
 
 async function agregarIntervencion() {
 
-
   const patente =
 
     document
@@ -1690,14 +1725,6 @@ async function agregarIntervencion() {
       .trim();
 
 
-  /*
-    IMPORTANTE:
-    usamos solamente las fotos
-    que quedaron después de
-    eliminar las equivocadas.
-  */
-
-
   const archivos =
     fotosSeleccionadas;
 
@@ -1759,7 +1786,6 @@ async function agregarIntervencion() {
     archivos.length > 0
   ) {
 
-
     for (
 
       let i = 0;
@@ -1770,9 +1796,7 @@ async function agregarIntervencion() {
 
     ) {
 
-
       try {
-
 
         const foto =
           await comprimirFoto(
@@ -1787,11 +1811,9 @@ async function agregarIntervencion() {
 
       } catch (error) {
 
-
         alert(
           "No se pudo procesar una de las fotos."
         );
-
 
         return;
 
@@ -1809,34 +1831,26 @@ async function agregarIntervencion() {
 
   const intervencion = {
 
-
     fecha:
       fecha,
-
 
     tipo:
       tipo,
 
-
     kilometraje:
       km,
-
 
     motivo:
       motivo,
 
-
     trabajo:
       trabajo,
-
 
     repuestos:
       repuestos,
 
-
     observaciones:
       observaciones,
-
 
     fotos:
       fotos
@@ -1851,12 +1865,9 @@ async function agregarIntervencion() {
 
   try {
 
-
     guardarDatos();
 
-
   } catch (error) {
-
 
     alert(
 
@@ -1868,7 +1879,6 @@ async function agregarIntervencion() {
 
 
     vehiculo.historial.pop();
-
 
     return;
 
@@ -1930,12 +1940,6 @@ async function agregarIntervencion() {
   ).value = "";
 
 
-  /*
-    MUY IMPORTANTE:
-    vaciamos las fotos temporales.
-  */
-
-
   fotosSeleccionadas = [];
 
 
@@ -1958,7 +1962,6 @@ function mostrarIntervencion(
   indice
 ) {
 
-
   const intervencion =
     historialActual[indice];
 
@@ -1980,19 +1983,15 @@ function mostrarIntervencion(
 
     (boton, i) => {
 
-
       if (
         i === indice
       ) {
-
 
         boton.classList.add(
           "activa"
         );
 
-
       } else {
-
 
         boton.classList.remove(
           "activa"
@@ -2029,7 +2028,6 @@ function mostrarIntervencion(
 
   ) {
 
-
     fotosHTML = `
 
       <div class="fotos">
@@ -2045,15 +2043,15 @@ function mostrarIntervencion(
 
     intervencion.fotos.forEach(
 
-      foto => {
-
+      (foto, fotoIndice) => {
 
         fotosHTML += `
 
           <img
             src="${foto}"
             class="foto-historial"
-            onclick="abrirFoto('${foto}')"
+            alt="Foto de intervención"
+            onclick="abrirFoto(historialActual[${indice}].fotos[${fotoIndice}])"
           >
 
         `;
@@ -2073,7 +2071,6 @@ function mostrarIntervencion(
 
 
   } else {
-
 
     fotosHTML = `
 
@@ -2204,18 +2201,15 @@ function mostrarIntervencion(
 
 function abrirFoto(foto) {
 
-
   const ventana =
     window.open();
 
 
   if (!ventana) {
 
-
     alert(
       "El navegador bloqueó la apertura de la foto."
     );
-
 
     return;
 
@@ -2287,7 +2281,6 @@ function abrirFoto(foto) {
 
 function buscarVehiculo() {
 
-
   const patente =
 
     document
@@ -2318,7 +2311,6 @@ function buscarVehiculo() {
 
 
   if (!vehiculo) {
-
 
     historialActual = [];
 
@@ -2473,7 +2465,6 @@ function buscarVehiculo() {
     historialOrdenado.length === 0
   ) {
 
-
     html += `
 
       <div class="historial">
@@ -2497,7 +2488,6 @@ function buscarVehiculo() {
 
   } else {
 
-
     html += `
 
       <div class="historial">
@@ -2515,7 +2505,6 @@ function buscarVehiculo() {
     historialOrdenado.forEach(
 
       (intervencion, indice) => {
-
 
         html += `
 
@@ -2547,12 +2536,6 @@ function buscarVehiculo() {
         </div>
 
 
-        <!--
-          El detalle empieza vacío
-          hasta tocar una fecha.
-        -->
-
-
         <div
           id="detalleHistorial"
         ></div>
@@ -2567,12 +2550,6 @@ function buscarVehiculo() {
 
   resultado.innerHTML =
     html;
-
-
-  /*
-    NO abrimos ninguna intervención
-    automáticamente.
-  */
 
 }
 
