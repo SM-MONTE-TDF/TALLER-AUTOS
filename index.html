@@ -61,6 +61,14 @@ button:hover {
     background: #777;
 }
 
+.boton-editar {
+    background: #444;
+}
+
+.boton-guardar-edicion {
+    background: #222;
+}
+
 input,
 select,
 textarea {
@@ -330,6 +338,78 @@ small {
     </div>
 
 
+    <!-- EDITAR VEHÍCULO -->
+    <div id="editarVehiculo" class="tarjeta oculto">
+
+        <h2>✏️ Editar datos del vehículo</h2>
+
+        <label>Patente</label>
+
+        <input
+            type="text"
+            id="editarPatente"
+            disabled
+        >
+
+        <label>Marca</label>
+
+        <input
+            type="text"
+            id="editarMarca"
+        >
+
+        <label>Modelo</label>
+
+        <input
+            type="text"
+            id="editarModelo"
+        >
+
+        <label>Año</label>
+
+        <input
+            type="number"
+            id="editarAnio"
+        >
+
+        <label>Kilometraje</label>
+
+        <input
+            type="number"
+            id="editarKilometraje"
+        >
+
+        <label>Cliente</label>
+
+        <input
+            type="text"
+            id="editarCliente"
+        >
+
+        <label>Teléfono</label>
+
+        <input
+            type="tel"
+            id="editarTelefono"
+        >
+
+        <button
+            class="boton-guardar-edicion"
+            onclick="guardarEdicionVehiculo()"
+        >
+            💾 Guardar cambios
+        </button>
+
+        <button
+            class="boton-secundario"
+            onclick="cancelarEdicionVehiculo()"
+        >
+            ← Cancelar
+        </button>
+
+    </div>
+
+
     <!-- NUEVA INTERVENCIÓN -->
     <div id="nuevaIntervencion" class="tarjeta oculto">
 
@@ -437,7 +517,10 @@ small {
             las que no quieras.
         </small>
 
-        <div id="vistaPreviaFotos" class="vista-previa-fotos"></div>
+        <div
+            id="vistaPreviaFotos"
+            class="vista-previa-fotos"
+        ></div>
 
 
         <button onclick="agregarIntervencion()">
@@ -465,6 +548,7 @@ small {
 let vehiculos = [];
 let historialActual = [];
 let fotosSeleccionadas = [];
+let patenteVehiculoEditando = "";
 
 
 /* =========================================================
@@ -485,10 +569,8 @@ function cargarDatos() {
             return;
         }
 
-
         vehiculos =
             JSON.parse(datosGuardados);
-
 
         if (!Array.isArray(vehiculos)) {
 
@@ -497,19 +579,11 @@ function cargarDatos() {
             return;
         }
 
-
-        /*
-         * COMPATIBILIDAD CON LOS DATOS ANTERIORES.
-         *
-         * No se borran registros.
-         */
-
         vehiculos.forEach(vehiculo => {
 
             if (Array.isArray(vehiculo.historial)) {
                 return;
             }
-
 
             if (Array.isArray(vehiculo.intervenciones)) {
 
@@ -528,7 +602,6 @@ function cargarDatos() {
             }
 
         });
-
 
         localStorage.setItem(
             "vehiculos",
@@ -590,9 +663,12 @@ function mostrarSeccion(seccion) {
         .classList.add("oculto");
 
     document
-        .getElementById("nuevaIntervencion")
+        .getElementById("editarVehiculo")
         .classList.add("oculto");
 
+    document
+        .getElementById("nuevaIntervencion")
+        .classList.add("oculto");
 
     document
         .getElementById(seccion)
@@ -608,6 +684,10 @@ function volverInicio() {
 
     document
         .getElementById("nuevoVehiculo")
+        .classList.add("oculto");
+
+    document
+        .getElementById("editarVehiculo")
         .classList.add("oculto");
 
     document
@@ -764,6 +844,165 @@ function agregarVehiculo() {
 
 
     volverInicio();
+}
+
+
+/* =========================================================
+   EDITAR VEHÍCULO
+   ========================================================= */
+
+function abrirEdicionVehiculo() {
+
+    const patente =
+        patenteVehiculoEditando;
+
+    const vehiculo =
+        vehiculos.find(
+            v => v.patente === patente
+        );
+
+
+    if (!vehiculo) {
+
+        alert(
+            "No se encontró el vehículo."
+        );
+
+        return;
+    }
+
+
+    document.getElementById(
+        "editarPatente"
+    ).value =
+        vehiculo.patente || "";
+
+
+    document.getElementById(
+        "editarMarca"
+    ).value =
+        vehiculo.marca || "";
+
+
+    document.getElementById(
+        "editarModelo"
+    ).value =
+        vehiculo.modelo || "";
+
+
+    document.getElementById(
+        "editarAnio"
+    ).value =
+        vehiculo.anio || "";
+
+
+    document.getElementById(
+        "editarKilometraje"
+    ).value =
+        vehiculo.kilometraje || "";
+
+
+    document.getElementById(
+        "editarCliente"
+    ).value =
+        vehiculo.cliente || "";
+
+
+    document.getElementById(
+        "editarTelefono"
+    ).value =
+        vehiculo.telefono || "";
+
+
+    mostrarSeccion(
+        "editarVehiculo"
+    );
+}
+
+
+function guardarEdicionVehiculo() {
+
+    const patente =
+        patenteVehiculoEditando;
+
+
+    const vehiculo =
+        vehiculos.find(
+            v => v.patente === patente
+        );
+
+
+    if (!vehiculo) {
+
+        alert(
+            "No se encontró el vehículo."
+        );
+
+        return;
+    }
+
+
+    vehiculo.marca =
+        document
+            .getElementById("editarMarca")
+            .value
+            .trim();
+
+
+    vehiculo.modelo =
+        document
+            .getElementById("editarModelo")
+            .value
+            .trim();
+
+
+    vehiculo.anio =
+        document
+            .getElementById("editarAnio")
+            .value
+            .trim();
+
+
+    vehiculo.kilometraje =
+        document
+            .getElementById("editarKilometraje")
+            .value
+            .trim();
+
+
+    vehiculo.cliente =
+        document
+            .getElementById("editarCliente")
+            .value
+            .trim();
+
+
+    vehiculo.telefono =
+        document
+            .getElementById("editarTelefono")
+            .value
+            .trim();
+
+
+    guardarDatos();
+
+
+    alert(
+        "Datos del vehículo actualizados correctamente."
+    );
+
+
+    mostrarSeccion("buscar");
+
+    buscarVehiculo();
+}
+
+
+function cancelarEdicionVehiculo() {
+
+    mostrarSeccion("buscar");
+
+    buscarVehiculo();
 }
 
 
@@ -1267,10 +1506,9 @@ function buscarVehiculo() {
     }
 
 
-    /*
-     * Recuperación compatible
-     * con versiones anteriores.
-     */
+    patenteVehiculoEditando =
+        vehiculo.patente;
+
 
     if (
         !Array.isArray(
@@ -1305,11 +1543,6 @@ function buscarVehiculo() {
         guardarDatos();
     }
 
-
-    /*
-     * ORDEN:
-     * fecha más nueva primero.
-     */
 
     const historialOrdenado =
         [...vehiculo.historial].sort(
@@ -1387,6 +1620,13 @@ function buscarVehiculo() {
                     vehiculo.telefono || "-"
                 )}
             </p>
+
+            <button
+                class="boton-editar"
+                onclick="abrirEdicionVehiculo()"
+            >
+                ✏️ Editar datos del vehículo
+            </button>
 
         </div>
     `;
