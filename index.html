@@ -30,45 +30,36 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    input, select, button {
+    input, button {
+      width: 100%;
+      box-sizing: border-box;
       padding: 12px;
-      margin: 5px 0;
+      margin: 6px 0;
       font-size: 16px;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
 
-    input {
-      width: 100%;
-      box-sizing: border-box;
-    }
-
     button {
-      cursor: pointer;
       background: #222;
       color: white;
       border: none;
+      cursor: pointer;
     }
 
     button:hover {
       background: #444;
     }
 
-    .historial {
-      margin-top: 20px;
-    }
-
-    .registro {
-      border-left: 5px solid #222;
+    .datos-vehiculo {
       background: #f8f8f8;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 5px;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 8px;
     }
 
-    .registro strong {
-      display: block;
-      margin-bottom: 5px;
+    .dato {
+      margin: 8px 0;
     }
   </style>
 </head>
@@ -81,27 +72,28 @@
 
   <div class="tarjeta">
 
-    <h2>Buscar vehículo</h2>
+    <h2>🔎 Buscar vehículo</h2>
 
     <input
       type="text"
-      id="patente"
+      id="patenteBuscar"
       placeholder="Ingresá la patente"
     >
 
     <button onclick="buscarVehiculo()">
-      🔍 Buscar
+      Buscar vehículo
     </button>
 
   </div>
 
+
   <div class="tarjeta">
 
-    <h2>Nuevo vehículo</h2>
+    <h2>🚗 Nuevo vehículo</h2>
 
     <input
       type="text"
-      id="nuevaPatente"
+      id="patente"
       placeholder="Patente"
     >
 
@@ -123,74 +115,132 @@
       placeholder="Año"
     >
 
+    <input
+      type="number"
+      id="kilometraje"
+      placeholder="Kilometraje"
+    >
+
+    <input
+      type="text"
+      id="cliente"
+      placeholder="Nombre del cliente"
+    >
+
+    <input
+      type="tel"
+      id="telefono"
+      placeholder="Teléfono"
+    >
+
     <button onclick="agregarVehiculo()">
       ➕ Agregar vehículo
     </button>
 
   </div>
 
+
   <div class="tarjeta">
 
-    <h2>Historial</h2>
+    <h2>📋 Información del vehículo</h2>
 
     <div id="resultado">
-      Buscá una patente para ver el historial.
+      Buscá una patente para ver la información.
     </div>
 
   </div>
 
 </div>
 
+
 <script>
 
   let vehiculos = [];
 
+
   function agregarVehiculo() {
 
     const patente =
-      document.getElementById("nuevaPatente").value.toUpperCase();
+      document.getElementById("patente").value.trim().toUpperCase();
 
     const marca =
-      document.getElementById("marca").value;
+      document.getElementById("marca").value.trim();
 
     const modelo =
-      document.getElementById("modelo").value;
+      document.getElementById("modelo").value.trim();
 
     const anio =
       document.getElementById("anio").value;
+
+    const kilometraje =
+      document.getElementById("kilometraje").value;
+
+    const cliente =
+      document.getElementById("cliente").value.trim();
+
+    const telefono =
+      document.getElementById("telefono").value.trim();
+
 
     if (!patente) {
       alert("Ingresá una patente.");
       return;
     }
 
-    vehiculos.push({
+
+    const vehiculo = {
+
       patente: patente,
+
       marca: marca,
+
       modelo: modelo,
+
       anio: anio,
-      historial: []
-    });
+
+      kilometraje: kilometraje,
+
+      cliente: cliente,
+
+      telefono: telefono
+
+    };
+
+
+    vehiculos.push(vehiculo);
+
 
     alert("Vehículo agregado correctamente.");
 
-    document.getElementById("nuevaPatente").value = "";
+
+    document.getElementById("patente").value = "";
     document.getElementById("marca").value = "";
     document.getElementById("modelo").value = "";
     document.getElementById("anio").value = "";
+    document.getElementById("kilometraje").value = "";
+    document.getElementById("cliente").value = "";
+    document.getElementById("telefono").value = "";
 
   }
+
 
   function buscarVehiculo() {
 
     const patente =
-      document.getElementById("patente").value.toUpperCase();
+      document
+      .getElementById("patenteBuscar")
+      .value
+      .trim()
+      .toUpperCase();
+
 
     const resultado =
       document.getElementById("resultado");
 
+
     const vehiculo =
       vehiculos.find(v => v.patente === patente);
+
 
     if (!vehiculo) {
 
@@ -198,20 +248,43 @@
         "<p>❌ No se encontró ningún vehículo con esa patente.</p>";
 
       return;
+
     }
 
+
     resultado.innerHTML = `
-      <h3>${vehiculo.marca} ${vehiculo.modelo}</h3>
-      <p><strong>Patente:</strong> ${vehiculo.patente}</p>
-      <p><strong>Año:</strong> ${vehiculo.anio}</p>
 
-      <div class="historial">
+      <div class="datos-vehiculo">
 
-        <h3>📋 Historial del vehículo</h3>
+        <h3>🚗 ${vehiculo.marca} ${vehiculo.modelo}</h3>
 
-        <p>No hay trabajos registrados todavía.</p>
+        <div class="dato">
+          <strong>Patente:</strong>
+          ${vehiculo.patente}
+        </div>
+
+        <div class="dato">
+          <strong>Año:</strong>
+          ${vehiculo.anio}
+        </div>
+
+        <div class="dato">
+          <strong>Kilometraje:</strong>
+          ${vehiculo.kilometraje} km
+        </div>
+
+        <div class="dato">
+          <strong>Cliente:</strong>
+          ${vehiculo.cliente}
+        </div>
+
+        <div class="dato">
+          <strong>Teléfono:</strong>
+          ${vehiculo.telefono}
+        </div>
 
       </div>
+
     `;
 
   }
