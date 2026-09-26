@@ -4,20 +4,219 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión Taller</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .tarjeta {
+      background: white;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    input, select, button {
+      padding: 12px;
+      margin: 5px 0;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      cursor: pointer;
+      background: #222;
+      color: white;
+      border: none;
+    }
+
+    button:hover {
+      background: #444;
+    }
+
+    .historial {
+      margin-top: 20px;
+    }
+
+    .registro {
+      border-left: 5px solid #222;
+      background: #f8f8f8;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+
+    .registro strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
 </head>
+
 <body>
+
+<div class="contenedor">
 
   <h1>🔧 Gestión Taller</h1>
 
-  <h2>Buscar vehículo</h2>
+  <div class="tarjeta">
 
-  <input type="text" placeholder="Ingresá la patente">
+    <h2>Buscar vehículo</h2>
 
-  <button>Buscar</button>
+    <input
+      type="text"
+      id="patente"
+      placeholder="Ingresá la patente"
+    >
 
-  <h2>Nuevo vehículo</h2>
+    <button onclick="buscarVehiculo()">
+      🔍 Buscar
+    </button>
 
-  <button>+ Agregar vehículo</button>
+  </div>
+
+  <div class="tarjeta">
+
+    <h2>Nuevo vehículo</h2>
+
+    <input
+      type="text"
+      id="nuevaPatente"
+      placeholder="Patente"
+    >
+
+    <input
+      type="text"
+      id="marca"
+      placeholder="Marca"
+    >
+
+    <input
+      type="text"
+      id="modelo"
+      placeholder="Modelo"
+    >
+
+    <input
+      type="number"
+      id="anio"
+      placeholder="Año"
+    >
+
+    <button onclick="agregarVehiculo()">
+      ➕ Agregar vehículo
+    </button>
+
+  </div>
+
+  <div class="tarjeta">
+
+    <h2>Historial</h2>
+
+    <div id="resultado">
+      Buscá una patente para ver el historial.
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+  let vehiculos = [];
+
+  function agregarVehiculo() {
+
+    const patente =
+      document.getElementById("nuevaPatente").value.toUpperCase();
+
+    const marca =
+      document.getElementById("marca").value;
+
+    const modelo =
+      document.getElementById("modelo").value;
+
+    const anio =
+      document.getElementById("anio").value;
+
+    if (!patente) {
+      alert("Ingresá una patente.");
+      return;
+    }
+
+    vehiculos.push({
+      patente: patente,
+      marca: marca,
+      modelo: modelo,
+      anio: anio,
+      historial: []
+    });
+
+    alert("Vehículo agregado correctamente.");
+
+    document.getElementById("nuevaPatente").value = "";
+    document.getElementById("marca").value = "";
+    document.getElementById("modelo").value = "";
+    document.getElementById("anio").value = "";
+
+  }
+
+  function buscarVehiculo() {
+
+    const patente =
+      document.getElementById("patente").value.toUpperCase();
+
+    const resultado =
+      document.getElementById("resultado");
+
+    const vehiculo =
+      vehiculos.find(v => v.patente === patente);
+
+    if (!vehiculo) {
+
+      resultado.innerHTML =
+        "<p>❌ No se encontró ningún vehículo con esa patente.</p>";
+
+      return;
+    }
+
+    resultado.innerHTML = `
+      <h3>${vehiculo.marca} ${vehiculo.modelo}</h3>
+      <p><strong>Patente:</strong> ${vehiculo.patente}</p>
+      <p><strong>Año:</strong> ${vehiculo.anio}</p>
+
+      <div class="historial">
+
+        <h3>📋 Historial del vehículo</h3>
+
+        <p>No hay trabajos registrados todavía.</p>
+
+      </div>
+    `;
+
+  }
+
+</script>
 
 </body>
 </html>
