@@ -233,10 +233,6 @@ small {
 
 <body>
 
-<!-- =========================
-     LOGIN
-========================= -->
-
 <div id="pantallaLogin" class="contenedor">
 
     <div class="tarjeta">
@@ -272,15 +268,9 @@ small {
 </div>
 
 
-<!-- =========================
-     SISTEMA
-========================= -->
-
 <div id="sistema" class="contenedor oculto">
 
     <h1>🔧 Taller Mecánico</h1>
-
-    <!-- MENÚ -->
 
     <div id="menuPrincipal" class="tarjeta">
 
@@ -305,8 +295,6 @@ small {
 
     </div>
 
-
-    <!-- BUSCAR -->
 
     <div id="buscar" class="tarjeta oculto">
 
@@ -335,8 +323,6 @@ small {
 
     </div>
 
-
-    <!-- NUEVO VEHÍCULO -->
 
     <div id="nuevoVehiculo" class="tarjeta oculto">
 
@@ -387,8 +373,6 @@ small {
 
     </div>
 
-
-    <!-- EDITAR VEHÍCULO -->
 
     <div id="editarVehiculo" class="tarjeta oculto">
 
@@ -442,8 +426,6 @@ small {
 
     </div>
 
-
-    <!-- NUEVA INTERVENCIÓN -->
 
     <div id="nuevaIntervencion" class="tarjeta oculto">
 
@@ -622,7 +604,7 @@ async function verificarSesion() {
             resultado.data.session
         ) {
 
-            mostrarSistema();
+            await mostrarSistema();
 
         } else {
 
@@ -639,7 +621,7 @@ async function verificarSesion() {
 
 
 /* =========================================================
-   MOSTRAR LOGIN
+   LOGIN
 ========================================================= */
 
 function mostrarLogin() {
@@ -654,11 +636,7 @@ function mostrarLogin() {
 }
 
 
-/* =========================================================
-   MOSTRAR SISTEMA
-========================================================= */
-
-function mostrarSistema() {
+async function mostrarSistema() {
 
     document
         .getElementById("pantallaLogin")
@@ -668,13 +646,9 @@ function mostrarSistema() {
         .getElementById("sistema")
         .classList.remove("oculto");
 
-    cargarDatos();
+    await cargarDatos();
 }
 
-
-/* =========================================================
-   INICIAR SESIÓN
-========================================================= */
 
 async function iniciarSesion() {
 
@@ -745,7 +719,7 @@ async function iniciarSesion() {
             )
             .value = "";
 
-        mostrarSistema();
+        await mostrarSistema();
 
     } catch (error) {
 
@@ -758,10 +732,6 @@ async function iniciarSesion() {
     }
 }
 
-
-/* =========================================================
-   CERRAR SESIÓN
-========================================================= */
 
 async function cerrarSesion() {
 
@@ -779,19 +749,30 @@ async function cerrarSesion() {
 
 
 /* =========================================================
-   CARGAR DATOS
+   CARGAR DATOS DESDE SUPABASE
 ========================================================= */
 
-function cargarDatos() {
+async function cargarDatos() {
 
     try {
 
-        const datosGuardados =
-            localStorage.getItem(
-                "vehiculos"
+        const resultado =
+            await supabaseClient
+                .from("vehiculos")
+                .select("*")
+                .order("created_at", {
+                    ascending: true
+                });
+
+        if (resultado.error) {
+
+            console.error(
+                resultado.error
             );
 
-        if (!datosGuardados) {
+            alert(
+                "No se pudieron cargar los vehículos desde Supabase."
+            );
 
             vehiculos = [];
 
@@ -799,53 +780,135 @@ function cargarDatos() {
         }
 
         vehiculos =
-            JSON.parse(
-                datosGuardados
-            );
+            resultado.data || [];
 
-        if (!Array.isArray(vehiculos)) {
+        for (
+            const vehiculo of vehiculos
+        ) {
 
-            vehiculos = [];
+            vehiculo.historial = [];
 
-            return;
+            const resultadoIntervenciones =
+                await supabaseClient
+                    .from("intervenciones")
+                    .select("*")
+                    .eq(
+                        "vehiculo_id",
+                        vehiculo.id
+                    )
+                    .order("fecha", {
+                        ascending: false
+                    });
+
+            if (
+                resultadoIntervenciones.error
+            ) {
+
+                console.error(
+                    resultadoIntervenciones.error
+                );
+
+                continue;
+            }
+
+            vehiculo.historial =
+                (
+                    resultadoIntervenciones.data ||
+                    []
+                ).map(
+                    convertirIntervencion
+                );
         }
 
-        vehiculos.forEach(
-            vehiculo => {
+        guardarDatosLocal();
 
-                if (
-                    Array.isArray(
-                        vehiculo.historial
-                    )
-                ) {
+    } catch (error) {
 
-                    return;
-                }
+        console.error(error);
 
-                if (
-                    Array.isArray(
-                        vehiculo.intervenciones
-                    )
-                ) {
-
-                    vehiculo.historial =
-                        vehiculo.intervenciones;
-
-                } else if (
-                    Array.isArray(
-                        vehiculo.registros
-                    )
-                ) {
-
-                    vehiculo.historial =
-                        vehiculo.registros;
-
-                } else {
-
-                    vehiculo.historial = [];
-                }
-            }
+        alert(
+            "No se pudieron cargar los datos."
         );
+
+        vehiculos = [];
+    }
+}
+
+
+/* =========================================================
+   CONVERTIR INTERVENCIÓN DE SUPABASE
+========================================================= */
+
+function convertirIntervencion(
+    intervencion
+) {
+
+    let datos = {};
+
+    try {
+
+        if (
+            intervencion.descripcion
+        ) {
+
+            datos =
+                JSON.parse(
+                    intervencion.descripcion
+                );
+        }
+
+    } catch (error) {
+
+        datos = {
+            trabajo:
+                intervencion.descripcion
+        };
+    }
+
+    return {
+
+        id:
+            intervencion.id,
+
+        fecha:
+            intervencion.fecha,
+
+        tipo:
+            intervencion.tipo,
+
+        kilometraje:
+            datos.kilometraje || "",
+
+        motivo:
+            datos.motivo || "",
+
+        trabajo:
+            datos.trabajo || "",
+
+        repuestos:
+            datos.repuestos || "",
+
+        observaciones:
+            datos.observaciones || "",
+
+        fotos:
+            Array.isArray(
+                intervencion.fotos
+            )
+                ? intervencion.fotos
+                : []
+
+    };
+}
+
+
+/* =========================================================
+   COPIA LOCAL
+========================================================= */
+
+function guardarDatosLocal() {
+
+    try {
 
         localStorage.setItem(
             "vehiculos",
@@ -857,24 +920,7 @@ function cargarDatos() {
     } catch (error) {
 
         console.error(error);
-
-        vehiculos = [];
     }
-}
-
-
-/* =========================================================
-   GUARDAR DATOS
-========================================================= */
-
-function guardarDatos() {
-
-    localStorage.setItem(
-        "vehiculos",
-        JSON.stringify(
-            vehiculos
-        )
-    );
 }
 
 
@@ -946,7 +992,7 @@ function volverInicio() {
    AGREGAR VEHÍCULO
 ========================================================= */
 
-function agregarVehiculo() {
+async function agregarVehiculo() {
 
     const patente =
         document
@@ -1016,24 +1062,84 @@ function agregarVehiculo() {
         return;
     }
 
-    vehiculos.push({
+    try {
 
-        patente: patente,
-        marca: marca,
-        modelo: modelo,
-        anio: anio,
-        kilometraje: kilometraje,
-        cliente: cliente,
-        telefono: telefono,
-        historial: []
+        const resultado =
+            await supabaseClient
+                .from("vehiculos")
+                .insert({
 
-    });
+                    patente:
+                        patente,
 
-    guardarDatos();
+                    marca:
+                        marca,
 
-    alert(
-        "Vehículo guardado correctamente."
-    );
+                    modelo:
+                        modelo,
+
+                    anio:
+                        anio,
+
+                    kilometraje:
+                        kilometraje,
+
+                    cliente:
+                        cliente,
+
+                    telefono:
+                        telefono
+
+                })
+                .select()
+                .single();
+
+        if (resultado.error) {
+
+            console.error(
+                resultado.error
+            );
+
+            alert(
+                "No se pudo guardar el vehículo: " +
+                resultado.error.message
+            );
+
+            return;
+        }
+
+        const nuevoVehiculo =
+            resultado.data;
+
+        nuevoVehiculo.historial =
+            [];
+
+        vehiculos.push(
+            nuevoVehiculo
+        );
+
+        guardarDatosLocal();
+
+        alert(
+            "Vehículo guardado correctamente."
+        );
+
+        limpiarFormularioVehiculo();
+
+        volverInicio();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Ocurrió un error al guardar el vehículo."
+        );
+    }
+}
+
+
+function limpiarFormularioVehiculo() {
 
     document.getElementById(
         "patente"
@@ -1062,8 +1168,6 @@ function agregarVehiculo() {
     document.getElementById(
         "telefono"
     ).value = "";
-
-    volverInicio();
 }
 
 
@@ -1130,7 +1234,7 @@ function abrirEdicionVehiculo() {
 }
 
 
-function guardarEdicionVehiculo() {
+async function guardarEdicionVehiculo() {
 
     const vehiculo =
         vehiculos.find(
@@ -1148,7 +1252,7 @@ function guardarEdicionVehiculo() {
         return;
     }
 
-    vehiculo.marca =
+    const marca =
         document
             .getElementById(
                 "editarMarca"
@@ -1156,7 +1260,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.modelo =
+    const modelo =
         document
             .getElementById(
                 "editarModelo"
@@ -1164,7 +1268,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.anio =
+    const anio =
         document
             .getElementById(
                 "editarAnio"
@@ -1172,7 +1276,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.kilometraje =
+    const kilometraje =
         document
             .getElementById(
                 "editarKilometraje"
@@ -1180,7 +1284,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.cliente =
+    const cliente =
         document
             .getElementById(
                 "editarCliente"
@@ -1188,7 +1292,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.telefono =
+    const telefono =
         document
             .getElementById(
                 "editarTelefono"
@@ -1196,13 +1300,85 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    guardarDatos();
+    try {
 
-    alert(
-        "Datos del vehículo actualizados correctamente."
-    );
+        const resultado =
+            await supabaseClient
+                .from("vehiculos")
+                .update({
 
-    volverInicio();
+                    marca:
+                        marca,
+
+                    modelo:
+                        modelo,
+
+                    anio:
+                        anio,
+
+                    kilometraje:
+                        kilometraje,
+
+                    cliente:
+                        cliente,
+
+                    telefono:
+                        telefono
+
+                })
+                .eq(
+                    "id",
+                    vehiculo.id
+                );
+
+        if (resultado.error) {
+
+            console.error(
+                resultado.error
+            );
+
+            alert(
+                "No se pudieron guardar los cambios: " +
+                resultado.error.message
+            );
+
+            return;
+        }
+
+        vehiculo.marca =
+            marca;
+
+        vehiculo.modelo =
+            modelo;
+
+        vehiculo.anio =
+            anio;
+
+        vehiculo.kilometraje =
+            kilometraje;
+
+        vehiculo.cliente =
+            cliente;
+
+        vehiculo.telefono =
+            telefono;
+
+        guardarDatosLocal();
+
+        alert(
+            "Datos del vehículo actualizados correctamente."
+        );
+
+        volverInicio();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Ocurrió un error al actualizar el vehículo."
+        );
+    }
 }
 
 
@@ -1312,15 +1488,6 @@ async function agregarIntervencion() {
         return;
     }
 
-    if (
-        !Array.isArray(
-            vehiculo.historial
-        )
-    ) {
-
-        vehiculo.historial = [];
-    }
-
     let fotos = [];
 
     try {
@@ -1339,41 +1506,107 @@ async function agregarIntervencion() {
         return;
     }
 
-    vehiculo.historial.push({
+    const datosIntervencion = {
 
-        fecha: fecha,
-        tipo: tipo,
-        kilometraje: km,
-        motivo: motivo,
-        trabajo: trabajo,
-        repuestos: repuestos,
-        observaciones: observaciones,
-        fotos: fotos
+        kilometraje:
+            km,
 
-    });
+        motivo:
+            motivo,
+
+        trabajo:
+            trabajo,
+
+        repuestos:
+            repuestos,
+
+        observaciones:
+            observaciones
+    };
 
     try {
 
-        guardarDatos();
+        const resultado =
+            await supabaseClient
+                .from("intervenciones")
+                .insert({
+
+                    user_id:
+                        (
+                            await supabaseClient
+                                .auth
+                                .getUser()
+                        ).data.user.id,
+
+                    vehiculo_id:
+                        vehiculo.id,
+
+                    fecha:
+                        fecha,
+
+                    tipo:
+                        tipo,
+
+                    descripcion:
+                        JSON.stringify(
+                            datosIntervencion
+                        ),
+
+                    fotos:
+                        fotos
+
+                })
+                .select()
+                .single();
+
+        if (resultado.error) {
+
+            console.error(
+                resultado.error
+            );
+
+            alert(
+                "No se pudo guardar la intervención: " +
+                resultado.error.message
+            );
+
+            return;
+        }
+
+        const nuevaIntervencion =
+            convertirIntervencion(
+                resultado.data
+            );
+
+        vehiculo.historial =
+            Array.isArray(
+                vehiculo.historial
+            )
+                ? vehiculo.historial
+                : [];
+
+        vehiculo.historial.push(
+            nuevaIntervencion
+        );
+
+        guardarDatosLocal();
+
+        alert(
+            "Intervención guardada correctamente."
+        );
+
+        limpiarFormularioIntervencion();
+
+        volverInicio();
 
     } catch (error) {
 
-        vehiculo.historial.pop();
+        console.error(error);
 
         alert(
-            "No se pudo guardar la intervención."
+            "Ocurrió un error al guardar la intervención."
         );
-
-        return;
     }
-
-    alert(
-        "Intervención guardada correctamente."
-    );
-
-    limpiarFormularioIntervencion();
-
-    volverInicio();
 }
 
 
@@ -1680,30 +1913,7 @@ function buscarVehiculo() {
         )
     ) {
 
-        if (
-            Array.isArray(
-                vehiculo.intervenciones
-            )
-        ) {
-
-            vehiculo.historial =
-                vehiculo.intervenciones;
-
-        } else if (
-            Array.isArray(
-                vehiculo.registros
-            )
-        ) {
-
-            vehiculo.historial =
-                vehiculo.registros;
-
-        } else {
-
-            vehiculo.historial = [];
-        }
-
-        guardarDatos();
+        vehiculo.historial = [];
     }
 
     const historialOrdenado =
@@ -1990,266 +2200,3 @@ function mostrarIntervencion(
                 <br>
 
                 ${escaparHTML(
-                    intervencion.trabajo ||
-                    "-"
-                )}
-            </p>
-
-            <p>
-                <strong>
-                    🔩 Repuestos:
-                </strong>
-
-                <br>
-
-                ${escaparHTML(
-                    intervencion.repuestos ||
-                    "-"
-                )}
-            </p>
-
-            <p>
-                <strong>
-                    📝 Observaciones:
-                </strong>
-
-                <br>
-
-                ${escaparHTML(
-                    intervencion.observaciones ||
-                    "-"
-                )}
-            </p>
-    `;
-
-    if (
-        Array.isArray(
-            intervencion.fotos
-        ) &&
-        intervencion.fotos.length > 0
-    ) {
-
-        html += `
-            <p>
-                <strong>
-                    📷 Fotos:
-                </strong>
-            </p>
-
-            <div class="fotos-guardadas">
-        `;
-
-        intervencion.fotos.forEach(
-            foto => {
-
-                html += `
-                    <img
-                        src="${foto}"
-                        onclick="abrirFoto(this.src)"
-                    >
-                `;
-            }
-        );
-
-        html += `
-            </div>
-        `;
-    }
-
-    html += `
-        </div>
-    `;
-
-    contenedor.innerHTML =
-        html;
-}
-
-
-/* =========================================================
-   ABRIR FOTO
-========================================================= */
-
-function abrirFoto(
-    src
-) {
-
-    const ventana =
-        window.open(
-            "",
-            "_blank"
-        );
-
-    if (!ventana) {
-
-        alert(
-            "El navegador bloqueó la ventana de la foto."
-        );
-
-        return;
-    }
-
-    ventana.document.write(`
-        <!DOCTYPE html>
-
-        <html>
-
-        <head>
-
-            <title>
-                Foto de intervención
-            </title>
-
-            <style>
-
-                body {
-                    margin: 0;
-                    background: #000;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-height: 100vh;
-                }
-
-                img {
-                    max-width: 100%;
-                    max-height: 100vh;
-                    object-fit: contain;
-                }
-
-            </style>
-
-        </head>
-
-        <body>
-
-            <img src="${src}">
-
-        </body>
-
-        </html>
-    `);
-}
-
-
-/* =========================================================
-   LIMPIAR FORMULARIO
-========================================================= */
-
-function limpiarFormularioIntervencion() {
-
-    document.getElementById(
-        "patenteIntervencion"
-    ).value = "";
-
-    document.getElementById(
-        "fecha"
-    ).value = "";
-
-    document.getElementById(
-        "tipo"
-    ).value = "";
-
-    document.getElementById(
-        "kmIntervencion"
-    ).value = "";
-
-    document.getElementById(
-        "motivo"
-    ).value = "";
-
-    document.getElementById(
-        "trabajo"
-    ).value = "";
-
-    document.getElementById(
-        "repuestos"
-    ).value = "";
-
-    document.getElementById(
-        "observaciones"
-    ).value = "";
-
-    fotosSeleccionadas = [];
-
-    document.getElementById(
-        "vistaPreviaFotos"
-    ).innerHTML = "";
-
-    document.getElementById(
-        "fotos"
-    ).value = "";
-}
-
-
-/* =========================================================
-   FORMATEAR FECHA
-========================================================= */
-
-function formatearFecha(
-    fecha
-) {
-
-    if (!fecha) {
-        return "-";
-    }
-
-    const partes =
-        fecha.split("-");
-
-    if (
-        partes.length === 3
-    ) {
-
-        return (
-            partes[2] +
-            "/" +
-            partes[1] +
-            "/" +
-            partes[0]
-        );
-    }
-
-    return fecha;
-}
-
-
-/* =========================================================
-   ESCAPAR HTML
-========================================================= */
-
-function escaparHTML(
-    texto
-) {
-
-    return String(texto)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-</script>
-
-</body>
-</html>
