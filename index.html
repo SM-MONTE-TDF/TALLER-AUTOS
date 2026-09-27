@@ -271,7 +271,6 @@ small {
 
 </div>
 
-
 <!-- =========================
      SISTEMA
 ========================= -->
@@ -305,7 +304,6 @@ small {
 
     </div>
 
-
     <!-- BUSCAR -->
 
     <div id="buscar" class="tarjeta oculto">
@@ -334,7 +332,6 @@ small {
         </button>
 
     </div>
-
 
     <!-- NUEVO VEHÍCULO -->
 
@@ -386,7 +383,6 @@ small {
         </button>
 
     </div>
-
 
     <!-- EDITAR VEHÍCULO -->
 
@@ -441,7 +437,6 @@ small {
         </button>
 
     </div>
-
 
     <!-- NUEVA INTERVENCIÓN -->
 
@@ -566,7 +561,6 @@ small {
 
 </div>
 
-
 <script>
 
 /* =========================================================
@@ -585,7 +579,6 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
-
 /* =========================================================
    VARIABLES
 ========================================================= */
@@ -595,7 +588,6 @@ let historialActual = [];
 let fotosSeleccionadas = [];
 let patenteVehiculoEditando = "";
 
-
 /* =========================================================
    INICIO
 ========================================================= */
@@ -604,7 +596,6 @@ window.addEventListener(
     "load",
     verificarSesion
 );
-
 
 /* =========================================================
    VERIFICAR SESIÓN
@@ -637,7 +628,6 @@ async function verificarSesion() {
     }
 }
 
-
 /* =========================================================
    MOSTRAR LOGIN
 ========================================================= */
@@ -652,7 +642,6 @@ function mostrarLogin() {
         .getElementById("sistema")
         .classList.add("oculto");
 }
-
 
 /* =========================================================
    MOSTRAR SISTEMA
@@ -670,7 +659,6 @@ function mostrarSistema() {
 
     cargarDatos();
 }
-
 
 /* =========================================================
    INICIAR SESIÓN
@@ -758,7 +746,6 @@ async function iniciarSesion() {
     }
 }
 
-
 /* =========================================================
    CERRAR SESIÓN
 ========================================================= */
@@ -776,7 +763,6 @@ async function cerrarSesion() {
 
     mostrarLogin();
 }
-
 
 /* =========================================================
    CARGAR DATOS
@@ -862,7 +848,6 @@ function cargarDatos() {
     }
 }
 
-
 /* =========================================================
    GUARDAR DATOS
 ========================================================= */
@@ -876,7 +861,6 @@ function guardarDatos() {
         )
     );
 }
-
 
 /* =========================================================
    NAVEGACIÓN
@@ -911,7 +895,6 @@ function mostrarSeccion(
         .classList.remove("oculto");
 }
 
-
 function volverInicio() {
 
     document
@@ -941,12 +924,11 @@ function volverInicio() {
     historialActual = [];
 }
 
-
 /* =========================================================
    AGREGAR VEHÍCULO
 ========================================================= */
 
-function agregarVehiculo() {
+async function agregarVehiculo() {
 
     const patente =
         document
@@ -1016,56 +998,116 @@ function agregarVehiculo() {
         return;
     }
 
-    vehiculos.push({
+    try {
 
-        patente: patente,
-        marca: marca,
-        modelo: modelo,
-        anio: anio,
-        kilometraje: kilometraje,
-        cliente: cliente,
-        telefono: telefono,
-        historial: []
+        const usuarioResultado =
+            await supabaseClient.auth.getUser();
 
-    });
+        if (
+            usuarioResultado.error ||
+            !usuarioResultado.data.user
+        ) {
 
-    guardarDatos();
+            alert(
+                "La sesión no está disponible. Volvé a iniciar sesión."
+            );
 
-    alert(
-        "Vehículo guardado correctamente."
-    );
+            return;
+        }
 
-    document.getElementById(
-        "patente"
-    ).value = "";
+        const usuario =
+            usuarioResultado.data.user;
 
-    document.getElementById(
-        "marca"
-    ).value = "";
+        const resultado =
+            await supabaseClient
+                .from("vehiculos")
+                .insert({
 
-    document.getElementById(
-        "modelo"
-    ).value = "";
+                    user_id: usuario.id,
+                    patente: patente,
+                    marca: marca,
+                    modelo: modelo,
+                    anio: anio,
+                    kilometraje: kilometraje,
+                    cliente: cliente,
+                    telefono: telefono
 
-    document.getElementById(
-        "anio"
-    ).value = "";
+                })
+                .select()
+                .single();
 
-    document.getElementById(
-        "kilometraje"
-    ).value = "";
+        if (resultado.error) {
 
-    document.getElementById(
-        "cliente"
-    ).value = "";
+            console.error(
+                resultado.error
+            );
 
-    document.getElementById(
-        "telefono"
-    ).value = "";
+            alert(
+                "No se pudo guardar el vehículo en la base de datos."
+            );
 
-    volverInicio();
+            return;
+        }
+
+        vehiculos.push({
+
+            id: resultado.data.id,
+            patente: patente,
+            marca: marca,
+            modelo: modelo,
+            anio: anio,
+            kilometraje: kilometraje,
+            cliente: cliente,
+            telefono: telefono,
+            historial: []
+
+        });
+
+        guardarDatos();
+
+        alert(
+            "Vehículo guardado correctamente."
+        );
+
+        document.getElementById(
+            "patente"
+        ).value = "";
+
+        document.getElementById(
+            "marca"
+        ).value = "";
+
+        document.getElementById(
+            "modelo"
+        ).value = "";
+
+        document.getElementById(
+            "anio"
+        ).value = "";
+
+        document.getElementById(
+            "kilometraje"
+        ).value = "";
+
+        document.getElementById(
+            "cliente"
+        ).value = "";
+
+        document.getElementById(
+            "telefono"
+        ).value = "";
+
+        volverInicio();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Ocurrió un error al guardar el vehículo."
+        );
+    }
 }
-
 
 /* =========================================================
    EDITAR VEHÍCULO
@@ -1128,7 +1170,6 @@ function abrirEdicionVehiculo() {
         "editarVehiculo"
     );
 }
-
 
 function guardarEdicionVehiculo() {
 
@@ -1205,12 +1246,10 @@ function guardarEdicionVehiculo() {
     volverInicio();
 }
 
-
 function cancelarEdicionVehiculo() {
 
     volverInicio();
 }
-
 
 /* =========================================================
    AGREGAR INTERVENCIÓN
@@ -1376,7 +1415,6 @@ async function agregarIntervencion() {
     volverInicio();
 }
 
-
 /* =========================================================
    FOTOS
 ========================================================= */
@@ -1392,7 +1430,6 @@ function procesarFotos() {
         )
     );
 }
-
 
 function comprimirImagen(
     archivo
@@ -1507,7 +1544,6 @@ function comprimirImagen(
     );
 }
 
-
 function seleccionarFotos() {
 
     const input =
@@ -1529,7 +1565,6 @@ function seleccionarFotos() {
 
     input.value = "";
 }
-
 
 function mostrarVistaPreviaFotos() {
 
@@ -1608,7 +1643,6 @@ function mostrarVistaPreviaFotos() {
     );
 }
 
-
 function eliminarFoto(
     indice
 ) {
@@ -1620,7 +1654,6 @@ function eliminarFoto(
 
     mostrarVistaPreviaFotos();
 }
-
 
 /* =========================================================
    BUSCAR VEHÍCULO
@@ -1867,7 +1900,6 @@ function buscarVehiculo() {
         html;
 }
 
-
 /* =========================================================
    ICONOS
 ========================================================= */
@@ -1903,7 +1935,6 @@ function obtenerIconoTipo(
 
     return "📋";
 }
-
 
 /* =========================================================
    MOSTRAR INTERVENCIÓN
@@ -2064,7 +2095,6 @@ function mostrarIntervencion(
         html;
 }
 
-
 /* =========================================================
    ABRIR FOTO
 ========================================================= */
@@ -2130,7 +2160,6 @@ function abrirFoto(
     `);
 }
 
-
 /* =========================================================
    LIMPIAR FORMULARIO
 ========================================================= */
@@ -2180,7 +2209,6 @@ function limpiarFormularioIntervencion() {
     ).value = "";
 }
 
-
 /* =========================================================
    FORMATEAR FECHA
 ========================================================= */
@@ -2212,7 +2240,6 @@ function formatearFecha(
     return fecha;
 }
 
-
 /* =========================================================
    ESCAPAR HTML
 ========================================================= */
@@ -2225,31 +2252,12 @@ function escaparHTML(
 
         .replace(
             /&/g,
-            "&amp;"
+            "&"
         )
 
         .replace(
             /</g,
-            "&lt;"
+            "<"
         )
 
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-</script>
-
-</body>
-</html>
+        .
