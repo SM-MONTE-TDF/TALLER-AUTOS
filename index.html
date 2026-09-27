@@ -6,6 +6,8 @@
 
 <title>Taller Mecánico</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 * {
     box-sizing: border-box;
@@ -61,8 +63,13 @@ button:hover {
     background: #777;
 }
 
+.boton-cerrar {
+    background: #a00000;
+}
+
 .boton-editar {
-    background: #444;
+    background: #555;
+    margin-top: 15px;
 }
 
 .boton-guardar-edicion {
@@ -91,7 +98,7 @@ label {
 }
 
 .oculto {
-    display: none;
+    display: none !important;
 }
 
 .info-vehiculo {
@@ -208,6 +215,14 @@ label {
     margin-top: 15px;
 }
 
+.mensaje-error {
+    padding: 15px;
+    background: #f8d7da;
+    color: #842029;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
 small {
     display: block;
     color: #666;
@@ -218,11 +233,55 @@ small {
 
 <body>
 
-<div class="contenedor">
+<!-- =========================
+     LOGIN
+========================= -->
+
+<div id="pantallaLogin" class="contenedor">
+
+    <div class="tarjeta">
+
+        <h1>🔧 Taller Mecánico</h1>
+
+        <h2>🔐 Iniciar sesión</h2>
+
+        <label>Correo electrónico</label>
+
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Tu correo electrónico"
+        >
+
+        <label>Contraseña</label>
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Tu contraseña"
+        >
+
+        <button onclick="iniciarSesion()">
+            🔐 Ingresar
+        </button>
+
+        <div id="mensajeLogin"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     SISTEMA
+========================= -->
+
+<div id="sistema" class="contenedor oculto">
 
     <h1>🔧 Taller Mecánico</h1>
 
-    <!-- MENÚ PRINCIPAL -->
+    <!-- MENÚ -->
+
     <div id="menuPrincipal" class="tarjeta">
 
         <button onclick="mostrarSeccion('buscar')">
@@ -237,10 +296,18 @@ small {
             🛠️ Nueva intervención
         </button>
 
+        <button
+            class="boton-cerrar"
+            onclick="cerrarSesion()"
+        >
+            🔒 Cerrar sesión
+        </button>
+
     </div>
 
 
-    <!-- BUSCAR VEHÍCULO -->
+    <!-- BUSCAR -->
+
     <div id="buscar" class="tarjeta oculto">
 
         <h2>🔎 Buscar vehículo</h2>
@@ -270,6 +337,7 @@ small {
 
 
     <!-- NUEVO VEHÍCULO -->
+
     <div id="nuevoVehiculo" class="tarjeta oculto">
 
         <h2>🚗 Nuevo vehículo</h2>
@@ -284,45 +352,27 @@ small {
 
         <label>Marca</label>
 
-        <input
-            type="text"
-            id="marca"
-        >
+        <input type="text" id="marca">
 
         <label>Modelo</label>
 
-        <input
-            type="text"
-            id="modelo"
-        >
+        <input type="text" id="modelo">
 
         <label>Año</label>
 
-        <input
-            type="number"
-            id="anio"
-        >
+        <input type="number" id="anio">
 
         <label>Kilometraje</label>
 
-        <input
-            type="number"
-            id="kilometraje"
-        >
+        <input type="number" id="kilometraje">
 
         <label>Cliente</label>
 
-        <input
-            type="text"
-            id="cliente"
-        >
+        <input type="text" id="cliente">
 
         <label>Teléfono</label>
 
-        <input
-            type="tel"
-            id="telefono"
-        >
+        <input type="tel" id="telefono">
 
         <button onclick="agregarVehiculo()">
             Guardar vehículo
@@ -339,9 +389,10 @@ small {
 
 
     <!-- EDITAR VEHÍCULO -->
+
     <div id="editarVehiculo" class="tarjeta oculto">
 
-        <h2>✏️ Editar datos del vehículo</h2>
+        <h2>✏️ Editar vehículo</h2>
 
         <label>Patente</label>
 
@@ -353,45 +404,27 @@ small {
 
         <label>Marca</label>
 
-        <input
-            type="text"
-            id="editarMarca"
-        >
+        <input type="text" id="editarMarca">
 
         <label>Modelo</label>
 
-        <input
-            type="text"
-            id="editarModelo"
-        >
+        <input type="text" id="editarModelo">
 
         <label>Año</label>
 
-        <input
-            type="number"
-            id="editarAnio"
-        >
+        <input type="number" id="editarAnio">
 
         <label>Kilometraje</label>
 
-        <input
-            type="number"
-            id="editarKilometraje"
-        >
+        <input type="number" id="editarKilometraje">
 
         <label>Cliente</label>
 
-        <input
-            type="text"
-            id="editarCliente"
-        >
+        <input type="text" id="editarCliente">
 
         <label>Teléfono</label>
 
-        <input
-            type="tel"
-            id="editarTelefono"
-        >
+        <input type="tel" id="editarTelefono">
 
         <button
             class="boton-guardar-edicion"
@@ -411,6 +444,7 @@ small {
 
 
     <!-- NUEVA INTERVENCIÓN -->
+
     <div id="nuevaIntervencion" class="tarjeta oculto">
 
         <h2>🛠️ Nueva intervención</h2>
@@ -425,10 +459,7 @@ small {
 
         <label>Fecha de ingreso</label>
 
-        <input
-            type="date"
-            id="fecha"
-        >
+        <input type="date" id="fecha">
 
         <label>Tipo de trabajo</label>
 
@@ -455,7 +486,6 @@ small {
             </option>
 
         </select>
-
 
         <label>Kilometraje</label>
 
@@ -492,7 +522,6 @@ small {
             placeholder="Observaciones"
         ></textarea>
 
-
         <label>📷 Fotos de la intervención</label>
 
         <input
@@ -522,7 +551,6 @@ small {
             class="vista-previa-fotos"
         ></div>
 
-
         <button onclick="agregarIntervencion()">
             💾 Guardar intervención
         </button>
@@ -542,8 +570,25 @@ small {
 <script>
 
 /* =========================================================
-   DATOS
-   ========================================================= */
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://sljknzpyxmpfnkcaoksu.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
 
 let vehiculos = [];
 let historialActual = [];
@@ -552,15 +597,199 @@ let patenteVehiculoEditando = "";
 
 
 /* =========================================================
+   INICIO
+========================================================= */
+
+window.addEventListener(
+    "load",
+    verificarSesion
+);
+
+
+/* =========================================================
+   VERIFICAR SESIÓN
+========================================================= */
+
+async function verificarSesion() {
+
+    try {
+
+        const resultado =
+            await supabaseClient.auth.getSession();
+
+        if (
+            resultado.data &&
+            resultado.data.session
+        ) {
+
+            mostrarSistema();
+
+        } else {
+
+            mostrarLogin();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        mostrarLogin();
+    }
+}
+
+
+/* =========================================================
+   MOSTRAR LOGIN
+========================================================= */
+
+function mostrarLogin() {
+
+    document
+        .getElementById("pantallaLogin")
+        .classList.remove("oculto");
+
+    document
+        .getElementById("sistema")
+        .classList.add("oculto");
+}
+
+
+/* =========================================================
+   MOSTRAR SISTEMA
+========================================================= */
+
+function mostrarSistema() {
+
+    document
+        .getElementById("pantallaLogin")
+        .classList.add("oculto");
+
+    document
+        .getElementById("sistema")
+        .classList.remove("oculto");
+
+    cargarDatos();
+}
+
+
+/* =========================================================
+   INICIAR SESIÓN
+========================================================= */
+
+async function iniciarSesion() {
+
+    const email =
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+    const mensaje =
+        document.getElementById(
+            "mensajeLogin"
+        );
+
+    mensaje.innerHTML = "";
+
+    if (!email) {
+
+        mensaje.innerHTML =
+            '<div class="mensaje-error">' +
+            'Ingresá tu correo electrónico.' +
+            '</div>';
+
+        return;
+    }
+
+    if (!password) {
+
+        mensaje.innerHTML =
+            '<div class="mensaje-error">' +
+            'Ingresá tu contraseña.' +
+            '</div>';
+
+        return;
+    }
+
+    try {
+
+        const resultado =
+            await supabaseClient.auth
+                .signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+        if (resultado.error) {
+
+            console.error(
+                resultado.error
+            );
+
+            mensaje.innerHTML =
+                '<div class="mensaje-error">' +
+                'Correo o contraseña incorrectos.' +
+                '</div>';
+
+            return;
+        }
+
+        document
+            .getElementById(
+                "loginPassword"
+            )
+            .value = "";
+
+        mostrarSistema();
+
+    } catch (error) {
+
+        console.error(error);
+
+        mensaje.innerHTML =
+            '<div class="mensaje-error">' +
+            'No se pudo iniciar sesión.' +
+            '</div>';
+    }
+}
+
+
+/* =========================================================
+   CERRAR SESIÓN
+========================================================= */
+
+async function cerrarSesion() {
+
+    try {
+
+        await supabaseClient.auth.signOut();
+
+    } catch (error) {
+
+        console.error(error);
+    }
+
+    mostrarLogin();
+}
+
+
+/* =========================================================
    CARGAR DATOS
-   ========================================================= */
+========================================================= */
 
 function cargarDatos() {
 
     try {
 
         const datosGuardados =
-            localStorage.getItem("vehiculos");
+            localStorage.getItem(
+                "vehiculos"
+            );
 
         if (!datosGuardados) {
 
@@ -570,7 +799,9 @@ function cargarDatos() {
         }
 
         vehiculos =
-            JSON.parse(datosGuardados);
+            JSON.parse(
+                datosGuardados
+            );
 
         if (!Array.isArray(vehiculos)) {
 
@@ -579,45 +810,53 @@ function cargarDatos() {
             return;
         }
 
-        vehiculos.forEach(vehiculo => {
+        vehiculos.forEach(
+            vehiculo => {
 
-            if (Array.isArray(vehiculo.historial)) {
-                return;
+                if (
+                    Array.isArray(
+                        vehiculo.historial
+                    )
+                ) {
+
+                    return;
+                }
+
+                if (
+                    Array.isArray(
+                        vehiculo.intervenciones
+                    )
+                ) {
+
+                    vehiculo.historial =
+                        vehiculo.intervenciones;
+
+                } else if (
+                    Array.isArray(
+                        vehiculo.registros
+                    )
+                ) {
+
+                    vehiculo.historial =
+                        vehiculo.registros;
+
+                } else {
+
+                    vehiculo.historial = [];
+                }
             }
-
-            if (Array.isArray(vehiculo.intervenciones)) {
-
-                vehiculo.historial =
-                    vehiculo.intervenciones;
-
-            } else if (Array.isArray(vehiculo.registros)) {
-
-                vehiculo.historial =
-                    vehiculo.registros;
-
-            } else {
-
-                vehiculo.historial = [];
-
-            }
-
-        });
+        );
 
         localStorage.setItem(
             "vehiculos",
-            JSON.stringify(vehiculos)
+            JSON.stringify(
+                vehiculos
+            )
         );
 
     } catch (error) {
 
-        console.error(
-            "Error cargando datos:",
-            error
-        );
-
-        alert(
-            "No se pudieron leer los datos guardados."
-        );
+        console.error(error);
 
         vehiculos = [];
     }
@@ -626,29 +865,26 @@ function cargarDatos() {
 
 /* =========================================================
    GUARDAR DATOS
-   ========================================================= */
+========================================================= */
 
 function guardarDatos() {
 
     localStorage.setItem(
         "vehiculos",
-        JSON.stringify(vehiculos)
+        JSON.stringify(
+            vehiculos
+        )
     );
 }
 
 
 /* =========================================================
-   INICIO
-   ========================================================= */
-
-cargarDatos();
-
-
-/* =========================================================
    NAVEGACIÓN
-   ========================================================= */
+========================================================= */
 
-function mostrarSeccion(seccion) {
+function mostrarSeccion(
+    seccion
+) {
 
     document
         .getElementById("menuPrincipal")
@@ -708,7 +944,7 @@ function volverInicio() {
 
 /* =========================================================
    AGREGAR VEHÍCULO
-   ========================================================= */
+========================================================= */
 
 function agregarVehiculo() {
 
@@ -755,20 +991,21 @@ function agregarVehiculo() {
             .value
             .trim();
 
-
     if (!patente) {
 
-        alert("Ingresá la patente.");
+        alert(
+            "Ingresá la patente."
+        );
 
         return;
     }
 
-
     const existente =
         vehiculos.find(
-            v => v.patente === patente
+            v =>
+                v.patente ===
+                patente
         );
-
 
     if (existente) {
 
@@ -779,40 +1016,24 @@ function agregarVehiculo() {
         return;
     }
 
-
-    const nuevoVehiculo = {
+    vehiculos.push({
 
         patente: patente,
-
         marca: marca,
-
         modelo: modelo,
-
         anio: anio,
-
         kilometraje: kilometraje,
-
         cliente: cliente,
-
         telefono: telefono,
-
         historial: []
 
-    };
-
-
-    vehiculos.push(
-        nuevoVehiculo
-    );
-
+    });
 
     guardarDatos();
-
 
     alert(
         "Vehículo guardado correctamente."
     );
-
 
     document.getElementById(
         "patente"
@@ -842,25 +1063,22 @@ function agregarVehiculo() {
         "telefono"
     ).value = "";
 
-
     volverInicio();
 }
 
 
 /* =========================================================
    EDITAR VEHÍCULO
-   ========================================================= */
+========================================================= */
 
 function abrirEdicionVehiculo() {
 
-    const patente =
-        patenteVehiculoEditando;
-
     const vehiculo =
         vehiculos.find(
-            v => v.patente === patente
+            v =>
+                v.patente ===
+                patenteVehiculoEditando
         );
-
 
     if (!vehiculo) {
 
@@ -871,48 +1089,40 @@ function abrirEdicionVehiculo() {
         return;
     }
 
-
     document.getElementById(
         "editarPatente"
     ).value =
         vehiculo.patente || "";
-
 
     document.getElementById(
         "editarMarca"
     ).value =
         vehiculo.marca || "";
 
-
     document.getElementById(
         "editarModelo"
     ).value =
         vehiculo.modelo || "";
-
 
     document.getElementById(
         "editarAnio"
     ).value =
         vehiculo.anio || "";
 
-
     document.getElementById(
         "editarKilometraje"
     ).value =
         vehiculo.kilometraje || "";
-
 
     document.getElementById(
         "editarCliente"
     ).value =
         vehiculo.cliente || "";
 
-
     document.getElementById(
         "editarTelefono"
     ).value =
         vehiculo.telefono || "";
-
 
     mostrarSeccion(
         "editarVehiculo"
@@ -922,15 +1132,12 @@ function abrirEdicionVehiculo() {
 
 function guardarEdicionVehiculo() {
 
-    const patente =
-        patenteVehiculoEditando;
-
-
     const vehiculo =
         vehiculos.find(
-            v => v.patente === patente
+            v =>
+                v.patente ===
+                patenteVehiculoEditando
         );
-
 
     if (!vehiculo) {
 
@@ -941,74 +1148,73 @@ function guardarEdicionVehiculo() {
         return;
     }
 
-
     vehiculo.marca =
         document
-            .getElementById("editarMarca")
+            .getElementById(
+                "editarMarca"
+            )
             .value
             .trim();
-
 
     vehiculo.modelo =
         document
-            .getElementById("editarModelo")
+            .getElementById(
+                "editarModelo"
+            )
             .value
             .trim();
-
 
     vehiculo.anio =
         document
-            .getElementById("editarAnio")
+            .getElementById(
+                "editarAnio"
+            )
             .value
             .trim();
-
 
     vehiculo.kilometraje =
         document
-            .getElementById("editarKilometraje")
+            .getElementById(
+                "editarKilometraje"
+            )
             .value
             .trim();
-
 
     vehiculo.cliente =
         document
-            .getElementById("editarCliente")
+            .getElementById(
+                "editarCliente"
+            )
             .value
             .trim();
-
 
     vehiculo.telefono =
         document
-            .getElementById("editarTelefono")
+            .getElementById(
+                "editarTelefono"
+            )
             .value
             .trim();
 
-
     guardarDatos();
-
 
     alert(
         "Datos del vehículo actualizados correctamente."
     );
 
-
-    mostrarSeccion("buscar");
-
-    buscarVehiculo();
+    volverInicio();
 }
 
 
 function cancelarEdicionVehiculo() {
 
-    mostrarSeccion("buscar");
-
-    buscarVehiculo();
+    volverInicio();
 }
 
 
 /* =========================================================
    AGREGAR INTERVENCIÓN
-   ========================================================= */
+========================================================= */
 
 async function agregarIntervencion() {
 
@@ -1063,7 +1269,6 @@ async function agregarIntervencion() {
             .value
             .trim();
 
-
     if (!patente) {
 
         alert(
@@ -1072,7 +1277,6 @@ async function agregarIntervencion() {
 
         return;
     }
-
 
     if (!fecha) {
 
@@ -1083,7 +1287,6 @@ async function agregarIntervencion() {
         return;
     }
 
-
     if (!tipo) {
 
         alert(
@@ -1093,12 +1296,12 @@ async function agregarIntervencion() {
         return;
     }
 
-
     const vehiculo =
         vehiculos.find(
-            v => v.patente === patente
+            v =>
+                v.patente ===
+                patente
         );
-
 
     if (!vehiculo) {
 
@@ -1109,16 +1312,16 @@ async function agregarIntervencion() {
         return;
     }
 
-
-    if (!Array.isArray(vehiculo.historial)) {
+    if (
+        !Array.isArray(
+            vehiculo.historial
+        )
+    ) {
 
         vehiculo.historial = [];
-
     }
 
-
     let fotos = [];
-
 
     try {
 
@@ -1136,32 +1339,18 @@ async function agregarIntervencion() {
         return;
     }
 
-
-    const intervencion = {
+    vehiculo.historial.push({
 
         fecha: fecha,
-
         tipo: tipo,
-
         kilometraje: km,
-
         motivo: motivo,
-
         trabajo: trabajo,
-
         repuestos: repuestos,
-
         observaciones: observaciones,
-
         fotos: fotos
 
-    };
-
-
-    vehiculo.historial.push(
-        intervencion
-    );
-
+    });
 
     try {
 
@@ -1178,11 +1367,9 @@ async function agregarIntervencion() {
         return;
     }
 
-
     alert(
         "Intervención guardada correctamente."
     );
-
 
     limpiarFormularioIntervencion();
 
@@ -1191,35 +1378,40 @@ async function agregarIntervencion() {
 
 
 /* =========================================================
-   PROCESAR FOTOS
-   ========================================================= */
+   FOTOS
+========================================================= */
 
 function procesarFotos() {
 
     return Promise.all(
         fotosSeleccionadas.map(
             archivo =>
-                comprimirImagen(archivo)
+                comprimirImagen(
+                    archivo
+                )
         )
     );
 }
 
 
-function comprimirImagen(archivo) {
+function comprimirImagen(
+    archivo
+) {
 
     return new Promise(
-        (resolve, reject) => {
+        (
+            resolve,
+            reject
+        ) => {
 
             const lector =
                 new FileReader();
-
 
             lector.onload =
                 function(e) {
 
                     const imagen =
                         new Image();
-
 
                     imagen.onload =
                         function() {
@@ -1233,7 +1425,6 @@ function comprimirImagen(archivo) {
                             let alto =
                                 imagen.height;
 
-
                             if (
                                 ancho > maximo ||
                                 alto > maximo
@@ -1245,7 +1436,10 @@ function comprimirImagen(archivo) {
 
                                     alto =
                                         alto *
-                                        (maximo / ancho);
+                                        (
+                                            maximo /
+                                            ancho
+                                        );
 
                                     ancho =
                                         maximo;
@@ -1254,19 +1448,20 @@ function comprimirImagen(archivo) {
 
                                     ancho =
                                         ancho *
-                                        (maximo / alto);
+                                        (
+                                            maximo /
+                                            alto
+                                        );
 
                                     alto =
                                         maximo;
                                 }
                             }
 
-
                             const canvas =
                                 document.createElement(
                                     "canvas"
                                 );
-
 
                             canvas.width =
                                 ancho;
@@ -1274,12 +1469,10 @@ function comprimirImagen(archivo) {
                             canvas.height =
                                 alto;
 
-
                             const contexto =
                                 canvas.getContext(
                                     "2d"
                                 );
-
 
                             contexto.drawImage(
                                 imagen,
@@ -1289,29 +1482,20 @@ function comprimirImagen(archivo) {
                                 alto
                             );
 
-
-                            const resultado =
+                            resolve(
                                 canvas.toDataURL(
                                     "image/jpeg",
                                     0.70
-                                );
-
-
-                            resolve(
-                                resultado
+                                )
                             );
-
                         };
-
 
                     imagen.onerror =
                         reject;
 
                     imagen.src =
                         e.target.result;
-
                 };
-
 
             lector.onerror =
                 reject;
@@ -1319,42 +1503,33 @@ function comprimirImagen(archivo) {
             lector.readAsDataURL(
                 archivo
             );
-
         }
     );
 }
 
 
-/* =========================================================
-   SELECCIONAR FOTOS
-   ========================================================= */
-
 function seleccionarFotos() {
 
     const input =
-        document.getElementById("fotos");
-
+        document.getElementById(
+            "fotos"
+        );
 
     const archivos =
-        Array.from(input.files);
-
+        Array.from(
+            input.files
+        );
 
     fotosSeleccionadas =
         fotosSeleccionadas.concat(
             archivos
         );
 
-
     mostrarVistaPreviaFotos();
-
 
     input.value = "";
 }
 
-
-/* =========================================================
-   VISTA PREVIA FOTOS
-   ========================================================= */
 
 function mostrarVistaPreviaFotos() {
 
@@ -1363,16 +1538,16 @@ function mostrarVistaPreviaFotos() {
             "vistaPreviaFotos"
         );
 
-
     contenedor.innerHTML = "";
 
-
     fotosSeleccionadas.forEach(
-        (archivo, indice) => {
+        (
+            archivo,
+            indice
+        ) => {
 
             const lector =
                 new FileReader();
-
 
             lector.onload =
                 function(e) {
@@ -1385,7 +1560,6 @@ function mostrarVistaPreviaFotos() {
                     div.className =
                         "foto-preview";
 
-
                     const img =
                         document.createElement(
                             "img"
@@ -1393,7 +1567,6 @@ function mostrarVistaPreviaFotos() {
 
                     img.src =
                         e.target.result;
-
 
                     const boton =
                         document.createElement(
@@ -1409,40 +1582,36 @@ function mostrarVistaPreviaFotos() {
                     boton.innerHTML =
                         "🗑️";
 
-
                     boton.onclick =
                         function() {
 
                             eliminarFoto(
                                 indice
                             );
-
                         };
-
 
                     div.appendChild(img);
 
-                    div.appendChild(boton);
+                    div.appendChild(
+                        boton
+                    );
 
-                    contenedor.appendChild(div);
-
+                    contenedor.appendChild(
+                        div
+                    );
                 };
-
 
             lector.readAsDataURL(
                 archivo
             );
-
         }
     );
 }
 
 
-/* =========================================================
-   ELIMINAR FOTO
-   ========================================================= */
-
-function eliminarFoto(indice) {
+function eliminarFoto(
+    indice
+) {
 
     fotosSeleccionadas.splice(
         indice,
@@ -1455,7 +1624,7 @@ function eliminarFoto(indice) {
 
 /* =========================================================
    BUSCAR VEHÍCULO
-   ========================================================= */
+========================================================= */
 
 function buscarVehiculo() {
 
@@ -1468,15 +1637,12 @@ function buscarVehiculo() {
             .trim()
             .toUpperCase();
 
-
     const resultado =
         document.getElementById(
             "resultadoBusqueda"
         );
 
-
     resultado.innerHTML = "";
-
 
     if (!patente) {
 
@@ -1488,12 +1654,12 @@ function buscarVehiculo() {
         return;
     }
 
-
     const vehiculo =
         vehiculos.find(
-            v => v.patente === patente
+            v =>
+                v.patente ===
+                patente
         );
-
 
     if (!vehiculo) {
 
@@ -1505,10 +1671,8 @@ function buscarVehiculo() {
         return;
     }
 
-
     patenteVehiculoEditando =
         vehiculo.patente;
-
 
     if (
         !Array.isArray(
@@ -1537,38 +1701,37 @@ function buscarVehiculo() {
         } else {
 
             vehiculo.historial = [];
-
         }
 
         guardarDatos();
     }
 
-
     const historialOrdenado =
-        [...vehiculo.historial].sort(
-            (a, b) => {
+        [...vehiculo.historial]
+            .sort(
+                (a, b) => {
 
-                const fechaA =
-                    new Date(
-                        a.fecha || 0
+                    const fechaA =
+                        new Date(
+                            a.fecha || 0
+                        );
+
+                    const fechaB =
+                        new Date(
+                            b.fecha || 0
+                        );
+
+                    return (
+                        fechaB -
+                        fechaA
                     );
-
-                const fechaB =
-                    new Date(
-                        b.fecha || 0
-                    );
-
-                return fechaB - fechaA;
-            }
-        );
-
+                }
+            );
 
     historialActual =
         historialOrdenado;
 
-
     let html = "";
-
 
     html += `
         <div class="info-vehiculo">
@@ -1631,7 +1794,6 @@ function buscarVehiculo() {
         </div>
     `;
 
-
     if (
         historialOrdenado.length === 0
     ) {
@@ -1649,27 +1811,24 @@ function buscarVehiculo() {
             <h3>
                 📋 Historial de intervenciones
             </h3>
-        `;
 
-
-        html += `
             <div class="historial-fechas">
         `;
 
-
         historialOrdenado.forEach(
-            (intervencion, indice) => {
+            (
+                intervencion,
+                indice
+            ) => {
 
                 const tipo =
                     intervencion.tipo ||
                     "Intervención";
 
-
                 const icono =
                     obtenerIconoTipo(
                         tipo
                     );
-
 
                 html += `
                     <button
@@ -1678,39 +1837,31 @@ function buscarVehiculo() {
                     >
 
                         <span class="fecha-ingreso">
-
                             ${formatearFecha(
                                 intervencion.fecha
                             )}
-
                         </span>
 
                         <span class="tipo-ingreso">
-
                             ${icono}
-                            ${escaparHTML(tipo)}
-
+                            ${escaparHTML(
+                                tipo
+                            )}
                         </span>
 
                     </button>
                 `;
-
             }
         );
 
-
         html += `
             </div>
-        `;
 
-
-        html += `
             <div
                 id="detalleIntervencion"
             ></div>
         `;
     }
-
 
     resultado.innerHTML =
         html;
@@ -1718,42 +1869,37 @@ function buscarVehiculo() {
 
 
 /* =========================================================
-   ICONOS SEGÚN TIPO
-   ========================================================= */
+   ICONOS
+========================================================= */
 
-function obtenerIconoTipo(tipo) {
+function obtenerIconoTipo(
+    tipo
+) {
 
     const texto =
         String(tipo)
             .toLowerCase();
-
 
     if (
         texto.includes("service")
     ) {
 
         return "🔧";
-
     }
-
 
     if (
         texto.includes("repar")
     ) {
 
         return "🛠️";
-
     }
-
 
     if (
         texto.includes("diagn")
     ) {
 
         return "🔎";
-
     }
-
 
     return "📋";
 }
@@ -1761,50 +1907,48 @@ function obtenerIconoTipo(tipo) {
 
 /* =========================================================
    MOSTRAR INTERVENCIÓN
-   ========================================================= */
+========================================================= */
 
-function mostrarIntervencion(indice) {
+function mostrarIntervencion(
+    indice
+) {
 
     const intervencion =
-        historialActual[indice];
-
+        historialActual[
+            indice
+        ];
 
     if (!intervencion) {
         return;
     }
-
 
     const contenedor =
         document.getElementById(
             "detalleIntervencion"
         );
 
-
     const tipo =
         intervencion.tipo ||
         "Intervención";
 
-
     const icono =
-        obtenerIconoTipo(tipo);
-
+        obtenerIconoTipo(
+            tipo
+        );
 
     let html = "";
-
 
     html += `
         <div class="detalle-intervencion">
 
             <h3>
-
                 ${icono}
-
-                ${escaparHTML(tipo)}
-
+                ${escaparHTML(
+                    tipo
+                )}
             </h3>
 
             <p>
-
                 <strong>
                     📅 Fecha de ingreso:
                 </strong>
@@ -1812,11 +1956,9 @@ function mostrarIntervencion(indice) {
                 ${formatearFecha(
                     intervencion.fecha
                 )}
-
             </p>
 
             <p>
-
                 <strong>
                     🚗 Kilometraje:
                 </strong>
@@ -1825,11 +1967,9 @@ function mostrarIntervencion(indice) {
                     intervencion.kilometraje ||
                     "-"
                 )}
-
             </p>
 
             <p>
-
                 <strong>
                     🔎 Motivo de ingreso:
                 </strong>
@@ -1840,11 +1980,9 @@ function mostrarIntervencion(indice) {
                     intervencion.motivo ||
                     "-"
                 )}
-
             </p>
 
             <p>
-
                 <strong>
                     🔧 Trabajo realizado:
                 </strong>
@@ -1855,11 +1993,9 @@ function mostrarIntervencion(indice) {
                     intervencion.trabajo ||
                     "-"
                 )}
-
             </p>
 
             <p>
-
                 <strong>
                     🔩 Repuestos:
                 </strong>
@@ -1870,11 +2006,9 @@ function mostrarIntervencion(indice) {
                     intervencion.repuestos ||
                     "-"
                 )}
-
             </p>
 
             <p>
-
                 <strong>
                     📝 Observaciones:
                 </strong>
@@ -1885,10 +2019,8 @@ function mostrarIntervencion(indice) {
                     intervencion.observaciones ||
                     "-"
                 )}
-
             </p>
     `;
-
 
     if (
         Array.isArray(
@@ -1899,18 +2031,13 @@ function mostrarIntervencion(indice) {
 
         html += `
             <p>
-
                 <strong>
                     📷 Fotos:
                 </strong>
-
             </p>
 
-            <div
-                class="fotos-guardadas"
-            >
+            <div class="fotos-guardadas">
         `;
-
 
         intervencion.fotos.forEach(
             foto => {
@@ -1921,21 +2048,17 @@ function mostrarIntervencion(indice) {
                         onclick="abrirFoto(this.src)"
                     >
                 `;
-
             }
         );
-
 
         html += `
             </div>
         `;
     }
 
-
     html += `
         </div>
     `;
-
 
     contenedor.innerHTML =
         html;
@@ -1944,16 +2067,17 @@ function mostrarIntervencion(indice) {
 
 /* =========================================================
    ABRIR FOTO
-   ========================================================= */
+========================================================= */
 
-function abrirFoto(src) {
+function abrirFoto(
+    src
+) {
 
     const ventana =
         window.open(
             "",
             "_blank"
         );
-
 
     if (!ventana) {
 
@@ -1964,9 +2088,7 @@ function abrirFoto(src) {
         return;
     }
 
-
     ventana.document.write(`
-
         <!DOCTYPE html>
 
         <html>
@@ -2005,14 +2127,13 @@ function abrirFoto(src) {
         </body>
 
         </html>
-
     `);
 }
 
 
 /* =========================================================
    LIMPIAR FORMULARIO
-   ========================================================= */
+========================================================= */
 
 function limpiarFormularioIntervencion() {
 
@@ -2062,18 +2183,18 @@ function limpiarFormularioIntervencion() {
 
 /* =========================================================
    FORMATEAR FECHA
-   ========================================================= */
+========================================================= */
 
-function formatearFecha(fecha) {
+function formatearFecha(
+    fecha
+) {
 
     if (!fecha) {
         return "-";
     }
 
-
     const partes =
         fecha.split("-");
-
 
     if (
         partes.length === 3
@@ -2088,34 +2209,40 @@ function formatearFecha(fecha) {
         );
     }
 
-
     return fecha;
 }
 
 
 /* =========================================================
    ESCAPAR HTML
-   ========================================================= */
+========================================================= */
 
-function escaparHTML(texto) {
+function escaparHTML(
+    texto
+) {
 
     return String(texto)
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
