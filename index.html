@@ -1039,6 +1039,7 @@ async function agregarVehiculo() {
         if (resultado.error) {
 
             console.error(
+                "ERROR SUPABASE:",
                 resultado.error
             );
 
@@ -1101,7 +1102,10 @@ async function agregarVehiculo() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "ERROR:",
+            error
+        );
 
         alert(
             "Ocurrió un error al guardar el vehículo."
@@ -1171,7 +1175,7 @@ function abrirEdicionVehiculo() {
     );
 }
 
-function guardarEdicionVehiculo() {
+async function guardarEdicionVehiculo() {
 
     const vehiculo =
         vehiculos.find(
@@ -1189,7 +1193,7 @@ function guardarEdicionVehiculo() {
         return;
     }
 
-    vehiculo.marca =
+    const marca =
         document
             .getElementById(
                 "editarMarca"
@@ -1197,7 +1201,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.modelo =
+    const modelo =
         document
             .getElementById(
                 "editarModelo"
@@ -1205,7 +1209,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.anio =
+    const anio =
         document
             .getElementById(
                 "editarAnio"
@@ -1213,7 +1217,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.kilometraje =
+    const kilometraje =
         document
             .getElementById(
                 "editarKilometraje"
@@ -1221,7 +1225,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.cliente =
+    const cliente =
         document
             .getElementById(
                 "editarCliente"
@@ -1229,7 +1233,7 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    vehiculo.telefono =
+    const telefono =
         document
             .getElementById(
                 "editarTelefono"
@@ -1237,13 +1241,108 @@ function guardarEdicionVehiculo() {
             .value
             .trim();
 
-    guardarDatos();
+    try {
 
-    alert(
-        "Datos del vehículo actualizados correctamente."
-    );
+        const usuarioResultado =
+            await supabaseClient.auth.getUser();
 
-    volverInicio();
+        if (
+            usuarioResultado.error ||
+            !usuarioResultado.data.user
+        ) {
+
+            alert(
+                "La sesión no está disponible. Volvé a iniciar sesión."
+            );
+
+            return;
+        }
+
+        const usuario =
+            usuarioResultado.data.user;
+
+        if (!vehiculo.id) {
+
+            alert(
+                "Este vehículo fue creado antes de conectar la base de datos. Creá uno nuevo para guardarlo en Supabase."
+            );
+
+            return;
+        }
+
+        const resultado =
+            await supabaseClient
+                .from("vehiculos")
+                .update({
+
+                    marca: marca,
+                    modelo: modelo,
+                    anio: anio,
+                    kilometraje: kilometraje,
+                    cliente: cliente,
+                    telefono: telefono
+
+                })
+                .eq(
+                    "id",
+                    vehiculo.id
+                )
+                .eq(
+                    "user_id",
+                    usuario.id
+                );
+
+        if (resultado.error) {
+
+            console.error(
+                "ERROR SUPABASE:",
+                resultado.error
+            );
+
+            alert(
+                "No se pudieron guardar los cambios en la base de datos."
+            );
+
+            return;
+        }
+
+        vehiculo.marca =
+            marca;
+
+        vehiculo.modelo =
+            modelo;
+
+        vehiculo.anio =
+            anio;
+
+        vehiculo.kilometraje =
+            kilometraje;
+
+        vehiculo.cliente =
+            cliente;
+
+        vehiculo.telefono =
+            telefono;
+
+        guardarDatos();
+
+        alert(
+            "Datos del vehículo actualizados correctamente."
+        );
+
+        volverInicio();
+
+    } catch (error) {
+
+        console.error(
+            "ERROR:",
+            error
+        );
+
+        alert(
+            "Ocurrió un error al actualizar el vehículo."
+        );
+    }
 }
 
 function cancelarEdicionVehiculo() {
@@ -2260,4 +2359,23 @@ function escaparHTML(
             "<"
         )
 
-        .
+        .replace(
+            />/g,
+            ">"
+        )
+
+        .replace(
+            /"/g,
+            """
+        )
+
+        .replace(
+            /'/g,
+            "'"
+        );
+}
+
+</script>
+
+</body>
+</html>
