@@ -2343,36 +2343,14 @@ function formatearFecha(
    ESCAPAR HTML
 ========================================================= */
 
-function escaparHTML(
-    texto
-) {
+function escaparHTML(texto) {
 
     return String(texto)
-
-        .replace(
-            /&/g,
-            "&"
-        )
-
-        .replace(
-            /</g,
-            "<"
-        )
-
-        .replace(
-            />/g,
-            ">"
-        )
-
-        .replace(
-            /"/g,
-            """
-        )
-
-        .replace(
-            /'/g,
-            "'"
-        );
+        .replace(/&/g, "&")
+        .replace(/</g, "<")
+        .replace(/>/g, ">")
+        .replace(/"/g, """)
+        .replace(/'/g, "'");
 }
 
 </script>
