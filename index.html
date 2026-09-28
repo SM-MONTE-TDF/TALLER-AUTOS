@@ -16,11 +16,12 @@ body{background:#000;color:#fff}
 .btn-red{background:#7a1f1f;color:#fff}
 #login{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
 .box{width:100%;max-width:360px;text-align:center}
-input,textarea{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;color:#fff;font-size:15px}
+input,textarea,select{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;color:#fff;font-size:15px}
 .card{background:#111;border:1px solid #222;border-radius:12px;padding:14px;margin:10px 0;border-left:4px solid #00c8ff}
 .patente{background:#fff;color:#000;font-weight:900;padding:4px 10px;border-radius:6px;display:inline-block}
 .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .badge{background:#111;border:1px solid #222;padding:6px 10px;border-radius:20px;font-size:12px;color:#888}
+label{color:#888;font-size:13px;margin-top:10px;display:block;text-align:left}
 </style>
 </head>
 <body>
@@ -28,66 +29,70 @@ input,textarea{width:100%;padding:14px;margin:8px 0;background:#111;border:1px s
 <div id="login">
 <div class="box">
 <img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px;margin-bottom:16px">
-<h2 id="loginTitle" style="color:#00c8ff">SM MONTENEGRO</h2>
-<p style="color:#888;margin:10px 0 20px">Ingresá para continuar</p>
-<input id="user" placeholder="Usuario" style="text-align:center">
-<input id="pass" type="password" placeholder="Contraseña" style="text-align:center">
+<h2 style="color:#00c8ff">SM MONTENEGRO</h2>
+<p style="color:#888;margin:10px 0 20px">Acceso privado</p>
+<input id="user" placeholder="Usuario" autocomplete="off" autocapitalize="off">
+<input id="pass" type="password" placeholder="Contraseña" autocomplete="new-password">
 <button class="btn btn-blue" onclick="doLogin()">Entrar</button>
-<p style="color:#444;font-size:12px;margin-top:12px">Usuario: admin - Clave: 1234</p>
+<p id="errorLogin" style="color:#ff5555;font-size:13px;margin-top:10px;display:none">Usuario o contraseña incorrectos</p>
 </div>
 </div>
 
 <div id="app" class="hidden">
 <div class="wrap">
 <div class="topbar">
-<span class="badge" id="userBadge">👤 admin</span>
+<span class="badge" id="userBadge">👤</span>
 <button onclick="show('ajustes')" style="background:#111;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:10px">⚙️ Ajustes</button>
 </div>
-
-<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" class="logo" id="mainLogo">
-
+<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" class="logo">
 <button class="btn btn-blue" onclick="show('buscar')">🔍 Buscar</button>
 <button class="btn btn-blue" onclick="show('nuevoV')">🚗 Nuevo vehículo</button>
 <button class="btn btn-blue" onclick="show('nuevaI')">🛠️ Nueva intervención</button>
-<button class="btn btn-blue" onclick="show('recuperar')">♻️ Recuperar viejos</button>
+<button class="btn btn-blue" onclick="show('recuperar')">♻️ Papelera</button>
 <button class="btn btn-red" onclick="cerrarSesion()">Cerrar sesión</button>
-
 <hr style="border:0;border-top:1px solid #1e1e1e;margin:16px 0">
 
 <div id="sec-buscar"><h2>Buscar <span id="cont" style="font-size:12px;color:#666"></span></h2><input id="q" placeholder="Patente, marca, cliente..." oninput="buscar()"><div id="r"></div></div>
 
-<div id="sec-nuevoV" class="hidden"><h2>🚗 Nuevo vehículo</h2><input id="vPat" placeholder="PATENTE AB123CD" style="text-transform:uppercase"><input id="vMar" placeholder="Marca"><input id="vMod" placeholder="Modelo"><input id="vCli" placeholder="Cliente"><input id="vTel" placeholder="Tel 2964..."><input id="vKm" type="number" placeholder="KM"><button class="btn btn-blue" onclick="saveV()">💾 Guardar</button></div>
+<div id="sec-nuevoV" class="hidden"><h2>🚗 Nuevo vehículo</h2>
+<input id="vPat" placeholder="PATENTE AB123CD" style="text-transform:uppercase"><input id="vMar" placeholder="Marca"><input id="vMod" placeholder="Modelo"><input id="vCli" placeholder="Cliente"><input id="vTel" placeholder="Tel"><input id="vKm" type="number" placeholder="KM actual"><button class="btn btn-blue" onclick="saveV()">💾 Guardar vehículo</button></div>
 
-<div id="sec-nuevaI" class="hidden"><h2>🛠️ Nueva intervención</h2><input id="iPat" placeholder="Patente" style="text-transform:uppercase"><input id="iFec" type="date"><input id="iKm" type="number" placeholder="KM"><textarea id="iTra" placeholder="Trabajo realizado"></textarea><input id="iCos" type="number" placeholder="Costo $"><button class="btn btn-blue" onclick="saveI()">💾 Guardar intervención</button></div>
+<div id="sec-nuevaI" class="hidden">
+<h2>🛠️ Nueva intervención COMPLETA</h2>
+<label>Patente *</label><input id="iPat" placeholder="AB123CD" style="text-transform:uppercase">
+<label>Fecha *</label><input id="iFec" type="date">
+<label>KM actual *</label><input id="iKm" type="number" placeholder="Ej: 85000">
+<label>Trabajo realizado *</label><textarea id="iTra" placeholder="Ej: Cambio de aceite, filtros..."></textarea>
+<label>Repuestos utilizados</label><textarea id="iRep" placeholder="Ej: Filtro aceite, 4L 10W40..."></textarea>
+<label>Costo repuestos $</label><input id="iCostRep" type="number" placeholder="0" oninput="calcTotal()">
+<label>Mano de obra $</label><input id="iCostMo" type="number" placeholder="0" oninput="calcTotal()">
+<label style="color:#00c8ff">TOTAL $</label><input id="iTotal" type="number" placeholder="0" style="border-color:#00c8ff;font-weight:900">
+<label>Próximo service KM</label><input id="iProxKm" type="number" placeholder="Ej: 95000">
+<label>Próximo service Fecha</label><input id="iProxFec" type="date">
+<label>Observaciones / Garantía</label><textarea id="iObs" placeholder="Garantía 3 meses..."></textarea>
+<button class="btn btn-blue" onclick="saveI()">💾 Guardar intervención</button>
+</div>
 
 <div id="sec-recuperar" class="hidden"><h2>♻️ Papelera</h2><div id="rPap"></div></div>
 
 <div id="sec-ajustes" class="hidden">
 <h2>⚙️ Ajustes</h2>
 <div class="card" style="border-left-color:#ffcc00">
-<b>👤 Cambiar usuario y contraseña</b><br><br>
-<input id="aUser" placeholder="Nuevo usuario">
-<input id="aPass" type="text" placeholder="Nueva contraseña">
-<button class="btn btn-blue" onclick="cambiarCreds()">Guardar usuario y contraseña</button>
+<b>🔒 Cambiar acceso (Seguro)</b><br><br>
+<label>Usuario actual: <span id="uActual" style="color:#fff"></span></label>
+<input id="aUserNew" placeholder="Nuevo usuario" autocomplete="off">
+<input id="aPassNew" type="password" placeholder="Nueva contraseña">
+<input id="aPassConf" type="password" placeholder="Confirmar nueva contraseña">
+<button class="btn btn-blue" onclick="cambiarCreds()">Guardar nuevo acceso</button>
+<p style="color:#666;font-size:12px;margin-top:8px">La contraseña no se muestra por seguridad. Tenés que escribirla 2 veces.</p>
 </div>
-
-<div class="card" style="border-left-color:#00c8ff">
-<b>🏢 Datos del taller</b><br><br>
-<input id="aTaller" placeholder="Nombre del taller">
-<button class="btn btn-dark" onclick="saveTaller()">Guardar nombre</button>
-</div>
-
 <div class="card" style="border-left-color:#25D366">
-<b>💾 Backup / Seguridad</b><br>
-<p style="color:#888;font-size:13px;margin:8px 0">Exportá para no perder nunca los vehículos</p>
+<b>💾 Backup</b><br><br>
 <button class="btn btn-dark" onclick="exportar()">📤 Exportar backup</button>
-<label class="btn btn-dark" style="display:block;text-align:center">📥 Importar backup<input type="file" id="fileIn" style="display:none" onchange="importar(event)"></label>
-<button class="btn" style="background:#222;color:#ff5555;margin-top:12px" onclick="if(confirm('¿Borrar TODO el taller? Esto no se puede deshacer')){localStorage.clear();location.reload()}">🗑️ Borrar todo el taller</button>
+<label class="btn btn-dark" style="text-align:center;display:block">📥 Importar backup<input type="file" id="fileIn" style="display:none" onchange="importar(event)"></label>
 </div>
-
-<button class="btn btn-dark" onclick="show('buscar')">⬅ Volver al taller</button>
+<button class="btn btn-dark" onclick="show('buscar')">⬅ Volver</button>
 </div>
-
 </div>
 </div>
 
@@ -95,43 +100,44 @@ input,textarea{width:100%;padding:14px;margin:8px 0;background:#111;border:1px s
 let vehiculos=JSON.parse(localStorage.getItem('sm_vehiculos')||'[]');
 let intervenciones=JSON.parse(localStorage.getItem('sm_interv')||'[]');
 let papelera=JSON.parse(localStorage.getItem('sm_papelera')||'[]');
-
 function save(){localStorage.setItem('sm_vehiculos',JSON.stringify(vehiculos));localStorage.setItem('sm_interv',JSON.stringify(intervenciones));localStorage.setItem('sm_papelera',JSON.stringify(papelera))}
-
 function doLogin(){
  let u=document.getElementById('user').value.trim();
  let p=document.getElementById('pass').value.trim();
+ if(!u||!p){document.getElementById('errorLogin').style.display='block';document.getElementById('errorLogin').innerText='Tenés que poner usuario y contraseña';return}
  let su=localStorage.getItem('sm_user')||'admin';
  let sp=localStorage.getItem('sm_pass')||'1234';
- if(u==su && p==sp){
+ if(u===su && p===sp){
   document.getElementById('login').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   document.getElementById('userBadge').innerText='👤 '+su;
-  document.getElementById('loginTitle').innerText=localStorage.getItem('sm_taller')||'SM MONTENEGRO';
+  document.getElementById('errorLogin').style.display='none';
   buscar();
- }else{alert('Usuario o contraseña incorrectos')}
+ }else{
+  document.getElementById('errorLogin').style.display='block';
+  document.getElementById('errorLogin').innerText='Usuario o contraseña incorrectos';
+ }
 }
-function cerrarSesion(){
- document.getElementById('app').classList.add('hidden');
- document.getElementById('login').classList.remove('hidden');
- document.getElementById('user').value='';document.getElementById('pass').value='';
-}
-function show(id){document.querySelectorAll('[id^=sec-]').forEach(e=>e.classList.add('hidden'));document.getElementById('sec-'+id).classList.remove('hidden');if(id=='buscar')buscar();if(id=='recuperar')renderPap();if(id=='ajustes'){document.getElementById('aUser').value=localStorage.getItem('sm_user')||'admin';document.getElementById('aPass').value=localStorage.getItem('sm_pass')||'1234';document.getElementById('aTaller').value=localStorage.getItem('sm_taller')||'SM MONTENEGRO'}}
+function cerrarSesion(){document.getElementById('app').classList.add('hidden');document.getElementById('login').classList.remove('hidden');document.getElementById('user').value='';document.getElementById('pass').value='';}
+function show(id){document.querySelectorAll('[id^=sec-]').forEach(e=>e.classList.add('hidden'));document.getElementById('sec-'+id).classList.remove('hidden');if(id=='buscar')buscar();if(id=='recuperar')renderPap();if(id=='ajustes'){document.getElementById('uActual').innerText=localStorage.getItem('sm_user')||'admin';document.getElementById('aUserNew').value='';document.getElementById('aPassNew').value='';document.getElementById('aPassConf').value='';}}
 function cambiarCreds(){
- let nu=document.getElementById('aUser').value.trim();let np=document.getElementById('aPass').value.trim();
- if(!nu||!np)return alert('Completá usuario y contraseña');
+ let nu=document.getElementById('aUserNew').value.trim();
+ let np=document.getElementById('aPassNew').value.trim();
+ let nc=document.getElementById('aPassConf').value.trim();
+ if(!nu||!np)return alert('Completá usuario y contraseña nueva');
+ if(np!==nc)return alert('Las contraseñas no coinciden');
  localStorage.setItem('sm_user',nu);localStorage.setItem('sm_pass',np);
- alert('✅ Nuevo acceso: Usuario '+nu+' - Clave '+np);document.getElementById('userBadge').innerText='👤 '+nu;
+ alert('✅ Nuevo acceso guardado\nUsuario: '+nu+'\nContraseña: '+np+'\n\nAhora entrá con esos datos');
+ document.getElementById('userBadge').innerText='👤 '+nu;
 }
-function saveTaller(){let t=document.getElementById('aTaller').value.trim();localStorage.setItem('sm_taller',t);alert('✅ Guardado');document.getElementById('loginTitle').innerText=t}
-function buscar(){let q=(document.getElementById('q').value||'').toLowerCase();document.getElementById('cont').innerText='('+vehiculos.length+')';let f=q?vehiculos.filter(v=>(v.patente+v.marca+v.modelo+v.cliente).toLowerCase().includes(q)):vehiculos;document.getElementById('r').innerHTML=f.length?f.map(v=>'<div class=card onclick="ver(\''+v.patente+'\')"><span class=patente>'+v.patente+'</span> <b>'+(v.marca||'')+' '+(v.modelo||'')+'</b><div style=color:#888>👤 '+(v.cliente||'')+'</div></div>').join(''):'<p style=color:#555;text-align:center;margin-top:20px>Sin vehículos</p>'}
-function ver(p){let v=vehiculos.find(x=>x.patente==p);let ins=intervenciones.filter(i=>i.patente==p);document.getElementById('r').innerHTML='<div class=card><span class=patente>'+v.patente+'</span><h3 style=margin-top:8px>'+(v.marca||'')+' '+(v.modelo||'')+'</h3><p>Cliente: '+(v.cliente||'')+'<br>Tel: '+(v.tel||'')+'<br>KM: '+(v.km||'')+'</p><button class=btn style=background:#222;color:#fff;margin-top:10px onclick="document.getElementById(\'iPat\').value=\''+p+'\';show(\'nuevaI\')">+ Nueva intervención</button></div><h3>Historial ('+ins.length+')</h3>'+ins.map(i=>'<div class=card style=border-left-color:#25D366>'+i.fecha+'<br>'+i.trabajo+'<br><b style=color:#25D366>$'+(i.costo||0)+'</b></div>').join('')}
+function calcTotal(){let r=parseFloat(document.getElementById('iCostRep').value)||0;let m=parseFloat(document.getElementById('iCostMo').value)||0;document.getElementById('iTotal').value=r+m}
+function buscar(){let q=(document.getElementById('q').value||'').toLowerCase();document.getElementById('cont').innerText='('+vehiculos.length+')';let f=q?vehiculos.filter(v=>(v.patente+v.marca+v.cliente).toLowerCase().includes(q)):vehiculos;document.getElementById('r').innerHTML=f.length?f.map(v=>'<div class=card onclick="ver(\''+v.patente+'\')"><span class=patente>'+v.patente+'</span> <b>'+(v.marca||'')+'</b><div style=color:#888>'+(v.cliente||'')+'</div></div>').join(''):'<p style=color:#555;text-align:center>Sin vehículos</p>'}
+function ver(p){let v=vehiculos.find(x=>x.patente==p);let ins=intervenciones.filter(i=>i.patente==p);document.getElementById('r').innerHTML='<div class=card><span class=patente>'+v.patente+'</span><h3>'+(v.marca||'')+' '+(v.modelo||'')+'</h3><p>'+(v.cliente||'')+'</p><button class=btn style=background:#222;color:#fff;margin-top:10px onclick="document.getElementById(\'iPat\').value=\''+p+'\';show(\'nuevaI\')">+ Nueva intervención</button></div>'+ins.map(i=>'<div class=card style=border-left-color:#25D366><b>'+i.fecha+'</b> - '+i.km+'km<br><b>'+i.trabajo+'</b><br>Rep: '+(i.repuestos||'-')+'<br>Rep $'+(i.costRep||0)+' + MO $'+(i.costMo||0)+' = <b style=color:#25D366>$'+(i.total||0)+'</b><br>Prox: '+(i.proxKm||'-')+'km / '+(i.proxFec||'-')+'<br><i>'+(i.obs||'')+'</i></div>').join('')}
 function saveV(){let p=document.getElementById('vPat').value.toUpperCase().trim();if(!p)return alert('Patente');let o={patente:p,marca:document.getElementById('vMar').value,modelo:document.getElementById('vMod').value,cliente:document.getElementById('vCli').value,tel:document.getElementById('vTel').value,km:document.getElementById('vKm').value};let ex=vehiculos.find(v=>v.patente==p);if(ex)Object.assign(ex,o);else vehiculos.unshift(o);save();show('buscar');buscar()}
-function saveI(){let p=document.getElementById('iPat').value.toUpperCase().trim();if(!p)return alert('Patente');intervenciones.unshift({patente:p,fecha:document.getElementById('iFec').value||new Date().toISOString().slice(0,10),trabajo:document.getElementById('iTra').value,costo:document.getElementById('iCos').value});save();alert('Guardada');show('buscar');buscar()}
-function renderPap(){document.getElementById('rPap').innerHTML=papelera.length?papelera.map(v=>'<div class=card><span class=patente>'+v.patente+'</span> <button class="btn btn-blue" style=padding:8px;margin-top:8px onclick="vehiculos.unshift(papelera.find(x=>x.patente==\''+v.patente+'\'));papelera=papelera.filter(x=>x.patente!=\''+v.patente+'\');save();renderPap();buscar()">♻️ Restaurar</button></div>').join(''):'<p style=color:#555>Vacía</p>'}
-function exportar(){let blob=new Blob([JSON.stringify({vehiculos,intervenciones,papelera},null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-SM-'+new Date().toISOString().slice(0,10)+'.json';a.click()}
-function importar(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){try{let d=JSON.parse(ev.target.result);if(d.vehiculos){vehiculos=d.vehiculos;localStorage.setItem('sm_vehiculos',JSON.stringify(vehiculos))}if(d.intervenciones){intervenciones=d.intervenciones;localStorage.setItem('sm_interv',JSON.stringify(intervenciones))}alert('✅ Backup importado: '+vehiculos.length+' vehículos');buscar()}catch(err){alert('Archivo inválido')}};r.readAsText(f)}
-if(localStorage.getItem('sm_taller'))document.getElementById('loginTitle').innerText=localStorage.getItem('sm_taller');
+function saveI(){let p=document.getElementById('iPat').value.toUpperCase().trim();let f=document.getElementById('iFec').value;let k=document.getElementById('iKm').value;let t=document.getElementById('iTra').value;if(!p||!f||!k||!t)return alert('Falta Patente, Fecha, KM y Trabajo (obligatorios)');intervenciones.unshift({patente:p,fecha:f,km:k,trabajo:t,repuestos:document.getElementById('iRep').value,costRep:document.getElementById('iCostRep').value,costMo:document.getElementById('iCostMo').value,total:document.getElementById('iTotal').value,proxKm:document.getElementById('iProxKm').value,proxFec:document.getElementById('iProxFec').value,obs:document.getElementById('iObs').value});save();alert('✅ Intervención guardada');show('buscar');document.getElementById('q').value=p;buscar()}
+function renderPap(){document.getElementById('rPap').innerHTML=papelera.length?papelera.map(v=>'<div class=card><span class=patente>'+v.patente+'</span></div>').join(''):'<p style=color:#555>Vacía</p>'}
+function exportar(){let blob=new Blob([JSON.stringify({vehiculos,intervenciones},null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-SM.json';a.click()}
+function importar(e){let f=e.target.files[0];let r=new FileReader();r.onload=function(ev){let d=JSON.parse(ev.target.result);vehiculos=d.vehiculos||[];intervenciones=d.intervenciones||[];save();buscar();alert('Importado')};r.readAsText(f)}
 document.getElementById('iFec').valueAsDate=new Date();
 </script>
 </body>
