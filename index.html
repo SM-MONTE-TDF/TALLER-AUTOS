@@ -21,29 +21,33 @@ input,textarea,select{width:100%;padding:14px;margin:8px 0;background:#111;borde
 .patente{background:#fff;color:#000;font-weight:900;padding:4px 10px;border-radius:6px;display:inline-block}
 .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .badge{background:#111;border:1px solid #222;padding:6px 10px;border-radius:20px;font-size:12px;color:#888}
-label{color:#888;font-size:13px;margin-top:10px;display:block;text-align:left}
+label{color:#888;font-size:13px;margin-top:12px;display:block;text-align:left}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.thumbs img{width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid #333;cursor:pointer}
+#imgModal{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;padding:10px}
+#imgModal img{max-width:100%;max-height:90vh;border-radius:12px}
+#imgModal.hidden{display:none!important}
+.fotoBox{border:2px dashed #333;border-radius:12px;padding:14px;text-align:center;margin:8px 0;background:#0a0a0a}
 </style>
 </head>
 <body>
+
+<div id="imgModal" class="hidden" onclick="this.classList.add('hidden')"><img id="imgBig" src=""></div>
 
 <div id="login">
 <div class="box">
 <img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px;margin-bottom:16px">
 <h2 style="color:#00c8ff">SM MONTENEGRO</h2>
 <p style="color:#888;margin:10px 0 20px">Acceso privado</p>
-<input id="user" placeholder="Usuario" autocomplete="off" autocapitalize="off">
-<input id="pass" type="password" placeholder="Contraseña" autocomplete="new-password">
+<input id="user" placeholder="Usuario" autocomplete="off"><input id="pass" type="password" placeholder="Contraseña" autocomplete="new-password">
 <button class="btn btn-blue" onclick="doLogin()">Entrar</button>
-<p id="errorLogin" style="color:#ff5555;font-size:13px;margin-top:10px;display:none">Usuario o contraseña incorrectos</p>
+<p id="errorLogin" style="color:#ff5555;font-size:13px;margin-top:10px;display:none"></p>
 </div>
 </div>
 
 <div id="app" class="hidden">
 <div class="wrap">
-<div class="topbar">
-<span class="badge" id="userBadge">👤</span>
-<button onclick="show('ajustes')" style="background:#111;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:10px">⚙️ Ajustes</button>
-</div>
+<div class="topbar"><span class="badge" id="userBadge">👤</span><button onclick="show('ajustes')" style="background:#111;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:10px">⚙️ Ajustes</button></div>
 <img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" class="logo">
 <button class="btn btn-blue" onclick="show('buscar')">🔍 Buscar</button>
 <button class="btn btn-blue" onclick="show('nuevoV')">🚗 Nuevo vehículo</button>
@@ -55,22 +59,27 @@ label{color:#888;font-size:13px;margin-top:10px;display:block;text-align:left}
 <div id="sec-buscar"><h2>Buscar <span id="cont" style="font-size:12px;color:#666"></span></h2><input id="q" placeholder="Patente, marca, cliente..." oninput="buscar()"><div id="r"></div></div>
 
 <div id="sec-nuevoV" class="hidden"><h2>🚗 Nuevo vehículo</h2>
-<input id="vPat" placeholder="PATENTE AB123CD" style="text-transform:uppercase"><input id="vMar" placeholder="Marca"><input id="vMod" placeholder="Modelo"><input id="vCli" placeholder="Cliente"><input id="vTel" placeholder="Tel"><input id="vKm" type="number" placeholder="KM actual"><button class="btn btn-blue" onclick="saveV()">💾 Guardar vehículo</button></div>
+<input id="vPat" placeholder="PATENTE AB123CD" style="text-transform:uppercase"><input id="vMar" placeholder="Marca"><input id="vMod" placeholder="Modelo"><input id="vCli" placeholder="Cliente"><input id="vTel" placeholder="Tel"><input id="vKm" type="number" placeholder="KM"><button class="btn btn-blue" onclick="saveV()">💾 Guardar</button></div>
 
 <div id="sec-nuevaI" class="hidden">
-<h2>🛠️ Nueva intervención COMPLETA</h2>
-<label>Patente *</label><input id="iPat" placeholder="AB123CD" style="text-transform:uppercase">
-<label>Fecha *</label><input id="iFec" type="date">
-<label>KM actual *</label><input id="iKm" type="number" placeholder="Ej: 85000">
-<label>Trabajo realizado *</label><textarea id="iTra" placeholder="Ej: Cambio de aceite, filtros..."></textarea>
-<label>Repuestos utilizados</label><textarea id="iRep" placeholder="Ej: Filtro aceite, 4L 10W40..."></textarea>
-<label>Costo repuestos $</label><input id="iCostRep" type="number" placeholder="0" oninput="calcTotal()">
-<label>Mano de obra $</label><input id="iCostMo" type="number" placeholder="0" oninput="calcTotal()">
-<label style="color:#00c8ff">TOTAL $</label><input id="iTotal" type="number" placeholder="0" style="border-color:#00c8ff;font-weight:900">
-<label>Próximo service KM</label><input id="iProxKm" type="number" placeholder="Ej: 95000">
-<label>Próximo service Fecha</label><input id="iProxFec" type="date">
-<label>Observaciones / Garantía</label><textarea id="iObs" placeholder="Garantía 3 meses..."></textarea>
-<button class="btn btn-blue" onclick="saveI()">💾 Guardar intervención</button>
+<h2>🛠️ Nueva intervención</h2>
+<label>1. Motivo *</label>
+<select id="iMotivo"><option value="">Seleccioná motivo</option><option>Diagnostico</option><option>Servicio</option><option>Reparacion</option></select>
+<label>2. Fecha *</label><input id="iFec" type="date">
+<label>3. Patente *</label><input id="iPat" placeholder="AB123CD" style="text-transform:uppercase">
+<label>4. Diagnóstico *</label><textarea id="iDiag" placeholder="Ej: Ruido en tren delantero..."></textarea>
+<label>5. Trabajo realizado *</label><textarea id="iTra" placeholder="Ej: Cambio buje..."></textarea>
+
+<label>6. Fotos (tocá para agregar, pegá con Ctrl+V)</label>
+<div class="fotoBox">
+<input type="file" id="fotoInput" accept="image/*" multiple capture="environment" onchange="addFotos(this.files)">
+<p style="color:#666;font-size:12px;margin-top:8px">📸 Podés sacar foto, elegir de galería o PEGAR (Ctrl+V) una captura</p>
+<div id="preview" class="thumbs"></div>
+</div>
+
+<label>Repuestos (opcional)</label><textarea id="iRep"></textarea>
+<label>Costo total $</label><input id="iTotal" type="number" placeholder="0">
+<button class="btn btn-blue" onclick="saveI()">💾 Guardar intervención con fotos</button>
 </div>
 
 <div id="sec-recuperar" class="hidden"><h2>♻️ Papelera</h2><div id="rPap"></div></div>
@@ -78,18 +87,9 @@ label{color:#888;font-size:13px;margin-top:10px;display:block;text-align:left}
 <div id="sec-ajustes" class="hidden">
 <h2>⚙️ Ajustes</h2>
 <div class="card" style="border-left-color:#ffcc00">
-<b>🔒 Cambiar acceso (Seguro)</b><br><br>
+<b>🔒 Cambiar acceso</b><br><br>
 <label>Usuario actual: <span id="uActual" style="color:#fff"></span></label>
-<input id="aUserNew" placeholder="Nuevo usuario" autocomplete="off">
-<input id="aPassNew" type="password" placeholder="Nueva contraseña">
-<input id="aPassConf" type="password" placeholder="Confirmar nueva contraseña">
-<button class="btn btn-blue" onclick="cambiarCreds()">Guardar nuevo acceso</button>
-<p style="color:#666;font-size:12px;margin-top:8px">La contraseña no se muestra por seguridad. Tenés que escribirla 2 veces.</p>
-</div>
-<div class="card" style="border-left-color:#25D366">
-<b>💾 Backup</b><br><br>
-<button class="btn btn-dark" onclick="exportar()">📤 Exportar backup</button>
-<label class="btn btn-dark" style="text-align:center;display:block">📥 Importar backup<input type="file" id="fileIn" style="display:none" onchange="importar(event)"></label>
+<input id="aUserNew" placeholder="Nuevo usuario"><input id="aPassNew" type="password" placeholder="Nueva contraseña"><input id="aPassConf" type="password" placeholder="Confirmar"><button class="btn btn-blue" onclick="cambiarCreds()">Guardar</button>
 </div>
 <button class="btn btn-dark" onclick="show('buscar')">⬅ Volver</button>
 </div>
@@ -97,47 +97,64 @@ label{color:#888;font-size:13px;margin-top:10px;display:block;text-align:left}
 </div>
 
 <script>
+const DEFAULT_USER='SM-MONTE-';const DEFAULT_PASS='Taller.monte1.';
+if(!localStorage.getItem('sm_user')){localStorage.setItem('sm_user',DEFAULT_USER);localStorage.setItem('sm_pass',DEFAULT_PASS)}
 let vehiculos=JSON.parse(localStorage.getItem('sm_vehiculos')||'[]');
 let intervenciones=JSON.parse(localStorage.getItem('sm_interv')||'[]');
 let papelera=JSON.parse(localStorage.getItem('sm_papelera')||'[]');
+let fotosTemp=[];
+
 function save(){localStorage.setItem('sm_vehiculos',JSON.stringify(vehiculos));localStorage.setItem('sm_interv',JSON.stringify(intervenciones));localStorage.setItem('sm_papelera',JSON.stringify(papelera))}
-function doLogin(){
- let u=document.getElementById('user').value.trim();
- let p=document.getElementById('pass').value.trim();
- if(!u||!p){document.getElementById('errorLogin').style.display='block';document.getElementById('errorLogin').innerText='Tenés que poner usuario y contraseña';return}
- let su=localStorage.getItem('sm_user')||'admin';
- let sp=localStorage.getItem('sm_pass')||'1234';
- if(u===su && p===sp){
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-  document.getElementById('userBadge').innerText='👤 '+su;
-  document.getElementById('errorLogin').style.display='none';
-  buscar();
- }else{
-  document.getElementById('errorLogin').style.display='block';
-  document.getElementById('errorLogin').innerText='Usuario o contraseña incorrectos';
+
+function doLogin(){let u=document.getElementById('user').value.trim();let p=document.getElementById('pass').value;if(!u||!p){let e=document.getElementById('errorLogin');e.style.display='block';e.innerText='Poné usuario y contraseña';return}let su=localStorage.getItem('sm_user');let sp=localStorage.getItem('sm_pass');if(u===su && p===sp){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('userBadge').innerText='👤 '+su;buscar();}else{let e=document.getElementById('errorLogin');e.style.display='block';e.innerText='Incorrecto. Usuario: '+su}}
+function cerrarSesion(){document.getElementById('app').classList.add('hidden');document.getElementById('login').classList.remove('hidden');document.getElementById('user').value='';document.getElementById('pass').value='';}
+function show(id){document.querySelectorAll('[id^=sec-]').forEach(e=>e.classList.add('hidden'));document.getElementById('sec-'+id).classList.remove('hidden');if(id=='buscar')buscar();if(id=='recuperar')renderPap();if(id=='ajustes'){document.getElementById('uActual').innerText=localStorage.getItem('sm_user');}}
+function cambiarCreds(){let nu=document.getElementById('aUserNew').value.trim();let np=document.getElementById('aPassNew').value;let nc=document.getElementById('aPassConf').value;if(!nu||!np)return alert('Completá');if(np!==nc)return alert('No coinciden');localStorage.setItem('sm_user',nu);localStorage.setItem('sm_pass',np);alert('✅ Nuevo acceso: '+nu);document.getElementById('userBadge').innerText='👤 '+nu}
+
+// FOTOS
+function addFotos(files){
+ for(let f of files){
+  let reader=new FileReader();
+  reader.onload=function(e){
+   fotosTemp.push(e.target.result);
+   renderPreview();
+  };
+  reader.readAsDataURL(f);
  }
 }
-function cerrarSesion(){document.getElementById('app').classList.add('hidden');document.getElementById('login').classList.remove('hidden');document.getElementById('user').value='';document.getElementById('pass').value='';}
-function show(id){document.querySelectorAll('[id^=sec-]').forEach(e=>e.classList.add('hidden'));document.getElementById('sec-'+id).classList.remove('hidden');if(id=='buscar')buscar();if(id=='recuperar')renderPap();if(id=='ajustes'){document.getElementById('uActual').innerText=localStorage.getItem('sm_user')||'admin';document.getElementById('aUserNew').value='';document.getElementById('aPassNew').value='';document.getElementById('aPassConf').value='';}}
-function cambiarCreds(){
- let nu=document.getElementById('aUserNew').value.trim();
- let np=document.getElementById('aPassNew').value.trim();
- let nc=document.getElementById('aPassConf').value.trim();
- if(!nu||!np)return alert('Completá usuario y contraseña nueva');
- if(np!==nc)return alert('Las contraseñas no coinciden');
- localStorage.setItem('sm_user',nu);localStorage.setItem('sm_pass',np);
- alert('✅ Nuevo acceso guardado\nUsuario: '+nu+'\nContraseña: '+np+'\n\nAhora entrá con esos datos');
- document.getElementById('userBadge').innerText='👤 '+nu;
+function renderPreview(){
+ let div=document.getElementById('preview');
+ div.innerHTML=fotosTemp.map((src,i)=>'<div style=position:relative><img src="'+src+'" onclick="openImg(\''+src+'\')"><span onclick="fotosTemp.splice('+i+',1);renderPreview()" style="position:absolute;top:-6px;right:-6px;background:#ff4444;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer">x</span></div>').join('');
 }
-function calcTotal(){let r=parseFloat(document.getElementById('iCostRep').value)||0;let m=parseFloat(document.getElementById('iCostMo').value)||0;document.getElementById('iTotal').value=r+m}
+document.addEventListener('paste',function(e){
+ let items=e.clipboardData.items;
+ for(let it of items){if(it.type.indexOf('image')===0){let f=it.getAsFile();addFotos([f]);}}
+});
+
+function openImg(src){document.getElementById('imgBig').src=src;document.getElementById('imgModal').classList.remove('hidden');}
+
 function buscar(){let q=(document.getElementById('q').value||'').toLowerCase();document.getElementById('cont').innerText='('+vehiculos.length+')';let f=q?vehiculos.filter(v=>(v.patente+v.marca+v.cliente).toLowerCase().includes(q)):vehiculos;document.getElementById('r').innerHTML=f.length?f.map(v=>'<div class=card onclick="ver(\''+v.patente+'\')"><span class=patente>'+v.patente+'</span> <b>'+(v.marca||'')+'</b><div style=color:#888>'+(v.cliente||'')+'</div></div>').join(''):'<p style=color:#555;text-align:center>Sin vehículos</p>'}
-function ver(p){let v=vehiculos.find(x=>x.patente==p);let ins=intervenciones.filter(i=>i.patente==p);document.getElementById('r').innerHTML='<div class=card><span class=patente>'+v.patente+'</span><h3>'+(v.marca||'')+' '+(v.modelo||'')+'</h3><p>'+(v.cliente||'')+'</p><button class=btn style=background:#222;color:#fff;margin-top:10px onclick="document.getElementById(\'iPat\').value=\''+p+'\';show(\'nuevaI\')">+ Nueva intervención</button></div>'+ins.map(i=>'<div class=card style=border-left-color:#25D366><b>'+i.fecha+'</b> - '+i.km+'km<br><b>'+i.trabajo+'</b><br>Rep: '+(i.repuestos||'-')+'<br>Rep $'+(i.costRep||0)+' + MO $'+(i.costMo||0)+' = <b style=color:#25D366>$'+(i.total||0)+'</b><br>Prox: '+(i.proxKm||'-')+'km / '+(i.proxFec||'-')+'<br><i>'+(i.obs||'')+'</i></div>').join('')}
+
+function ver(p){
+ let v=vehiculos.find(x=>x.patente==p);
+ let ins=intervenciones.filter(i=>i.patente==p);
+ document.getElementById('r').innerHTML='<div class=card><span class=patente>'+v.patente+'</span><h3>'+(v.marca||'')+' '+(v.modelo||'')+'</h3><p>'+(v.cliente||'')+'</p><button class=btn style=background:#222;color:#fff;margin-top:10px onclick="document.getElementById(\'iPat\').value=\''+p+'\';fotosTemp=[];renderPreview();show(\'nuevaI\')">+ Nueva intervención</button></div>'+ins.map((i,idx)=>'<div class=card style=border-left-color:#25D366><b>['+i.motivo+']</b> '+i.fecha+'<br><b>Diag:</b> '+i.diagnostico+'<br><b>Trabajo:</b> '+i.trabajo+'<br>'+(i.repuestos?'Rep: '+i.repuestos+'<br>':'')+(i.total?'Total: $'+i.total+'<br>':'')+(i.fotos&&i.fotos.length?'<div class=thumbs>'+i.fotos.map(f=>'<img src="'+f+'" onclick="openImg(\''+f+'\')">').join('')+'</div>':'')+'</div>').join('');
+}
+
 function saveV(){let p=document.getElementById('vPat').value.toUpperCase().trim();if(!p)return alert('Patente');let o={patente:p,marca:document.getElementById('vMar').value,modelo:document.getElementById('vMod').value,cliente:document.getElementById('vCli').value,tel:document.getElementById('vTel').value,km:document.getElementById('vKm').value};let ex=vehiculos.find(v=>v.patente==p);if(ex)Object.assign(ex,o);else vehiculos.unshift(o);save();show('buscar');buscar()}
-function saveI(){let p=document.getElementById('iPat').value.toUpperCase().trim();let f=document.getElementById('iFec').value;let k=document.getElementById('iKm').value;let t=document.getElementById('iTra').value;if(!p||!f||!k||!t)return alert('Falta Patente, Fecha, KM y Trabajo (obligatorios)');intervenciones.unshift({patente:p,fecha:f,km:k,trabajo:t,repuestos:document.getElementById('iRep').value,costRep:document.getElementById('iCostRep').value,costMo:document.getElementById('iCostMo').value,total:document.getElementById('iTotal').value,proxKm:document.getElementById('iProxKm').value,proxFec:document.getElementById('iProxFec').value,obs:document.getElementById('iObs').value});save();alert('✅ Intervención guardada');show('buscar');document.getElementById('q').value=p;buscar()}
+
+function saveI(){
+ let motivo=document.getElementById('iMotivo').value;
+ let fec=document.getElementById('iFec').value;
+ let pat=document.getElementById('iPat').value.toUpperCase().trim();
+ let diag=document.getElementById('iDiag').value.trim();
+ let tra=document.getElementById('iTra').value.trim();
+ if(!motivo||!fec||!pat||!diag||!tra)return alert('Falta Motivo, Fecha, Patente, Diagnóstico y Trabajo');
+ intervenciones.unshift({motivo:motivo,fecha:fec,patente:pat,trabajo:tra,diagnostico:diag,repuestos:document.getElementById('iRep').value,total:document.getElementById('iTotal').value,fotos:[...fotosTemp]});
+ save();fotosTemp=[];renderPreview();alert('✅ Guardado con '+intervenciones[0].fotos.length+' fotos');show('buscar');document.getElementById('q').value=pat;buscar();
+}
+
 function renderPap(){document.getElementById('rPap').innerHTML=papelera.length?papelera.map(v=>'<div class=card><span class=patente>'+v.patente+'</span></div>').join(''):'<p style=color:#555>Vacía</p>'}
-function exportar(){let blob=new Blob([JSON.stringify({vehiculos,intervenciones},null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-SM.json';a.click()}
-function importar(e){let f=e.target.files[0];let r=new FileReader();r.onload=function(ev){let d=JSON.parse(ev.target.result);vehiculos=d.vehiculos||[];intervenciones=d.intervenciones||[];save();buscar();alert('Importado')};r.readAsText(f)}
 document.getElementById('iFec').valueAsDate=new Date();
 </script>
 </body>
