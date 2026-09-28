@@ -18,18 +18,141 @@ input:focus{border-color:#00e5ff}
 .back{background:#111;border:1px solid #333;color:#aaa;padding:8px 12px;border-radius:10px;font-size:13px;cursor:pointer}
 .add{background:#081a1a;border:1px solid #00e5ff;color:#00e5ff;padding:10px 12px;border-radius:10px;width:100%;cursor:pointer;font-weight:700}
 .vehicle-btn{background:#0e0e0e;border:1px solid #222;border-radius:14px;padding:12px 14px;margin:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;color:#fff}
+.vehicle-btn:hover{border-color:#00e5ff;background:#0f1f22}
 .vehicle-btn b{color:#00e5ff}
 .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.thumb{width:76px;height:76px;border-radius:10px;object-fit:cover;border:1px solid #333}
-.thumb-wrap{position:relative;display:inline-block}.thumb-del{position:absolute;top:-6px;right:-6px;background:#ff2a2a;color:#fff;border:0;width:22px;height:22px;border-radius:50%}
+.thumb-wrap{position:relative;display:inline-block}.thumb-del{position:absolute;top:-6px;right:-6px;background:#ff2a2a;color:#fff;border:0;width:22px;height:22px;border-radius:50%;font-size:12px;cursor:pointer}
 .small{color:#888;font-size:12px}
 .tab{background:#0e0e0e;border:1px solid #222;border-radius:12px;padding:11px 12px;margin:6px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .tab b{color:#00e5ff;font-size:13px}.tab.active{border-color:#00e5ff;background:#0f1f22}
 .detail{background:#0c0c0c;border:1px dashed #222;border-radius:12px;padding:10px;margin:0 0 10px;display:none}
 .detail.open{display:block}
-.detail p{margin:5px 0;font-size:13px}
+.detail p{margin:5px 0;font-size:13px;line-height:1.35}
 .detail img{width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px;border:1px solid #333}
 .view{display:none}.view.active{display:block}
 </style></head><body>
 <div id="login" class="center">
 <div class="logo"><span>SM</span> <b>MONTENEGRO</b></div>
-<div class="sub">TALLER AUTOS - PRIVADO</
+<div class="sub">TALLER AUTOS - PRIVADO</div>
+<form onsubmit="return false" style="width:100%;max-width:340px" autocomplete="on">
+<input id="u" type="text" name="username" autocomplete="username" placeholder="Usuario" autocapitalize="off" autocorrect="off" spellcheck="false">
+<input id="p" type="password" name="password" autocomplete="current-password" placeholder="Contraseña">
+<button class="btn" onclick="login()">ENTRAR</button>
+<div id="msg" class="msg"></div>
+</form>
+</div>
+<div id="app">
+<div class="topbar"><div><b style="color:#00e5ff;letter-spacing:1px">SM MONTENEGRO</b><div class="small" id="path">Inicio</div></div><button class="del" onclick="salir()">Salir</button></div>
+<div id="view-lista" class="view active">
+<div class="card">
+<h3 style="color:#00e5ff;margin:0 0 10px">🚗 Nuevo vehículo</h3>
+<div class="grid2"><input type="date" id="v_fecha"><input id="v_pat" placeholder="PATENTE *" style="text-transform:uppercase"></div>
+<div class="grid2"><input id="v_marca" placeholder="Marca"><input id="v_modelo" placeholder="Modelo"></div>
+<input id="v_titular" placeholder="Titular">
+<div class="grid2"><input id="v_tel" placeholder="Teléfono" type="tel"><input id="v_contacto" placeholder="Contacto (email/otro)"></div>
+<button class="add" onclick="addVeh()">+ Guardar vehículo</button>
+</div>
+<div style="position:sticky;top:60px;background:#050505;z-index:4;padding:8px 0"><input id="busq" placeholder="🔍 Buscar patente, titular, teléfono..." oninput="renderLista()"></div>
+<div id="listaVeh"></div>
+</div>
+<div id="view-detalle" class="view">
+<button class="back" onclick="volverLista()">← Volver a vehículos</button>
+<div id="detalleVeh" class="card" style="margin-top:12px"></div>
+<div class="card">
+<b style="font-size:13px;color:#00e5ff">+ Nueva intervención</b>
+<div class="grid2"><input type="date" id="i_fecha"><input id="i_km" placeholder="Km" type="number"></div>
+<div class="grid2"><select id="i_motivo"><option value="diagnostico">Diagnóstico</option><option value="servicio">Servicio</option><option value="reparacion">Reparación</option></select><input id="i_pat" style="text-transform:uppercase" placeholder="Patente"></div>
+<textarea id="i_diag" placeholder="Diagnóstico" rows="2"></textarea>
+<textarea id="i_trab" placeholder="Trabajo realizado" rows="2"></textarea>
+<textarea id="i_rep" placeholder="Repuestos" rows="2"></textarea>
+<label class="small">📷 Fotos (podés borrar la equivocada antes de guardar)</label>
+<input type="file" id="i_fotos" multiple accept="image/*" onchange="previewFotos()">
+<div id="preview" class="thumbs"></div>
+<button class="btn" style="margin-top:10px" onclick="guardarInterv()">💾 Guardar intervención (bloqueada luego)</button>
+</div>
+<div id="tabs"></div>
+</div>
+</div>
+<script>
+const USER_OK="SM-MONTE-";const PASS_OK="Taller.monte1.";const LS="sm_montenegro_final_def";
+let data=JSON.parse(localStorage.getItem(LS)||localStorage.getItem("sm_montenegro_v2_final")||localStorage.getItem("sm_montenegro_final_v1")||"[]");
+let selected=-1;let fotoCache=[];
+function today(){return new Date().toISOString().slice(0,10)}
+document.getElementById('v_fecha').value=today();
+function login(){
+ let u=document.getElementById('u').value.trim();let p=document.getElementById('p').value;
+ if(u===USER_OK&&p===PASS_OK){localStorage.setItem("auth","1");show();}else{document.getElementById('msg').innerText="Usuario o clave incorrectos";}
+}
+function salir(){localStorage.removeItem("auth");selected=-1;location.reload();}
+function show(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';renderLista();}
+function save(){localStorage.setItem(LS,JSON.stringify(data));renderLista();if(selected>=0)renderDetalle();}
+function addVeh(){
+ let pat=document.getElementById('v_pat').value.trim().toUpperCase();if(!pat)return alert("Patente obligatoria");
+ let o={id:Date.now(),fecha:document.getElementById('v_fecha').value||today(),patente:pat,marca:document.getElementById('v_marca').value.trim(),modelo:document.getElementById('v_modelo').value.trim(),titular:document.getElementById('v_titular').value.trim(),telefono:document.getElementById('v_tel').value.trim(),contacto:document.getElementById('v_contacto').value.trim(),intervenciones:[]};
+ data.unshift(o);["v_pat","v_marca","v_modelo","v_titular","v_tel","v_contacto"].forEach(i=>document.getElementById(i).value="");document.getElementById('v_fecha').value=today();save();
+}
+function renderLista(){
+ let q=document.getElementById('busq').value.toLowerCase().trim();
+ let cont=document.getElementById('listaVeh');cont.innerHTML="";
+ let list=data.filter(v=>{if(!q)return true;return (v.patente+" "+v.titular+" "+v.telefono+" "+(v.contacto||"")+" "+v.marca).toLowerCase().includes(q);});
+ if(!list.length){cont.innerHTML='<div class="small" style="text-align:center;padding:24px">Sin vehículos</div>';return;}
+ list.forEach(v=>{
+  let idx=data.indexOf(v);
+  let btn=document.createElement('button');btn.className='vehicle-btn';
+  btn.innerHTML=`<div><b>${v.patente}</b><div class="small">${v.marca} ${v.modelo} • ${v.titular} • ${v.telefono}</div><div class="small">${v.intervenciones.length} intervenciones • ${v.fecha||''}</div></div><span style="color:#00e5ff">›</span>`;
+  btn.onclick=()=>abrirVeh(idx);
+  cont.appendChild(btn);
+ });
+ document.getElementById('path').innerText=`Vehículos (${data.length})`;
+}
+function abrirVeh(idx){
+ selected=idx;document.getElementById('view-lista').classList.remove('active');document.getElementById('view-detalle').classList.add('active');
+ renderDetalle();
+}
+function volverLista(){selected=-1;document.getElementById('view-detalle').classList.remove('active');document.getElementById('view-lista').classList.add('active');renderLista();}
+function renderDetalle(){
+ if(selected<0)return;
+ let v=data[selected];
+ document.getElementById('path').innerText=`${v.patente} • ${v.titular}`;
+ document.getElementById('detalleVeh').innerHTML=`<div style="display:flex;justify-content:space-between"><div><b style="color:#00e5ff;font-size:18px">${v.patente}</b><div class="small">${v.fecha} • ${v.marca} ${v.modelo}</div><div class="small" style="margin-top:4px">Titular: ${v.titular}<br>Tel: ${v.telefono} ${v.contacto?'• '+v.contacto:''}</div></div><button class="del" onclick="delVeh()">🗑️ Borrar vehículo</button></div>`;
+ document.getElementById('i_pat').value=v.patente;document.getElementById('i_fecha').value=today();
+ let tabs=document.getElementById('tabs');tabs.innerHTML=`<div class="small" style="margin:14px 0 6px">Historial (${v.intervenciones.length}) - tocá el cuadrito</div>`;
+ for(let j=v.intervenciones.length-1;j>=0;j--){
+  let inter=v.intervenciones[j];
+  let tab=document.createElement('div');tab.className='tab';
+  tab.innerHTML=`<b>📅 ${inter.fecha} • ${inter.motivo.toUpperCase()}</b><span>${inter.km?inter.km+' km':''} ▼</span>`;
+  let det=document.createElement('div');det.className='detail';
+  let fotos=(inter.fotos||[]).map(f=>`<img src="${f}">`).join('');
+  det.innerHTML=`<p><strong>Patente:</strong> ${inter.patente} | <strong>Km:</strong> ${inter.km||'-'}</p>${inter.diagnostico?`<p><strong>Diagnóstico:</strong> ${inter.diagnostico}</p>`:''}${inter.trabajo?`<p><strong>Trabajo:</strong> ${inter.trabajo}</p>`:''}${inter.repuestos?`<p><strong>Repuestos:</strong> ${inter.repuestos}</p>`:''}<div style="display:flex;flex-wrap:wrap">${fotos}</div><div style="margin-top:10px"><button class="del" onclick="delInterv(${j})">🗑️ Borrar intervención</button></div><div class="small" style="margin-top:6px">🔒 Bloqueado</div>`;
+  tab.onclick=()=>{det.classList.toggle('open');tab.classList.toggle('active');};
+  tabs.appendChild(tab);tabs.appendChild(det);
+ }
+}
+function previewFotos(){
+ let input=document.getElementById('i_fotos');let files=Array.from(input.files);
+ let readers=files.map(f=>new Promise(r=>{let fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(f);}));
+ Promise.all(readers).then(imgs=>{fotoCache=fotoCache.concat(imgs);renderPreview();input.value="";});
+}
+function renderPreview(){
+ let prev=document.getElementById('preview');prev.innerHTML="";
+ fotoCache.forEach((src,i)=>{let w=document.createElement('div');w.className='thumb-wrap';w.innerHTML=`<img class="thumb" src="${src}"><button class="thumb-del" onclick="delPreview(${i})">x</button>`;prev.appendChild(w);});
+}
+function delPreview(i){fotoCache.splice(i,1);renderPreview();}
+function guardarInterv(){
+ if(selected<0)return;
+ let fecha=document.getElementById('i_fecha').value||today();
+ let km=document.getElementById('i_km').value.trim();
+ let motivo=document.getElementById('i_motivo').value;
+ let pat=document.getElementById('i_pat').value.trim().toUpperCase();
+ let diag=document.getElementById('i_diag').value.trim();
+ let trab=document.getElementById('i_trab').value.trim();
+ let rep=document.getElementById('i_rep').value.trim();
+ if(!pat||(!diag&&!trab))return alert("Completá datos");
+ let inter={fecha,km,motivo,patente:pat,diagnostico:diag,trabajo:trab,repuestos:rep,fotos:fotoCache,creado:Date.now()};
+ data[selected].intervenciones.push(inter);fotoCache=[];document.getElementById('preview').innerHTML="";["i_km","i_diag","i_trab","i_rep"].forEach(id=>document.getElementById(id).value="");
+ save();renderDetalle();
+}
+function delVeh(){if(confirm("¿Borrar vehículo y todo su historial?")){data.splice(selected,1);selected=-1;save();volverLista();}}
+function delInterv(j){if(confirm("¿Borrar intervención?")){data[selected].intervenciones.splice(j,1);save();renderDetalle();}}
+if(localStorage.getItem("auth")==="1"){show();}else{document.getElementById('login').style.display='flex';document.getElementById('app').style.display='none';}
+</script></body></html>
