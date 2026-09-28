@@ -1,49 +1,24 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SM Montenegro</title>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SM MONTENEGRO</title>
 <style>
-body{margin:0;padding:12px;font-family:Arial;background:#000;color:#fff}
-.tarjeta{background:#111;padding:18px;border-radius:14px;max-width:850px;margin:auto;border:1px solid #222}
-button{width:100%;padding:15px;margin-top:10px;border:none;border-radius:10px;background:#06b6d4;color:#000;font-size:17px;font-weight:900}
-.boton-secundario{background:#374151;color:#fff}.boton-cerrar{background:#7f1d1d;color:#fff}
-input,select,textarea{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#fff;box-sizing:border-box}
-.tab{flex:1;padding:10px;border-radius:8px;background:#1e293b;color:#cbd5e1;text-align:center;cursor:pointer;font-weight:700}.tab.activa{background:#06b6d4;color:#000}
-.ficha{border:1px solid #1e293b;border-radius:10px;padding:12px;margin:10px 0;background:#0f172a}
-.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:800;color:#fff}.badge-servicio{background:#16a34a}.badge-diagnostico{background:#2563eb}.badge-reparacion{background:#ea580c}
-.foto-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.foto-item{position:relative;width:90px;height:90px;border-radius:8px;overflow:hidden;border:1px solid #334155}.foto-item img{width:100%;height:100%;object-fit:cover}
-.foto-del{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:24px;height:24px}
-.tabs{display:flex;gap:6px;margin:10px 0}.grilla-doble{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.label-sm{font-size:13px;font-weight:700;color:#94a3b8;margin-top:4px;display:block}
-.historial-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.h-tab{padding:8px 12px;border-radius:20px;border:1px solid #334155;background:#1e293b;color:#e2e8f0;cursor:pointer;font-size:13px}.h-tab.activa{background:#06b6d4;color:#000}
-.h-detalle{border:1px solid #1e293b;border-radius:10px;padding:12px;margin-top:10px;background:#0f172a;display:none}.h-detalle.activo{display:block}
-#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:9999}#lightbox.activa{display:flex}#lightbox img{max-width:95%;max-height:90%;border-radius:12px}
-.logo-wrap{text-align:center;margin-bottom:14px}.logo-wrap img{max-width:100%;width:340px;background:#000}
-.oculto{display:none!important}
-</style></head><body>
-<div id="pantallaLogin" class="tarjeta"><div class="logo-wrap"><img src="logo.png"><div style="font-size:28px;font-weight:900;color:#06b6d4">SM MONTENEGRO</div></div><h2 style="text-align:center">Entrar</h2><input id="loginEmail" value="maxi_boca46@hotmail.com"><input type="password" id="loginPassword" placeholder="Contraseña"><button id="btnLogin">Ingresar</button><div id="mensajeLogin" style="color:#f87171;font-weight:bold;margin-top:10px"></div></div>
-<div id="sistema" class="tarjeta oculto"><div class="logo-wrap"><img src="logo.png"><div style="font-size:24px;font-weight:900;color:#06b6d4">SM MONTENEGRO</div></div>
-<button id="btnMenuBuscar">Buscar</button><button id="btnMenuNuevoVeh">Nuevo vehiculo</button><button id="btnMenuNuevaInterv">Nueva intervencion</button><button id="btnRecuperar" style="background:#06b6d4">Recuperar viejos</button><button id="btnCerrarSesion" class="boton-cerrar">Cerrar sesion</button><div id="estadoRecupero" style="color:#22d3ee;font-weight:bold;margin-top:10px"></div>
-<div id="buscar" class="oculto"><hr><h2>Buscar</h2><div class="tabs"><div id="tabPatente" class="tab activa">Patente</div><div id="tabTitular" class="tab">Titular</div><div id="tabTelefono" class="tab">Telefono</div></div><input id="patenteBuscar" placeholder="Buscar..."><button id="btnBuscarAhora">Buscar ahora</button><div id="resultadoBusqueda"></div></div>
-<div id="nuevoVehiculo" class="oculto"><hr><h2>Nuevo vehiculo</h2><div class="grilla-doble"><div><span class="label-sm">Patente</span><input id="patente"></div><div><span class="label-sm">Año</span><input id="anio" type="number"></div></div><div class="grilla-doble"><div><span class="label-sm">Marca</span><input id="marca"></div><div><span class="label-sm">Modelo</span><input id="modelo"></div></div><span class="label-sm">Titular</span><input id="titular"><span class="label-sm">Telefono</span><input id="telefono"><span class="label-sm">Contacto alt.</span><input id="cliente"><button id="btnGuardarVeh">Guardar</button></div>
-<div id="nuevaIntervencion" class="oculto"><hr><h2>Nueva intervencion</h2><span class="label-sm">Patente</span><input id="patenteIntervencion"><span class="label-sm">Fecha</span><input type="date" id="fecha"><span class="label-sm">Motivo</span><select id="motivoTipo"><option value="diagnostico">Diagnostico</option><option value="servicio">Servicio</option><option value="reparacion">Reparacion</option></select><span class="label-sm">Diagnostico</span><textarea id="diagnostico" rows="3"></textarea><span class="label-sm">Trabajo realizado</span><textarea id="trabajo" rows="4"></textarea><span class="label-sm">Fotos</span><input type="file" id="inputFotos" accept="image/*" multiple><div id="previewFotos" class="foto-grid"></div><button id="btnGuardarInterv">Guardar intervencion</button><div id="estadoInterv"></div></div></div>
-<div id="lightbox" onclick="this.classList.remove('activa')"><img id="lightbox-img"></div>
-<script>
-const URL_SUPA="https://sljknzpyxmpfnkcaoksu.supabase.co";const KEY="sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI";let TOKEN=localStorage.getItem("token");let UID=localStorage.getItem("uid");let tipoBusqueda='patente';let fotosTemp=[];
-function $(id){return document.getElementById(id)}function headers(){return {apikey:KEY,Authorization:"Bearer "+TOKEN,"Content-Type":"application/json"}}function badgeClass(m){if(m==='servicio')return 'badge-servicio';if(m==='diagnostico')return 'badge-diagnostico';return 'badge-reparacion';}
-if(TOKEN&&UID){$("pantallaLogin").classList.add("oculto");$("sistema").classList.remove("oculto");}
-$("btnLogin").onclick=async function(){const pass=$("loginPassword").value;const email=$("loginEmail").value;const r=await fetch(URL_SUPA+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:KEY,Authorization:"Bearer "+KEY,"Content-Type":"application/json"},body:JSON.stringify({email,password:pass})});const t=await r.text();let j={};try{j=JSON.parse(t)}catch(e){}if(!r.ok){$("mensajeLogin").textContent="ERROR "+(j.error_description||t);return;}TOKEN=j.access_token;UID=j.user.id;localStorage.setItem("token",TOKEN);localStorage.setItem("uid",UID);$("pantallaLogin").classList.add("oculto");$("sistema").classList.remove("oculto");};
-$("btnCerrarSesion").onclick=function(){localStorage.clear();location.reload();};
-function setTab(t){tipoBusqueda=t;$("tabPatente").classList.toggle("activa",t==='patente');$("tabTitular").classList.toggle("activa",t==='titular');$("tabTelefono").classList.toggle("activa",t==='telefono');}
-$("tabPatente").onclick=function(){setTab('patente')};$("tabTitular").onclick=function(){setTab('titular')};$("tabTelefono").onclick=function(){setTab('telefono')};
-$("btnMenuBuscar").onclick=function(){$("buscar").classList.remove("oculto");$("nuevoVehiculo").classList.add("oculto");$("nuevaIntervencion").classList.add("oculto");};
-$("btnMenuNuevoVeh").onclick=function(){$("nuevoVehiculo").classList.remove("oculto");$("buscar").classList.add("oculto");$("nuevaIntervencion").classList.add("oculto");};
-$("btnMenuNuevaInterv").onclick=function(){$("fecha").valueAsDate=new Date();$("nuevaIntervencion").classList.remove("oculto");$("buscar").classList.add("oculto");$("nuevoVehiculo").classList.add("oculto");fotosTemp=[];renderFotos();};
-$("btnRecuperar").onclick=async function(){$("estadoRecupero").textContent="Recuperando...";let cv=0,ci=0;const rv=await fetch(URL_SUPA+"/rest/v1/vehiculos?user_id=is.null&select=*",{headers:headers()});const veh=await rv.json();for(let v of (veh||[])){const rr=await fetch(URL_SUPA+"/rest/v1/vehiculos?id=eq."+v.id,{method:"PATCH",headers:{...headers(),Prefer:"return=minimal"},body:JSON.stringify({user_id:UID})});if(rr.ok)cv++;}const ri=await fetch(URL_SUPA+"/rest/v1/intervenciones?user_id=is.null&select=*",{headers:headers()});const inter=await ri.json();for(let it of (inter||[])){const rr=await fetch(URL_SUPA+"/rest/v1/intervenciones?id=eq."+it.id,{method:"PATCH",headers:{...headers(),Prefer:"return=minimal"},body:JSON.stringify({user_id:UID})});if(rr.ok)ci++;}$("estadoRecupero").textContent="Veh: "+cv+" Interv: "+ci;};
-$("btnGuardarVeh").onclick=async function(){const p=$("patente").value.toUpperCase().trim();if(!p){alert("Patente");return;}const body={user_id:UID,patente:p,marca:$("marca").value,modelo:$("modelo").value,cliente:JSON.stringify({titular:$("titular").value,telefono:$("telefono").value,contacto:$("cliente").value,marca:$("marca").value,modelo:$("modelo").value,anio:$("anio").value})};const r=await fetch(URL_SUPA+"/rest/v1/vehiculos",{method:"POST",headers:{...headers(),Prefer:"return=minimal"},body:JSON.stringify(body)});if(r.ok){alert("Guardado");}else alert(await r.text());};
-$("inputFotos").addEventListener("change",async function(e){for(let f of Array.from(e.target.files)){const b64=await new Promise(function(res){const fr=new FileReader();fr.onload=function(){res(fr.result)};fr.readAsDataURL(f);});fotosTemp.push({base64:b64});}renderFotos();});
-function renderFotos(){const c=$("previewFotos");c.innerHTML="";fotosTemp.forEach(function(ft,i){const d=document.createElement("div");d.className="foto-item";d.innerHTML='<img src="'+ft.base64+'" onclick="abrirFoto(\''+ft.base64+'\')"><button class="foto-del" onclick="borrarFoto('+i+')">X</button>';c.appendChild(d);});}
-window.borrarFoto=function(i){fotosTemp.splice(i,1);renderFotos();};
-$("btnBuscarAhora").onclick=async function(){const q=$("patenteBuscar").value.trim();if(!q)return;$("resultadoBusqueda").innerHTML="Buscando...";let url=URL_SUPA+"/rest/v1/vehiculos?user_id=eq."+UID+"&select=*&cliente=ilike.*"+encodeURIComponent(q)+"*";if(tipoBusqueda==='patente')url=URL_SUPA+"/rest/v1/vehiculos?user_id=eq."+UID+"&patente=ilike.*"+q+"*&select=*";const r=await fetch(url,{headers:headers()});const data=await r.json();if(!data.length){$("resultadoBusqueda").innerHTML="No encontrado";return;}let html="";for(let veh of data){let cli={};try{cli=JSON.parse(veh.cliente)}catch(e){cli={titular:veh.cliente}}html+='<div class="ficha"><b>'+veh.patente+'</b> - '+(cli.marca||"")+' '+(cli.modelo||"")+' '+(cli.anio||"")+'<br>'+(cli.titular||"")+' - '+(cli.telefono||"")+'<br><button class="boton-secundario" onclick="verHistorial(\''+veh.id+'\')">Ver historial</button><div id="hist_'+veh.id+'"></div></div>';}$("resultadoBusqueda").innerHTML=html;};
-window.verHistorial=async function(vehId){const cont=document.getElementById('hist_'+vehId);cont.innerHTML="Cargando...";const r=await fetch(URL_SUPA+"/rest/v1/intervenciones?user_id=eq."+UID+"&vehiculo_id=eq."+vehId+"&order=fecha.desc&select=*",{headers:headers()});const inter=await r.json();if(!inter.length){cont.innerHTML="Sin intervenciones";return;}let tabs='<div class="historial-tabs">';let detalles="";inter.forEach(function(it,idx){let desc={};try{desc=JSON.parse(it.descripcion)}catch(e){desc={trabajo:it.descripcion}}const motivo=(it.tipo||desc.motivo||"servicio").toLowerCase();tabs+='<div class="h-tab '+(idx===0?'activa':'')+'" onclick="mostrarDetalle(\''+vehId+'\','+idx+')"><span class="badge '+badgeClass(motivo)+'">'+motivo.slice(0,3).toUpperCase()+'</span> '+it.fecha+'</div>';detalles+='<div id="det_'+vehId+'_'+idx+'" class="h-detalle '+(idx===0?'activo':'')+'"><span class="badge '+badgeClass(motivo)+'">'+motivo.toUpperCase()+'</span> '+it.fecha+'<div style="margin-top:8px"><b>Diagnostico:</b><br>'+(desc.diagnostico||"-")+'</div><div style="margin-top:8px"><b>Trabajo:</b><br>'+(desc.trabajo||"")+'</div>'+((desc.fotos||[]).length?'<div class="foto-grid">'+desc.fotos.map(function(f){return '<div class="foto-item"><img src="'+f+'" onclick="abrirFoto(\''+f+'\')"></div>'}).join("")+'</div>' : "")+'</div>';});tabs+='</div>';cont.innerHTML=tabs+detalles;};
-window.abrirFoto=function(src){$("lightbox-img").src=src;$("lightbox").classList.add("activa");};
-window.mostrarDetalle=function(vehId,idx){const cont=document.getElementById('hist_'+vehId);cont.querySelectorAll('.h-tab').forEach(function(el,i){el.classList.toggle('activa',i===idx)});cont.querySelectorAll('.h-detalle').forEach(function(el,i){el.classList.toggle('activo',i===idx)});};
-$("btnGuardarInterv").onclick=async function(){const p=$("patenteIntervencion").value.toUpperCase().trim();if(!p)return;const r=await fetch(URL_SUPA+"/rest/v1/vehiculos?user_id=eq."+UID+"&patente=eq."+p+"&select=id",{headers:headers()});const v=await r.json();if(!v[0]){alert("Patente no existe");return;}const desc=JSON.stringify({motivo:$("motivoTipo").value,diagnostico:$("diagnostico").value,trabajo:$("trabajo").value,fotos:fotosTemp.map(function(f){return f.base64})});const body={user_id:UID,vehiculo_id:v[0].id,fecha:$("fecha").value||new Date().toISOString().slice(0,10),tipo:$("motivoTipo").value,descripcion:desc};const rr=await fetch(URL_SUPA+"/rest/v1/intervenciones",{method:"POST",headers:headers(),body:JSON.stringify(body)});if(rr.ok){alert("Guardada");$("diagnostico").value="";$("trabajo").value="";fotosTemp=[];renderFotos();}else alert(await rr.text());};
-</script></body></html>
+body{background:#111;color:#fff;font-family:Arial;text-align:center;margin:0;padding:20px}
+.logo{width:300px;max-width:90%;margin:20px auto;display:block;border-radius:12px}
+.btn{display:block;background:#06b6d4;color:#000;padding:16px;margin:12px auto;max-width:340px;border-radius:12px;font-weight:bold;text-decoration:none;font-size:18px}
+.btn-w{background:#25D366;color:#fff}
+h1{color:#06b6d4}
+</style>
+</head>
+<body>
+<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" class="logo">
+<h1>SM MONTENEGRO</h1>
+<p>Taller Mecánico - Río Grande</p>
+<a class="btn btn-w" href="https://wa.me/5492964535280">📱 WhatsApp</a>
+<a class="btn" href="tel:+542964535280">📞 Llamar</a>
+<a class="btn" href="#">📍 Ubicación</a>
+<a class="btn" href="#">🔧 Servicios</a>
+</body>
+</html>
