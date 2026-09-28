@@ -1,32 +1,54 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SM MONTENEGRO - Taller</title>
-<style>
-*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto}
-body{margin:0;background:#000;color:#fff;min-height:100vh}
-.center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-h1{color:#00d4ff;letter-spacing:2px;margin:0 0 5px;font-size:26px}
-.sub{color:#666;font-size:12px;letter-spacing:3px;margin-bottom:25px}
-input{background:#111;border:1px solid #333;color:#fff;padding:14px 16px;border-radius:12px;width:100%;max-width:340px;margin:6px 0;font-size:16px;outline:none}
-input:focus{border-color:#00d4ff}
-.btn{background:#00d4ff;color:#000;border:0;padding:14px;width:100%;max-width:340px;border-radius:12px;font-weight:800;font-size:16px;margin-top:12px;cursor:pointer}
-.msg{color:#ff4d4d;margin-top:12px;font-size:13px;min-height:18px;text-align:center;max-width:340px}
-.app{display:none;padding:15px;max-width:600px;margin:0 auto}
-.card{background:#111;border:1px solid #222;border-radius:14px;padding:14px;margin:10px 0}
-.card h3{margin:0 0 6px;color:#00d4ff}
-.small{color:#888;font-size:12px}
-.actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.del{background:#1a0000;border:1px solid #ff2a2a;color:#ff6b6b;padding:8px 12px;border-radius:10px;font-size:13px;cursor:pointer}
-.add{background:#001a1a;border:1px solid #00d4ff;color:#00d4ff;padding:8px 12px;border-radius:10px;font-size:13px;cursor:pointer}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 0}
-.topbar button{background:#222;color:#fff;border:0;padding:8px 12px;border-radius:8px}
-</style>
-</head>
-<body>
-<div id="login" class="center">
-<div style="font-size:42px;font-weight:900;font-style:italic;line-height:1;margin-bottom:10px"><span style="color:#fff">SM</span> <span style="color:#00d4ff">MONTENEGRO</span></div>
-<h1>SM MONTENEGRO</h1>
-<div class="sub">ACCESO PRIV
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SM TALLER</title>
+<style>body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center;padding:20px}h1{color:#00d4ff}
+input{display:block;width:90%;max-width:300px;margin:10px auto;padding:15px;border-radius:10px;border:1px solid #444;background:#111;color:#fff;font-size:18px}
+button{display:block;width:90%;max-width:300px;margin:10px auto;padding:15px;border-radius:10px;border:0;background:#00d4ff;color:#000;font-weight:bold;font-size:18px}
+#app{display:none;text-align:left;max-width:500px;margin:0 auto}
+.card{background:#111;border:1px solid #333;padding:12px;margin:10px 0;border-radius:10px}
+.del{background:#300;color:#f88;border:1px solid #f44;padding:6px 10px;border-radius:8px;margin-top:6px}
+</style></head><body>
+<div id="login">
+<h1 style="font-style:italic"><span style="color:#fff">SM</span> MONTENEGRO</h1>
+<h2 style="color:#00d4ff;font-size:16px;letter-spacing:2px">ACCESO PRIVADO</h2>
+<input id="u" placeholder="Usuario">
+<input id="p" placeholder="Contraseña">
+<button onclick="entrar()">ENTRAR</button>
+<button onclick="directo()" style="background:#111;color:#0ff;border:1px solid #0ff">ENTRAR DIRECTO</button>
+<p id="msg" style="color:#f55"></p>
+</div>
+<div id="app">
+<div style="display:flex;justify-content:space-between"><b style="color:#0ff">TALLER AUTOS</b><button onclick="salir()" style="width:auto;padding:5px 10px">Salir</button></div>
+<div class="card"><input id="pat" placeholder="Patente Cliente"><input id="mod" placeholder="Modelo"><button onclick="addV()">+ Agregar vehiculo</button></div>
+<div id="lista"></div>
+</div>
+<script>
+var LS="sm_v4"; var data=JSON.parse(localStorage.getItem(LS)||"[]");
+function entrar(){
+ var u=document.getElementById('u').value.trim();
+ var p=document.getElementById('p').value.trim();
+ if(u==="SM-MONTE-" && p==="Taller.monte1."){localStorage.setItem("auth","1");show();}
+ else{document.getElementById('msg').innerText="Error: usa SM-MONTE- / Taller.monte1."; if(confirm("Queres entrar directo?")){directo();}}
+}
+function directo(){localStorage.setItem("auth","1");show();}
+function show(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';render();}
+function salir(){localStorage.removeItem("auth");location.reload();}
+function render(){
+ var c=document.getElementById('lista');c.innerHTML="";
+ if(data.length==0)c.innerHTML="Sin vehiculos";
+ for(var i=0;i<data.length;i++){
+  var v=data[i]; var d=document.createElement('div'); d.className='card';
+  var html="<b style='color:#0ff'>"+v.pat+"</b><br><small>"+(v.mod||"")+"</small><br>";
+  html+="<input id='int_"+i+"' placeholder='Arreglo'><button onclick='addI("+i+")'>+ Arreglo</button><div>";
+  for(var j=0;j<(v.ints||[]).length;j++){html+="<div style='background:#000;margin:5px 0;padding:6px;border-radius:6px'>"+v.ints[j]+" <button class='del' onclick='delI("+i+","+j+")'>Borrar</button></div>";}
+  html+="</div><button class='del' onclick='delV("+i+")'>BORRAR VEHICULO</button>";
+  d.innerHTML=html;c.appendChild(d);
+ }
+ localStorage.setItem(LS,JSON.stringify(data));
+}
+function addV(){var p=document.getElementById('pat').value.trim();var m=document.getElementById('mod').value.trim();if(!p)return;data.unshift({pat:p,mod:m,ints:[]});document.getElementById('pat').value="";document.getElementById('mod').value="";render();}
+function delV(i){if(confirm("Borrar vehiculo?")){data.splice(i,1);render();}}
+function addI(i){var el=document.getElementById('int_'+i);var t=el.value.trim();if(!t)return;if(!data[i].ints)data[i].ints=[];data[i].ints.push(t);el.value="";render();}
+function delI(i,j){if(confirm("Borrar arreglo?")){data[i].ints.splice(j,1);render();}}
+if(localStorage.getItem("auth")==="1")show();
+</script></body></html>
