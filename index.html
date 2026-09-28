@@ -36,68 +36,8 @@ label{color:#888;font-size:13px;margin-top:12px;display:block;text-align:left}
 <div class="box">
 <img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px;margin-bottom:16px">
 <h2 style="color:#00c8ff">SM MONTENEGRO</h2>
-<p style="color:#222;font-size:10px;letter-spacing:2px;margin:10px 0 20px">ACCESO PRIVADO</p>
+<p style="color:#444;font-size:10px;letter-spacing:2px;margin:10px 0 20px">ACCESO PRIVADO</p>
 <input id="user" placeholder="Usuario" autocomplete="off">
 <input id="pass" type="password" placeholder="Contraseña" autocomplete="new-password">
 <button class="btn btn-blue" onclick="doLogin()">Entrar</button>
-<p id="errorLogin" style="color:#ff5555;font-size:13px;margin-top:10px;display:none"></p>
-</div>
-</div>
-
-<div id="app" class="hidden">
-<div class="wrap">
-<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" class="logo">
-<button class="btn btn-blue" onclick="show('buscar')">🔍 Buscar</button>
-<button class="btn btn-blue" onclick="show('nuevoV')">🚗 Nuevo vehículo</button>
-<button class="btn btn-blue" onclick="show('nuevaI')">🛠️ Nueva intervención</button>
-<button class="btn btn-red" onclick="location.reload()">Cerrar sesión</button>
-<hr style="border:0;border-top:1px solid #1e1e1e;margin:16px 0">
-
-<div id="sec-buscar"><h2>Buscar <span id="cont" style="font-size:12px;color:#666"></span></h2><input id="q" placeholder="Patente, marca, cliente..." oninput="buscar()"><div id="r"></div></div>
-
-<div id="sec-nuevoV" class="hidden"><h2>🚗 Nuevo vehículo</h2>
-<input id="vPat" placeholder="PATENTE AB123CD" style="text-transform:uppercase"><input id="vMar" placeholder="Marca"><input id="vMod" placeholder="Modelo"><input id="vCli" placeholder="Cliente"><input id="vTel" placeholder="Tel"><input id="vKm" type="number" placeholder="KM"><button class="btn btn-blue" onclick="saveV()">💾 Guardar</button></div>
-
-<div id="sec-nuevaI" class="hidden">
-<h2>🛠️ Nueva intervención</h2>
-<label>1. Motivo *</label>
-<select id="iMotivo"><option value="">Seleccioná</option><option>Diagnostico</option><option>Servicio</option><option>Reparacion</option></select>
-<label>2. Fecha *</label><input id="iFec" type="date">
-<label>3. Patente *</label><input id="iPat" placeholder="AB123CD" style="text-transform:uppercase">
-<label>4. Diagnóstico *</label><textarea id="iDiag" placeholder="Qué trae, falla..."></textarea>
-<label>5. Trabajo realizado *</label><textarea id="iTra" placeholder="Qué se hizo..."></textarea>
-<label>6. Fotos (tocá para agregar o pegá Ctrl+V)</label>
-<div class="fotoBox">
-<input type="file" id="fotoInput" accept="image/*" multiple onchange="addFotos(this.files)">
-<p style="color:#666;font-size:11px;margin-top:6px">Podés sacar foto o elegir de galería. Tocá la miniatura para abrirla grande.</p>
-<div id="preview" class="thumbs"></div>
-</div>
-<label>Repuestos</label><textarea id="iRep"></textarea>
-<label>Costo $</label><input id="iTotal" type="number" placeholder="0">
-<button class="btn btn-blue" onclick="saveI()">💾 Guardar con fotos</button>
-</div>
-
-</div>
-</div>
-
-<script>
-localStorage.setItem('sm_user','SM-MONTE-');
-localStorage.setItem('sm_pass','Taller.monte1.');
-let vehiculos=JSON.parse(localStorage.getItem('sm_vehiculos')||'[]');
-let intervenciones=JSON.parse(localStorage.getItem('sm_interv')||'[]');
-let fotosTemp=[];
-function save(){localStorage.setItem('sm_vehiculos',JSON.stringify(vehiculos));localStorage.setItem('sm_interv',JSON.stringify(intervenciones));}
-function doLogin(){let u=document.getElementById('user').value.trim();let p=document.getElementById('pass').value;let su=localStorage.getItem('sm_user');let sp=localStorage.getItem('sm_pass');if(u===su&&p===sp){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');buscar();}else{let e=document.getElementById('errorLogin');e.style.display='block';e.innerText='Usuario o contraseña incorrectos'}}
-function show(id){document.querySelectorAll('[id^=sec-]').forEach(e=>e.classList.add('hidden'));document.getElementById('sec-'+id).classList.remove('hidden');if(id=='buscar')buscar();}
-function addFotos(files){for(let f of files){let r=new FileReader();r.onload=e=>{fotosTemp.push(e.target.result);renderPreview()};r.readAsDataURL(f)}}
-function renderPreview(){document.getElementById('preview').innerHTML=fotosTemp.map((src,i)=>'<div style=position:relative><img src="'+src+'" onclick="openImg(this.src)"><span onclick="fotosTemp.splice('+i+',1);renderPreview()" style="position:absolute;top:-6px;right:-6px;background:#f44;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px">x</span></div>').join('')}
-document.addEventListener('paste',e=>{for(let it of e.clipboardData.items){if(it.type.includes('image')){addFotos([it.getAsFile()])}}});
-function openImg(src){document.getElementById('imgBig').src=src;document.getElementById('imgModal').classList.remove('hidden')}
-function buscar(){let q=(document.getElementById('q').value||'').toLowerCase();document.getElementById('cont').innerText='('+vehiculos.length+')';let f=q?vehiculos.filter(v=>(v.patente+v.marca+v.cliente).toLowerCase().includes(q)):vehiculos;document.getElementById('r').innerHTML=f.length?f.map(v=>'<div class=card onclick="ver(\''+v.patente+'\')"><span class=patente>'+v.patente+'</span> <b>'+(v.marca||'')+'</b><div style=color:#888>'+(v.cliente||'')+'</div></div>').join(''):'<p style=color:#555;text-align:center>Sin vehículos</p>'}
-function ver(p){let v=vehiculos.find(x=>x.patente==p);let ins=intervenciones.filter(i=>i.patente==p);document.getElementById('r').innerHTML='<div class=card><span class=patente>'+v.patente+'</span><h3>'+(v.marca||'')+' '+(v.modelo||'')+'</h3><button class=btn style=background:#222;color:#fff;margin-top:10px onclick="document.getElementById(\'iPat\').value=\''+p+'\';fotosTemp=[];renderPreview();show(\'nuevaI\')">+ Nueva intervención</button></div>'+ins.map(i=>'<div class=card style=border-left-color:#25D366><b>['+i.motivo+']</b> '+i.fecha+'<br><b>Diag:</b> '+i.diagnostico+'<br><b>Trabajo:</b> '+i.trabajo+(i.fotos&&i.fotos.length?'<div class=thumbs>'+i.fotos.map(f=>'<img src="'+f+'" onclick="openImg(this.src)">').join('')+'</div>':'')+'</div>').join('')}
-function saveV(){let p=document.getElementById('vPat').value.toUpperCase().trim();if(!p)return alert('Patente');let o={patente:p,marca:document.getElementById('vMar').value,modelo:document.getElementById('vMod').value,cliente:document.getElementById('vCli').value,tel:document.getElementById('vTel').value,km:document.getElementById('vKm').value};let ex=vehiculos.find(v=>v.patente==p);if(ex)Object.assign(ex,o);else vehiculos.unshift(o);save();show('buscar');buscar()}
-function saveI(){let m=document.getElementById('iMotivo').value;let f=document.getElementById('iFec').value;let p=document.getElementById('iPat').value.toUpperCase().trim();let d=document.getElementById('iDiag').value.trim();let t=document.getElementById('iTra').value.trim();if(!m||!f||!p||!d||!t)return alert('Falta Motivo, Fecha, Patente, Diagnóstico y Trabajo');intervenciones.unshift({motivo:m,fecha:f,patente:p,diagnostico:d,trabajo:t,repuestos:document.getElementById('iRep').value,total:document.getElementById('iTotal').value,fotos:[...fotosTemp]});save();fotosTemp=[];renderPreview();alert('Guardado con '+intervenciones[0].fotos.length+' fotos');show('buscar');document.getElementById('q').value=p;buscar()}
-document.getElementById('iFec').valueAsDate=new Date();
-</script>
-</body>
-</html>
+<p id="errorLogin" style="color
