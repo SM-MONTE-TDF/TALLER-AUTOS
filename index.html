@@ -9,7 +9,6 @@
 input,select,textarea{width:100%;background:#121212;border:1px solid #2a2a2a;color:#fff;padding:13px 14px;border-radius:12px;font-size:15px;margin:6px 0;outline:none}
 input:focus,select:focus,textarea:focus{border-color:#00e5ff}
 .btn{background:#00e5ff;color:#000;border:0;padding:14px;border-radius:12px;font-weight:800;width:100%;cursor:pointer;font-size:16px}
-.btn-ghost{background:#111;color:#00e5ff;border:1px solid #00e5ff;margin-top:10px}
 .msg{color:#ff5a5a;text-align:center;font-size:13px;margin-top:10px;min-height:18px}
 #app{display:none;max-width:740px;margin:0 auto;padding:14px 14px 90px}
 .topbar{display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#050505;z-index:5;padding:12px 0;border-bottom:1px solid #111}
@@ -30,11 +29,10 @@ input:focus,select:focus,textarea:focus{border-color:#00e5ff}
 <div id="login" class="center">
 <div class="logo"><span>SM</span> <b>MONTENEGRO</b></div>
 <div class="sub">TALLER AUTOS - PRIVADO</div>
-<form onsubmit="return false" style="width:100%;max-width:340px">
+<form onsubmit="return false" style="width:100%;max-width:340px" autocomplete="on">
 <input id="u" type="text" name="username" autocomplete="username" placeholder="Usuario" autocapitalize="off" autocorrect="off" spellcheck="false">
 <input id="p" type="password" name="password" autocomplete="current-password" placeholder="Contraseña">
 <button class="btn" onclick="login()">ENTRAR</button>
-<button class="btn btn-ghost" onclick="directo()">ENTRAR DIRECTO</button>
 <div id="msg" class="msg"></div>
 </form>
 </div>
@@ -53,12 +51,10 @@ input:focus,select:focus,textarea:focus{border-color:#00e5ff}
 </div>
 <script>
 const USER_OK="SM-MONTE-";const PASS_OK="Taller.monte1.";const LS="sm_montenegro_final_def";
-let old1=localStorage.getItem("sm_montenegro_final_v1");let old2=localStorage.getItem("sm_montenegro_v2_final");let old3=localStorage.getItem("sm_monte_taller_v3");
-let data=JSON.parse(localStorage.getItem(LS)||old2||old1||old3||"[]");
+let data=JSON.parse(localStorage.getItem(LS)||localStorage.getItem("sm_montenegro_v2_final")||localStorage.getItem("sm_montenegro_final_v1")||"[]");
 function today(){return new Date().toISOString().slice(0,10)}
 document.getElementById('v_fecha').value=today();
 function login(){let u=document.getElementById('u').value.trim();let p=document.getElementById('p').value;if(u===USER_OK&&p===PASS_OK){localStorage.setItem("auth","1");show();}else{document.getElementById('msg').innerText="Usuario o clave incorrectos";}}
-function directo(){localStorage.setItem("auth","1");show();}
 function salir(){localStorage.removeItem("auth");location.reload();}
 function show(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';render();}
 function addVeh(){
