@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SM MONTENEGRO - Taller</title>
 <style>
 *{box-sizing:border-box;font-family:system-ui,Arial}body{margin:0;background:#050505;color:#fff;min-height:100vh}
 .center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.logo{font-size:44px;font-weight:900;font-style:italic;letter-spacing:1px}.logo span{color:#fff}.logo b{color:#00e5ff}
+.logo{font-size:48px;font-weight:900;font-style:italic;letter-spacing:1px}.logo span{color:#fff}.logo b{color:#00e5ff}
 .sub{color:#666;font-size:11px;letter-spacing:4px;margin:10px 0 32px}
 input,select,textarea{width:100%;background:#121212;border:1px solid #2a2a2a;color:#fff;padding:13px 14px;border-radius:12px;font-size:15px;margin:6px 0;outline:none}
 input:focus{border-color:#00e5ff}
 .btn{background:#00e5ff;color:#000;border:0;padding:14px;border-radius:12px;font-weight:800;width:100%;cursor:pointer;font-size:16px}
+.btn-small{background:#111;border:1px solid #00e5ff;color:#00e5ff;padding:8px 10px;border-radius:10px;font-size:12px;cursor:pointer}
 .msg{color:#ff5a5a;text-align:center;font-size:13px;margin-top:10px;min-height:18px}
 #app{display:none;max-width:740px;margin:0 auto;padding:14px 14px 90px}
 .topbar{display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#050505;z-index:10;padding:12px 0;border-bottom:1px solid #111}
@@ -31,25 +32,30 @@ input:focus{border-color:#00e5ff}
 .view{display:none}.view.active{display:block}
 </style></head><body>
 <div id="login" class="center">
+<div style="text-align:center;margin-bottom:10px">
+<div style="width:90px;height:90px;background:#00e5ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:44px;box-shadow:0 0 20px rgba(0,229,255,0.4)">🔧</div>
 <div class="logo"><span>SM</span> <b>MONTENEGRO</b></div>
-<div class="sub">TALLER AUTOS - PRIVADO</div>
-<form onsubmit="return false" style="width:100%;max-width:340px" autocomplete="on">
-<input id="u" type="text" autocomplete="username" placeholder="Usuario" autocapitalize="off">
+<div style="color:#00e5ff;font-size:12px;letter-spacing:7px;margin-top:4px;font-weight:700">TALLER AUTOS</div>
+<div style="color:#333;font-size:10px;letter-spacing:3px;margin-top:8px">PRIVADO</div>
+</div>
+<form onsubmit="return false" style="width:100%;max-width:340px;margin-top:20px" autocomplete="on">
+<input id="u" type="text" autocomplete="username" placeholder="Usuario">
 <input id="p" type="password" autocomplete="current-password" placeholder="Contraseña">
 <button class="btn" onclick="login()">ENTRAR</button>
 <div id="msg" class="msg"></div>
 </form>
 </div>
 <div id="app">
-<div class="topbar"><div><b style="color:#00e5ff">SM MONTENEGRO</b><div class="small" id="path">Inicio</div></div><button class="del" onclick="salir()">Salir</button></div>
+<div class="topbar"><div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:#00e5ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px">🔧</div><div><b style="color:#00e5ff;letter-spacing:1px">SM MONTENEGRO</b><div class="small" id="path">Vehículos</div></div></div><div style="display:flex;gap:8px"><button class="btn-small" onclick="exportar()">📤 Backup</button><button class="del" onclick="salir()">Salir</button></div></div>
 <div id="view-lista" class="view active">
 <div class="card">
 <h3 style="color:#00e5ff;margin:0 0 10px">🚗 Nuevo vehículo</h3>
 <div class="grid2"><input type="date" id="v_fecha"><input id="v_pat" placeholder="PATENTE *" style="text-transform:uppercase"></div>
 <div class="grid2"><input id="v_marca" placeholder="Marca"><input id="v_modelo" placeholder="Modelo"></div>
 <input id="v_titular" placeholder="Titular">
-<div class="grid2"><input id="v_tel" placeholder="Teléfono" type="tel"><input id="v_contacto" placeholder="Contacto (email/otro)"></div>
+<div class="grid2"><input id="v_tel" placeholder="Teléfono" type="tel"><input id="v_contacto" placeholder="Contacto del titular (email/otro)"></div>
 <button class="add" onclick="addVeh()">+ Guardar vehículo</button>
+<div id="saveMsg" class="small" style="color:#00e5ff;margin-top:6px"></div>
 </div>
 <div style="position:sticky;top:60px;background:#050505;z-index:4;padding:8px 0"><input id="busq" placeholder="🔍 Buscar patente, titular, teléfono..." oninput="renderLista()"></div>
 <div id="listaVeh"></div>
@@ -67,85 +73,64 @@ input:focus{border-color:#00e5ff}
 <label class="small">📷 Fotos (podés borrar la equivocada antes de guardar)</label>
 <input type="file" id="i_fotos" multiple accept="image/*" onchange="previewFotos()">
 <div id="preview" class="thumbs"></div>
-<button class="btn" style="margin-top:10px" onclick="guardarInterv()">💾 Guardar intervención (bloqueada luego)</button>
+<button class="btn" style="margin-top:10px" onclick="guardarInterv()">💾 Guardar intervención</button>
 </div>
 <div id="tabs"></div>
 </div>
 </div>
 <script>
-const USER_OK="SM-MONTE-";const PASS_OK="Taller.monte1.";const LS="sm_montenegro_final_def";
-let data=JSON.parse(localStorage.getItem(LS)||localStorage.getItem("sm_montenegro_v2_final")||localStorage.getItem("sm_montenegro_final_v1")||"[]");
-let selected=-1;let fotoCache=[];
+const USER_OK="SM-MONTE-";const PASS_OK="Taller.monte1.";const LS="sm_montenegro_v6_persist";
+let data=[];function load(){let keys=[LS,"sm_montenegro_final_def","sm_montenegro_v2_final","sm_montenegro_final_v1","sm_monte_taller_v3"];for(let k of keys){try{let v=localStorage.getItem(k);if(v){let arr=JSON.parse(v);if(arr&&arr.length>0){data=arr;localStorage.setItem(LS,JSON.stringify(arr));break;}}}catch(e){}}if(!data.length){try{data=JSON.parse(localStorage.getItem(LS)||"[]");}catch(e){data=[]}}}
+load();let selected=-1;let fotoCache=[];
 function today(){return new Date().toISOString().slice(0,10)}
 document.getElementById('v_fecha').value=today();
 function login(){let u=document.getElementById('u').value.trim();let p=document.getElementById('p').value;if(u===USER_OK&&p===PASS_OK){localStorage.setItem("auth","1");show();}else{document.getElementById('msg').innerText="Usuario o clave incorrectos";}}
-function salir(){localStorage.removeItem("auth");selected=-1;location.reload();}
+function salir(){localStorage.removeItem("auth");location.reload();}
 function show(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';renderLista();}
-function save(){localStorage.setItem(LS,JSON.stringify(data));renderLista();if(selected>=0)renderDetalle();}
+function save(){
+ try{localStorage.setItem(LS,JSON.stringify(data));document.getElementById('saveMsg').innerText="✓ Guardado correctamente";setTimeout(()=>{let el=document.getElementById('saveMsg');if(el)el.innerText="";},3000);renderLista();if(selected>=0)renderDetalle();}
+ catch(e){alert("Memoria llena por fotos muy grandes.");try{let copia=data.map(v=>({...v,intervenciones:v.intervenciones.map(i=>({...i,fotos:(i.fotos||[]).slice(0,2)}))}));localStorage.setItem(LS,JSON.stringify(copia));data=copia;renderLista();}catch(e2){alert("No se pudo guardar");}}
+}
 function addVeh(){
  let pat=document.getElementById('v_pat').value.trim().toUpperCase();if(!pat)return alert("Patente obligatoria");
  let o={id:Date.now(),fecha:document.getElementById('v_fecha').value||today(),patente:pat,marca:document.getElementById('v_marca').value.trim(),modelo:document.getElementById('v_modelo').value.trim(),titular:document.getElementById('v_titular').value.trim(),telefono:document.getElementById('v_tel').value.trim(),contacto:document.getElementById('v_contacto').value.trim(),intervenciones:[]};
- data.unshift(o);["v_pat","v_marca","v_modelo","v_titular","v_tel","v_contacto"].forEach(i=>document.getElementById(i).value="");document.getElementById('v_fecha').value=today();save();
+ data.unshift(o);["v_pat","v_marca","v_modelo","v_titular","v_tel","v_contacto"].forEach(i=>{let el=document.getElementById(i);if(el)el.value="";});document.getElementById('v_fecha').value=today();save();
 }
 function renderLista(){
- let q=document.getElementById('busq').value.toLowerCase().trim();
+ let q=(document.getElementById('busq')?document.getElementById('busq').value:"").toLowerCase().trim();
  let cont=document.getElementById('listaVeh');cont.innerHTML="";
  let list=data.filter(v=>{if(!q)return true;return (v.patente+" "+v.titular+" "+v.telefono+" "+(v.contacto||"")+" "+v.marca).toLowerCase().includes(q);});
- if(!list.length){cont.innerHTML='<div class="small" style="text-align:center;padding:24px">Sin vehículos</div>';return;}
- list.forEach(v=>{
-  let idx=data.indexOf(v);
-  let btn=document.createElement('button');btn.className='vehicle-btn';
-  btn.innerHTML=`<div><b>${v.patente}</b><div class="small">${v.marca} ${v.modelo} • ${v.titular} • ${v.telefono}</div><div class="small">${v.intervenciones.length} intervenciones • ${v.fecha||''}</div></div><span style="color:#00e5ff">›</span>`;
-  btn.onclick=()=>abrirVeh(idx);
-  cont.appendChild(btn);
- });
- document.getElementById('path').innerText=`Vehículos (${data.length})`;
+ if(!list.length){cont.innerHTML='<div class="small" style="text-align:center;padding:24px">Sin vehículos - agregá uno arriba.</div>';return;}
+ list.forEach(v=>{let idx=data.indexOf(v);let btn=document.createElement('button');btn.className='vehicle-btn';btn.innerHTML=`<div><b>${v.patente}</b><div class="small">${v.marca} ${v.modelo} • ${v.titular}</div><div class="small">${v.telefono} ${v.contacto?'• '+v.contacto:''} • ${v.intervenciones.length} interv.</div></div><span style="color:#00e5ff">›</span>`;btn.onclick=()=>abrirVeh(idx);cont.appendChild(btn);});
+ document.getElementById('path').innerText=`Vehículos (${data.length}) guardados`;
 }
-function abrirVeh(idx){selected=idx;document.getElementById('view-lista').classList.remove('active');document.getElementById('view-detalle').classList.add('active');renderDetalle();}
+function abrirVeh(idx){selected=idx;document.getElementById('view-lista').classList.remove('active');document.getElementById('view-detalle').classList.add('active');fotoCache=[];let prev=document.getElementById('preview');if(prev)prev.innerHTML="";renderDetalle();}
 function volverLista(){selected=-1;document.getElementById('view-detalle').classList.remove('active');document.getElementById('view-lista').classList.add('active');renderLista();}
 function renderDetalle(){
  if(selected<0)return;
  let v=data[selected];
- document.getElementById('path').innerText=`${v.patente} • ${v.titular}`;
- document.getElementById('detalleVeh').innerHTML=`<div style="display:flex;justify-content:space-between"><div><b style="color:#00e5ff;font-size:18px">${v.patente}</b><div class="small">${v.fecha} • ${v.marca} ${v.modelo}</div><div class="small" style="margin-top:4px">Titular: ${v.titular}<br>Tel: ${v.telefono} ${v.contacto?'• '+v.contacto:''}</div></div><button class="del" onclick="delVeh()">🗑️ Borrar vehículo</button></div>`;
+ document.getElementById('path').innerText=`${v.patente}`;
+ document.getElementById('detalleVeh').innerHTML=`<div style="display:flex;justify-content:space-between"><div><b style="color:#00e5ff;font-size:18px">${v.patente}</b><div class="small">${v.fecha} • ${v.marca} ${v.modelo}</div><div class="small" style="margin-top:4px">Titular: ${v.titular}<br>Tel: ${v.telefono} ${v.contacto?'• '+v.contacto:''}</div></div><button class="del" onclick="delVeh()">🗑️</button></div>`;
  document.getElementById('i_pat').value=v.patente;document.getElementById('i_fecha').value=today();
- let tabs=document.getElementById('tabs');tabs.innerHTML=`<div class="small" style="margin:14px 0 6px">Historial (${v.intervenciones.length}) - tocá el cuadrito</div>`;
- for(let j=v.intervenciones.length-1;j>=0;j--){
-  let inter=v.intervenciones[j];
-  let tab=document.createElement('div');tab.className='tab';
-  tab.innerHTML=`<b>📅 ${inter.fecha} • ${inter.motivo.toUpperCase()}</b><span>${inter.km?inter.km+' km':''} ▼</span>`;
-  let det=document.createElement('div');det.className='detail';
-  let fotos=(inter.fotos||[]).map(f=>`<img src="${f}">`).join('');
-  det.innerHTML=`<p><strong>Patente:</strong> ${inter.patente} | <strong>Km:</strong> ${inter.km||'-'}</p>${inter.diagnostico?`<p><strong>Diagnóstico:</strong> ${inter.diagnostico}</p>`:''}${inter.trabajo?`<p><strong>Trabajo:</strong> ${inter.trabajo}</p>`:''}${inter.repuestos?`<p><strong>Repuestos:</strong> ${inter.repuestos}</p>`:''}<div style="display:flex;flex-wrap:wrap">${fotos}</div><div style="margin-top:10px"><button class="del" onclick="delInterv(${j})">🗑️ Borrar intervención</button></div><div class="small" style="margin-top:6px">🔒 Bloqueado</div>`;
-  tab.onclick=()=>{det.classList.toggle('open');tab.classList.toggle('active');};
-  tabs.appendChild(tab);tabs.appendChild(det);
- }
+ let tabs=document.getElementById('tabs');tabs.innerHTML=`<div class="small" style="margin:14px 0 6px">Historial (${v.intervenciones.length}) - tocá para ver</div>`;
+ for(let j=v.intervenciones.length-1;j>=0;j--){let inter=v.intervenciones[j];let tab=document.createElement('div');tab.className='tab';tab.innerHTML=`<b>📅 ${inter.fecha} • ${inter.motivo.toUpperCase()}</b><span>${inter.km?inter.km+' km':''} ▼</span>`;let det=document.createElement('div');det.className='detail';let fotos=(inter.fotos||[]).map(f=>`<img src="${f}">`).join('');det.innerHTML=`<p><strong>Patente:</strong> ${inter.patente} | <strong>Km:</strong> ${inter.km||'-'}</p>${inter.diagnostico?`<p><strong>Diagnóstico:</strong> ${inter.diagnostico}</p>`:''}${inter.trabajo?`<p><strong>Trabajo:</strong> ${inter.trabajo}</p>`:''}${inter.repuestos?`<p><strong>Repuestos:</strong> ${inter.repuestos}</p>`:''}<div style="display:flex;flex-wrap:wrap">${fotos}</div><div style="margin-top:10px"><button class="del" onclick="delInterv(${j})">🗑️ Borrar</button></div><div class="small" style="margin-top:6px">🔒 Bloqueado</div>`;tab.onclick=()=>{det.classList.toggle('open');tab.classList.toggle('active');};tabs.appendChild(tab);tabs.appendChild(det);}
 }
 function previewFotos(){
  let input=document.getElementById('i_fotos');let files=Array.from(input.files);
- let readers=files.map(f=>new Promise(r=>{let fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(f);}));
+ let readers=files.map(f=>new Promise(r=>{let fr=new FileReader();fr.onload=e=>{let img=new Image();img.onload=()=>{let canvas=document.createElement('canvas');let max=800;let w=img.width,h=img.height;if(w>max||h>max){if(w>h){h=h*max/w;w=max;}else{w=w*max/h;h=max;}}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);r(canvas.toDataURL('image/jpeg',0.6));};img.src=e.target.result;};fr.readAsDataURL(f);}));
  Promise.all(readers).then(imgs=>{fotoCache=fotoCache.concat(imgs);renderPreview();input.value="";});
 }
-function renderPreview(){
- let prev=document.getElementById('preview');prev.innerHTML="";
- fotoCache.forEach((src,i)=>{let w=document.createElement('div');w.className='thumb-wrap';w.innerHTML=`<img class="thumb" src="${src}"><button class="thumb-del" onclick="delPreview(${i})">x</button>`;prev.appendChild(w);});
-}
+function renderPreview(){let prev=document.getElementById('preview');prev.innerHTML="";fotoCache.forEach((src,i)=>{let w=document.createElement('div');w.className='thumb-wrap';w.innerHTML=`<img class="thumb" src="${src}"><button class="thumb-del" onclick="delPreview(${i})">x</button>`;prev.appendChild(w);});}
 function delPreview(i){fotoCache.splice(i,1);renderPreview();}
 function guardarInterv(){
  if(selected<0)return;
- let fecha=document.getElementById('i_fecha').value||today();
- let km=document.getElementById('i_km').value.trim();
- let motivo=document.getElementById('i_motivo').value;
- let pat=document.getElementById('i_pat').value.trim().toUpperCase();
- let diag=document.getElementById('i_diag').value.trim();
- let trab=document.getElementById('i_trab').value.trim();
- let rep=document.getElementById('i_rep').value.trim();
+ let fecha=document.getElementById('i_fecha').value||today();let km=document.getElementById('i_km').value.trim();let motivo=document.getElementById('i_motivo').value;let pat=document.getElementById('i_pat').value.trim().toUpperCase();let diag=document.getElementById('i_diag').value.trim();let trab=document.getElementById('i_trab').value.trim();let rep=document.getElementById('i_rep').value.trim();
  if(!pat||(!diag&&!trab))return alert("Completá datos");
  let inter={fecha,km,motivo,patente:pat,diagnostico:diag,trabajo:trab,repuestos:rep,fotos:fotoCache,creado:Date.now()};
- data[selected].intervenciones.push(inter);fotoCache=[];document.getElementById('preview').innerHTML="";["i_km","i_diag","i_trab","i_rep"].forEach(id=>document.getElementById(id).value="");
- save();renderDetalle();
+ data[selected].intervenciones.push(inter);fotoCache=[];document.getElementById('preview').innerHTML="";["i_km","i_diag","i_trab","i_rep"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});save();renderDetalle();
 }
-function delVeh(){if(confirm("¿Borrar vehículo y todo su historial?")){data.splice(selected,1);selected=-1;save();volverLista();}}
+function delVeh(){if(confirm("¿Borrar vehículo?")){data.splice(selected,1);selected=-1;save();volverLista();}}
 function delInterv(j){if(confirm("¿Borrar intervención?")){data[selected].intervenciones.splice(j,1);save();renderDetalle();}}
+function exportar(){let txt=JSON.stringify(data);let blob=new Blob([txt],{type:"application/json"});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download="backup-taller.json";a.click();}
 if(localStorage.getItem("auth")==="1"){show();}else{document.getElementById('login').style.display='flex';document.getElementById('app').style.display='none';}
 </script></body></html>
