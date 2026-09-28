@@ -1,55 +1,18 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taller Mecánico</title>
-<style>
-*{box-sizing:border-box}body{margin:0;padding:20px;font-family:Arial;background:#f2f2f2}
-.contenedor{max-width:800px;margin:auto}.tarjeta{background:#fff;padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:8px;background:#222;color:#fff;font-size:16px}input,select,textarea{width:100%;padding:12px;margin:6px 0 15px;border:1px solid #ccc;border-radius:7px}
-.oculto{display:none!important}.boton-recuperar{background:#0066cc}.boton-secundario{background:#777}.boton-cerrar{background:#a00000}
-.info-vehiculo{background:#f5f5f5;padding:15px;border-radius:8px}.detalle-intervencion{background:#f7f7f7;padding:12px;border-radius:8px;margin-top:10px}
-</style>
-</head>
-<body>
-<div id="pantallaLogin" class="contenedor">
-<div class="tarjeta">
-<h1>🔧 Taller Mecánico</h1>
-<h2>🔐 Entrar</h2>
-<label>Email</label><input id="loginEmail" value="maxi_boca46@hotmail.com">
-<label>Contraseña</label><input type="password" id="loginPassword">
-<button id="btnLogin">🔐 Ingresar</button>
-<div id="mensajeLogin" style="margin-top:10px;white-space:pre-wrap"></div>
-</div></div>
-
-<div id="sistema" class="contenedor oculto">
-<h1>🔧 Taller Mecánico</h1>
-<div id="menuPrincipal" class="tarjeta">
-<button id="btnMenuBuscar">🔎 Buscar vehículo</button>
-<button id="btnMenuNuevoVeh">🚗 Nuevo vehículo</button>
-<button id="btnMenuNuevaInterv">🛠️ Nueva intervención</button>
-<button id="btnRecuperar" class="boton-recuperar">♻️ Recuperar vehículos viejos (usar 1 sola vez)</button>
-<button class="boton-cerrar" id="btnCerrarSesion">🔒 Cerrar sesión</button>
-<div id="estadoRecupero"></div>
-</div>
-
-<div id="buscar" class="tarjeta oculto"><h2>🔎 Buscar</h2><input id="patenteBuscar" placeholder="AB123CD"><button id="btnBuscarAhora">🔎 Buscar</button><div id="resultadoBusqueda"></div><button class="boton-secundario" id="btnVolverBuscar">← Volver</button></div>
-
-<div id="nuevoVehiculo" class="tarjeta oculto"><h2>🚗 Nuevo vehículo</h2><input id="patente" placeholder="Patente"><input id="marca" placeholder="Marca"><input id="modelo" placeholder="Modelo"><input id="anio" type="number" placeholder="Año"><input id="kilometraje" type="number" placeholder="Km"><input id="cliente" placeholder="Cliente"><input id="telefono" placeholder="Tel"><button id="btnGuardarVeh">💾 Guardar</button><button class="boton-secundario" id="btnVolverNuevoVeh">← Volver</button></div>
-
-<div id="nuevaIntervencion" class="tarjeta oculto"><h2>🛠️ Nueva intervención</h2><input id="patenteIntervencion" placeholder="Patente"><input type="date" id="fecha"><select id="tipo"><option>Service</option><option>Reparación</option><option>Diagnóstico</option><option>Otro</option></select><textarea id="motivo" placeholder="Motivo"></textarea><textarea id="trabajo" placeholder="Trabajo"></textarea><button id="btnGuardarInterv">💾 Guardar intervención</button><button class="boton-secundario" id="btnVolverInterv">← Volver</button></div>
-</div>
-
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Taller</title>
+<style>body{font-family:Arial;padding:20px;background:#f2f2f2}.card{background:#fff;padding:20px;border-radius:12px;max-width:500px;margin:auto}input,button{width:100%;padding:14px;margin:8px 0;border-radius:8px;border:1px solid #ccc}button{background:#222;color:#fff}#error{color:red;font-weight:bold;white-space:pre-wrap;margin-top:15px;background:#ffe6e6;padding:10px;border-radius:8px}</style></head><body>
+<div class="card"><h1>🔧 Taller Mecánico</h1>
+<input id="email" value="maxi_boca46@hotmail.com"><input id="pass" type="password" placeholder="Contraseña"><button id="btn">🔐 Ingresar</button><div id="error"></div></div>
 <script>
-const URL_SUPA="https://sljknzpyxmpfnkcaoksu.supabase.co";
-const KEY="sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI";
-let TOKEN=null; let UID=null;
-const $=id=>document.getElementById(id);
-const esc=t=>String(t||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-function mostrar(id){["menuPrincipal","buscar","nuevoVehiculo","nuevaIntervencion"].forEach(s=>$(s).classList.add("oculto"));$(id).classList.remove("oculto");}
-function volver(){["buscar","nuevoVehiculo","nuevaIntervencion"].forEach(s=>$(s).classList.add("oculto"));$("menuPrincipal").classList.remove("oculto");}
-
-$("btnLogin").onclick=async()=>{
-  const email=$("loginEmail").value.trim(); const pass=$("loginPassword").value;
-  $("mensajeLogin").
+const URL="https://sljknzpyxmpfnkcaoksu.supabase.co";const KEY="sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI";
+document.getElementById("btn").onclick=async()=>{
+  const e=document.getElementById("email").value.trim();const p=document.getElementById("pass").value;
+  document.getElementById("error").textContent="⏳ Intentando entrar a Supabase...";
+  try{
+    const r=await fetch(URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+KEY,"Content-Type":"application/json"},body:JSON.stringify({email:e,password:p})});
+    const txt=await r.text();
+    if(!r.ok){ document.getElementById("error").textContent="❌ ERROR DE SUPABASE (status "+r.status+"):\n"+txt+"\n\nEsto es lo que tenés que mandarme foto."; return; }
+    const j=JSON.parse(txt); alert("✅ Entraste! Token: "+j.access_token.slice(0,20)+"... Ahora te mando el taller completo.");
+    localStorage.setItem("token",j.access_token); localStorage.setItem("uid",j.user.id); location.href="/TALLER-AUTOS/?v=104";
+  }catch(err){ document.getElementById("error").textContent="❌ ERROR DE RED/JS:\n"+err.message; }
+};
+</script></body></html>
