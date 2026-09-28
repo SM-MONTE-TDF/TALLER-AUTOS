@@ -1,111 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SM MONTENEGRO</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;color:#fff}
-.hidden{display:none!important}
-.wrap{max-width:480px;margin:0 auto;padding:14px 14px 90px}
-.logo{width:100%;border-radius:14px;margin-bottom:18px;display:block}
-.btn{width:100%;padding:16px;border:none;border-radius:12px;font-weight:900;font-size:16px;margin:8px 0;cursor:pointer}
-.btn-blue{background:#00c8ff;color:#000}
-.btn-dark{background:#1a1a1a;color:#fff;border:1px solid #333}
-.btn-red{background:#7a1f1f;color:#fff}
-#login{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
-.box{width:100%;max-width:360px;text-align:center}
-input,textarea,select{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;color:#fff;font-size:15px}
-.card{background:#111;border:1px solid #222;border-radius:12px;padding:14px;margin:10px 0;border-left:4px solid #00c8ff}
-.patente{background:#fff;color:#000;font-weight:900;padding:4px 10px;border-radius:6px;display:inline-block}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.badge{background:#111;border:1px solid #222;padding:6px 10px;border-radius:20px;font-size:12px;color:#888}
-label{color:#888;font-size:13px;margin-top:12px;display:block;text-align:left}
-.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.thumbs img{width:75px;height:75px;object-fit:cover;border-radius:8px;border:1px solid #333;cursor:pointer}
-.fotoBox{border:2px dashed #333;border-radius:12px;padding:14px;text-align:center;margin:8px 0;background:#0a0a0a}
-#imgModal{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;padding:10px}
-#imgModal.hidden{display:none!important}
-#imgModal img{max-width:100%;max-height:90vh;border-radius:12px}
-</style>
-</head>
-<body>
-
-<div id="imgModal" class="hidden" onclick="this.classList.add('hidden')"><img id="imgBig" src=""></div>
-
-<div id="login">
-<div class="box">
-<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px;margin-bottom:16px">
-<h2 style="color:#00c8ff">SM MONTENEGRO</h2>
-<p style="color:#555;font-size:12px;margin:10px 0 20px;letter-spacing:1px">ACCESO PRIVADO</p>
-<input id="user" placeholder="Usuario" autocomplete="off" autocapitalize="off">
-<input id="pass" type="password" placeholder="Contraseña" autocomplete="new-password">
-<button class="btn btn-blue" onclick="doLogin()">Entrar</button>
-<p id="errorLogin" style="color:#ff5555;font-size:13px;margin-top:10px;display:none"></p>
-</div>
-</div>
-
-<div id="app" class="hidden">
-<div class="wrap">
-<div class="topbar"><span class="badge" id="userBadge">👤</span><button onclick="show('ajustes')" style="background:#111;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:10px">⚙️</button></div>
-<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" class="logo">
-<button class="btn btn-blue" onclick="show('buscar')">🔍 Buscar</button>
-<button class="btn btn-blue" onclick="show('nuevoV')">🚗 Nuevo vehículo</button>
-<button class="btn btn-blue" onclick="show('nuevaI')">🛠️ Nueva intervención</button>
-<button class="btn btn-blue" onclick="show('recuperar')">♻️ Papelera</button>
-<button class="btn btn-red" onclick="cerrarSesion()">Cerrar sesión</button>
-<hr style="border:0;border-top:1px solid #1e1e1e;margin:16px 0">
-
-<div id="sec-buscar"><h2>Buscar <span id="cont" style="font-size:12px;color:#666"></span></h2><input id="q" placeholder="Patente, marca, cliente..." oninput="buscar()"><div id="r"></div></div>
-
-<div id="sec-nuevoV" class="hidden"><h2>🚗 Nuevo vehículo</h2>
-<input id="vPat" placeholder="PATENTE AB123CD" style="text-transform:uppercase"><input id="vMar" placeholder="Marca"><input id="vMod" placeholder="Modelo"><input id="vCli" placeholder="Cliente"><input id="vTel" placeholder="Tel"><input id="vKm" type="number" placeholder="KM"><button class="btn btn-blue" onclick="saveV()">💾 Guardar</button></div>
-
-<div id="sec-nuevaI" class="hidden">
-<h2>🛠️ Nueva intervención</h2>
-<label>1. Motivo *</label>
-<select id="iMotivo"><option value="">Seleccioná</option><option>Diagnostico</option><option>Servicio</option><option>Reparacion</option></select>
-<label>2. Fecha *</label><input id="iFec" type="date">
-<label>3. Patente *</label><input id="iPat" placeholder="AB123CD" style="text-transform:uppercase">
-<label>4. Diagnóstico *</label><textarea id="iDiag" placeholder="Qué trae, falla..."></textarea>
-<label>5. Trabajo realizado *</label><textarea id="iTra" placeholder="Qué se hizo..."></textarea>
-<label>6. Fotos (tocá para agregar o pegá Ctrl+V)</label>
-<div class="fotoBox">
-<input type="file" id="fotoInput" accept="image/*" multiple onchange="addFotos(this.files)">
-<p style="color:#666;font-size:11px;margin-top:6px">Podés sacar foto, elegir de galería o pegar captura. Tocá la miniatura para abrirla grande.</p>
-<div id="preview" class="thumbs"></div>
-</div>
-<label>Repuestos</label><textarea id="iRep"></textarea>
-<label>Costo $</label><input id="iTotal" type="number" placeholder="0">
-<button class="btn btn-blue" onclick="saveI()">💾 Guardar con fotos</button>
-</div>
-
-<div id="sec-recuperar" class="hidden"><h2>♻️ Papelera</h2><div id="rPap"></div></div>
-<div id="sec-ajustes" class="hidden"><h2>⚙️ Ajustes</h2><div class="card"><b>Usuario:</b> <span id="uActual" style="color:#00c8ff"></span></div><button class="btn btn-dark" onclick="show('buscar')">⬅ Volver</button></div>
-</div>
-</div>
-
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SM</title><style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#000;color:#fff}.hidden{display:none!important}.wrap{max-width:480px;margin:auto;padding:14px}.btn{width:100%;padding:16px;border:0;border-radius:12px;font-weight:900;margin:8px 0} .btn-blue{background:#00c8ff;color:#000}#login{position:fixed;inset:0;background:#000;z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}.box{width:100%;max-width:360px;text-align:center}input,textarea,select{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;color:#fff} .card{background:#111;border:1px solid #222;border-radius:12px;padding:14px;margin:10px 0;border-left:4px solid #00c8ff}.thumbs{display:flex;gap:8px;flex-wrap:wrap} .thumbs img{width:70px;height:70px;object-fit:cover;border-radius:8px}#imgM{position:fixed;inset:0;background:#000000f2;z-index:9999;display:flex;align-items:center;justify-content:center} #imgM.hidden{display:none!important} #imgM img{max-width:95%;max-height:90vh}</style></head><body>
+<div id="imgM" class="hidden" onclick="this.classList.add('hidden')"><img id="imgB"></div>
+<div id="login"><div class="box"><img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px;margin-bottom:16px"><p style="color:#444;font-size:11px;margin-bottom:20px">ACCESO PRIVADO</p><input id="user" placeholder="Usuario"><input id="pass" type="password" placeholder="Contraseña"><button class="btn btn-blue" onclick="doLogin()">Entrar</button><p id="err" style="color:#f55;display:none;margin-top:10px">Datos incorrectos</p></div></div>
+<div id="app" class="hidden"><div class="wrap"><img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px;margin-bottom:14px"><button class="btn btn-blue" onclick="S('buscar')">🔍 Buscar</button><button class="btn btn-blue" onclick="S('nuevoV')">🚗 Nuevo vehículo</button><button class="btn btn-blue" onclick="S('nuevaI')">🛠️ Nueva intervención</button><button class="btn" style="background:#1a1a1a;color:#fff;border:1px solid #333" onclick="location.reload()">Cerrar sesión</button><hr style="margin:14px 0;border:0;border-top:1px solid #222">
+<div id="sec-buscar"><input id="q" placeholder="Patente..." oninput="buscar()"><div id="r"></div></div>
+<div id="sec-nuevoV" class="hidden"><h3>Nuevo vehículo</h3><input id="vPat" placeholder="PATENTE"><input id="vMar" placeholder="Marca"><input id="vCli" placeholder="Cliente"><button class="btn btn-blue" onclick="saveV()">Guardar</button></div>
+<div id="sec-nuevaI" class="hidden"><h3>Nueva intervención</h3><select id="iMot"><option value="">1. Motivo</option><option>Diagnostico</option><option>Servicio</option><option>Reparacion</option></select><input id="iFec" type="date"><input id="iPat" placeholder="3. Patente"><textarea id="iDiag" placeholder="4. Diagnóstico"></textarea><textarea id="iTra" placeholder="5. Trabajo realizado"></textarea><input type="file" accept="image/*" multiple onchange="addF(this.files)"><div id="prev" class="thumbs" style="margin-top:10px"></div><button class="btn btn-blue" onclick="saveI()">💾 Guardar</button></div>
+</div></div>
 <script>
-localStorage.setItem('sm_user','SM-MONTE-');
-localStorage.setItem('sm_pass','Taller.monte1.');
-let vehiculos=JSON.parse(localStorage.getItem('sm_vehiculos')||'[]');
-let intervenciones=JSON.parse(localStorage.getItem('sm_interv')||'[]');
-let papelera=JSON.parse(localStorage.getItem('sm_papelera')||'[]');
-let fotosTemp=[];
-function save(){localStorage.setItem('sm_vehiculos',JSON.stringify(vehiculos));localStorage.setItem('sm_interv',JSON.stringify(intervenciones));}
-function doLogin(){let u=document.getElementById('user').value.trim();let p=document.getElementById('pass').value;let su=localStorage.getItem('sm_user');let sp=localStorage.getItem('sm_pass');if(u===su&&p===sp){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('userBadge').innerText='👤 '+su;buscar();}else{let e=document.getElementById('errorLogin');e.style.display='block';e.innerText='Usuario o contraseña incorrectos'}}
-function cerrarSesion(){document.getElementById('app').classList.add('hidden');document.getElementById('login').classList.remove('hidden');document.getElementById('user').value='';document.getElementById('pass').value='';}
-function show(id){document.querySelectorAll('[id^=sec-]').forEach(e=>e.classList.add('hidden'));document.getElementById('sec-'+id).classList.remove('hidden');if(id=='buscar')buscar();if(id=='ajustes')document.getElementById('uActual').innerText=localStorage.getItem('sm_user');}
-function addFotos(files){for(let f of files){let r=new FileReader();r.onload=e=>{fotosTemp.push(e.target.result);renderPreview()};r.readAsDataURL(f)}}
-function renderPreview(){document.getElementById('preview').innerHTML=fotosTemp.map((src,i)=>'<div style=position:relative><img src="'+src+'" onclick="openImg(this.src)"><span onclick="fotosTemp.splice('+i+',1);renderPreview()" style="position:absolute;top:-6px;right:-6px;background:#f44;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px">x</span></div>').join('')}
-document.addEventListener('paste',e=>{for(let it of e.clipboardData.items){if(it.type.includes('image')){addFotos([it.getAsFile()])}}});
-function openImg(src){document.getElementById('imgBig').src=src;document.getElementById('imgModal').classList.remove('hidden')}
-function buscar(){let q=(document.getElementById('q').value||'').toLowerCase();document.getElementById('cont').innerText='('+vehiculos.length+')';let f=q?vehiculos.filter(v=>(v.patente+v.marca+v.cliente).toLowerCase().includes(q)):vehiculos;document.getElementById('r').innerHTML=f.length?f.map(v=>'<div class=card onclick="ver(\''+v.patente+'\')"><span class=patente>'+v.patente+'</span> <b>'+(v.marca||'')+'</b><div style=color:#888>'+(v.cliente||'')+'</div></div>').join(''):'<p style=color:#555;text-align:center>Sin vehículos</p>'}
-function ver(p){let v=vehiculos.find(x=>x.patente==p);let ins=intervenciones.filter(i=>i.patente==p);document.getElementById('r').innerHTML='<div class=card><span class=patente>'+v.patente+'</span><h3>'+(v.marca||'')+' '+(v.modelo||'')+'</h3><button class=btn style=background:#222;color:#fff;margin-top:10px onclick="document.getElementById(\'iPat\').value=\''+p+'\';fotosTemp=[];renderPreview();show(\'nuevaI\')">+ Nueva intervención</button></div>'+ins.map(i=>'<div class=card style=border-left-color:#25D366><b>['+i.motivo+']</b> '+i.fecha+'<br><b>Diag:</b> '+i.diagnostico+'<br><b>Trabajo:</b> '+i.trabajo+(i.fotos&&i.fotos.length?'<div class=thumbs>'+i.fotos.map(f=>'<img src="'+f+'" onclick="openImg(this.src)">').join('')+'</div>':'')+'</div>').join('')}
-function saveV(){let p=document.getElementById('vPat').value.toUpperCase().trim();if(!p)return alert('Patente');let o={patente:p,marca:document.getElementById('vMar').value,modelo:document.getElementById('vMod').value,cliente:document.getElementById('vCli').value,tel:document.getElementById('vTel').value,km:document.getElementById('vKm').value};let ex=vehiculos.find(v=>v.patente==p);if(ex)Object.assign(ex,o);else vehiculos.unshift(o);save();show('buscar');buscar()}
-function saveI(){let m=document.getElementById('iMotivo').value;let f=document.getElementById('iFec').value;let p=document.getElementById('iPat').value.toUpperCase().trim();let d=document.getElementById('iDiag').value.trim();let t=document.getElementById('iTra').value.trim();if(!m||!f||!p||!d||!t)return alert('Falta Motivo, Fecha, Patente, Diagnóstico y Trabajo');intervenciones.unshift({motivo:m,fecha:f,patente:p,diagnostico:d,trabajo:t,repuestos:document.getElementById('iRep').value,total:document.getElementById('iTotal').value,fotos:[...fotosTemp]});save();fotosTemp=[];renderPreview();alert('Guardado con '+intervenciones[0].fotos.length+' fotos');show('buscar');document.getElementById('q').value=p;buscar()}
+localStorage.setItem('sm_user','SM-MONTE-');localStorage.setItem('sm_pass','Taller.monte1.');
+let V=JSON.parse(localStorage.getItem('sm_vehiculos')||'[]'),I=JSON.parse(localStorage.getItem('sm_interv')||'[]'),FT=[];
+function SV(){localStorage.setItem('sm_vehiculos',JSON.stringify(V));localStorage.setItem('sm_interv',JSON.stringify(I));}
+function doLogin(){let u=document.getElementById('user').value.trim(),p=document.getElementById('pass').value;if(u===localStorage.getItem('sm_user')&&p===localStorage.getItem('sm_pass')){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');buscar()}else document.getElementById('err').style.display='block'}
+function S(id){document.querySelectorAll('[id^=sec-]').forEach(e=>e.classList.add('hidden'));document.getElementById('sec-'+id).classList.remove('hidden');if(id=='buscar')buscar()}
+function addF(f){for(let x of f){let r=new FileReader();r.onload=e=>{FT.push(e.target.result);RP()};r.readAsDataURL(x)}}function RP(){document.getElementById('prev').innerHTML=FT.map((s,i)=>'<img src="'+s+'" onclick="document.getElementById(\'imgB\').src=this.src;document.getElementById(\'imgM\').classList.remove(\'hidden\')">').join('')}
+function buscar(){let q=(document.getElementById('q').value||'').toLowerCase(),f=q?V.filter(v=>v.patente.toLowerCase().includes(q)):V;document.getElementById('r').innerHTML=f.map(v=>'<div class=card onclick="ver(\''+v.patente+'\')"><b>'+v.patente+'</b> '+v.marca+'</div>').join('')||'<p style=color:#555>Sin datos</p>'}
+function ver(p){let ins=I.filter(i=>i.patente==p);document.getElementById('r').innerHTML='<div class=card><b>'+p+'</b><button class=btn style=background:#222;color:#fff onclick="document.getElementById(\'iPat\').value=\''+p+'\';S(\'nuevaI\')">+ Intervención</button></div>'+ins.map(i=>'<div class=card><b>'+i.motivo+'</b> '+i.fecha+'<br>'+i.diagnostico+'<br><b>'+i.trabajo+'</b>'+(i.fotos?'<div class=thumbs>'+i.fotos.map(f=>'<img src="'+f+'" onclick="document.getElementById(\'imgB\').src=this.src;document.getElementById(\'imgM\').classList.remove(\'hidden\')">').join('')+'</div>':'')+'</div>').join('')}
+function saveV(){let p=document.getElementById('vPat').value.toUpperCase().trim();if(!p)return alert('Patente');V.unshift({patente:p,marca:document.getElementById('vMar').value,cliente:document.getElementById('vCli').value});SV();S('buscar');buscar()}
+function saveI(){let m=document.getElementById('iMot').value,f=document.getElementById('iFec').value,p=document.getElementById('iPat').value.toUpperCase().trim(),d=document.getElementById('iDiag').value,t=document.getElementById('iTra').value;if(!m||!f||!p||!d||!t)return alert('Completa los 5 campos');I.unshift({motivo:m,fecha:f,patente:p,diagnostico:d,trabajo:t,fotos:[...FT]});SV();FT=[];RP();alert('Guardado');S('buscar');document.getElementById('q').value=p;buscar()}
 document.getElementById('iFec').valueAsDate=new Date();
-</script>
-</body>
-</html>
+</script></body></html>
