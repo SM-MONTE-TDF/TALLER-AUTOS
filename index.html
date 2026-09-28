@@ -1,18 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taller Mecánico</title>
-<link rel="icon" href="data:,">
+<link rel="icon" href="data:,[STRIPPED]
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f2f2f2;color:#222}
 .contenedor{max-width:800px;margin:auto}h1{text-align:center}h2{margin-top:0}
 .tarjeta{background:white;padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:8px;background:#222;color:white;font-size:16px;cursor:pointer}
-button:hover{background:#444}.boton-secundario{background:#777}.boton-cerrar{background:#a00000}.boton-editar{background:#555;margin-top:15px}
+button:hover{background:#444}.boton-secundario{background:#777}.boton-cerrar{background:#a00000}.boton-editar{background:#555;margin-top:15px}.boton-recuperar{background:#0066cc}
 input,select,textarea{width:100%;padding:12px;margin-top:6px;margin-bottom:15px;border:1px solid #ccc;border-radius:7px;font-size:15px}
 textarea{min-height:90px}.oculto{display:none!important}
 .info-vehiculo{background:#f5f5f5;padding:15px;border-radius:8px;margin-bottom:15px}
@@ -27,104 +26,4 @@ textarea{min-height:90px}.oculto{display:none!important}
 <div id="pantallaLogin" class="contenedor">
   <div class="tarjeta">
     <h1>🔧 Taller Mecánico</h1>
-    <h2>🔐 Iniciar sesión</h2>
-    <label>Correo</label><input type="email" id="loginEmail" value="maxi_boca46@hotmail.com">
-    <label>Contraseña</label><input type="password" id="loginPassword">
-    <button id="btnLogin">🔐 Ingresar</button>
-    <div id="mensajeLogin"></div>
-  </div>
-</div>
-
-<div id="sistema" class="contenedor oculto">
-  <h1>🔧 Taller Mecánico</h1>
-  <div id="menuPrincipal" class="tarjeta">
-    <button id="btnMenuBuscar">🔎 Buscar vehículo</button>
-    <button id="btnMenuNuevoVeh">🚗 Nuevo vehículo</button>
-    <button id="btnMenuNuevaInterv">🛠️ Nueva intervención</button>
-    <button class="boton-cerrar" id="btnCerrarSesion">🔒 Cerrar sesión</button>
-  </div>
-  <div id="buscar" class="tarjeta oculto"><h2>🔎 Buscar</h2><input type="text" id="patenteBuscar" placeholder="AB123CD"><button id="btnBuscarAhora">🔎 Buscar</button><div id="resultadoBusqueda"></div><button class="boton-secundario" id="btnVolverBuscar">← Volver</button></div>
-  <div id="nuevoVehiculo" class="tarjeta oculto"><h2>🚗 Nuevo vehículo</h2><input id="patente" placeholder="Patente"><input id="marca" placeholder="Marca"><input id="modelo" placeholder="Modelo"><input type="number" id="anio" placeholder="Año"><input type="number" id="kilometraje" placeholder="Km"><input id="cliente" placeholder="Cliente"><input id="telefono" placeholder="Teléfono"><button id="btnGuardarVeh">💾 Guardar</button><button class="boton-secundario" id="btnVolverNuevoVeh">← Volver</button></div>
-  <div id="editarVehiculo" class="tarjeta oculto"><h2>✏️ Editar</h2><input id="editarPatente" disabled><input id="editarMarca" placeholder="Marca"><input id="editarModelo" placeholder="Modelo"><input type="number" id="editarAnio" placeholder="Año"><input type="number" id="editarKilometraje" placeholder="Km"><input id="editarCliente" placeholder="Cliente"><input id="editarTelefono" placeholder="Teléfono"><button id="btnGuardarEdicion">💾 Guardar cambios</button><button class="boton-secundario" id="btnCancelarEdicion">← Cancelar</button></div>
-  <div id="nuevaIntervencion" class="tarjeta oculto"><h2>🛠️ Nueva intervención</h2><input id="patenteIntervencion" placeholder="Patente"><input type="date" id="fecha"><select id="tipo"><option>Service</option><option>Reparación</option><option>Diagnóstico</option><option>Otro</option></select><input type="number" id="kmIntervencion" placeholder="Km"><textarea id="motivo" placeholder="Motivo"></textarea><textarea id="trabajo" placeholder="Trabajo"></textarea><textarea id="repuestos" placeholder="Repuestos"></textarea><textarea id="observaciones" placeholder="Observaciones"></textarea><input type="file" id="fotos" accept="image/*" multiple style="display:none"><button type="button" class="boton-secundario" id="btnAgregarFotos">📷 Agregar fotos</button><div id="vistaPreviaFotos" class="vista-previa-fotos"></div><button id="btnGuardarInterv">💾 Guardar intervención</button><button class="boton-secundario" id="btnVolverInterv">← Volver</button></div>
-</div>
-
-<script>
-const SUPABASE_URL = "https://sljknzpyxmpfnkcaoksu.supabase.co";
-const SUPABASE_KEY = "sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let vehiculos=[]; let fotosSeleccionadas=[]; let vehiculoEditandoId=null;
-const $=id=>document.getElementById(id);
-function escaparHTML(t){return String(t||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-async function obtenerUsuario(){const {data}=await supabaseClient.auth.getUser(); return data?.user||null;}
-function mostrarSeccion(id){["menuPrincipal","buscar","nuevoVehiculo","editarVehiculo","nuevaIntervencion"].forEach(s=>$(s).classList.add("oculto"));$(id).classList.remove("oculto");}
-function volverInicio(){["buscar","nuevoVehiculo","editarVehiculo","nuevaIntervencion"].forEach(s=>$(s).classList.add("oculto"));$("menuPrincipal").classList.remove("oculto");}
-async function verificarSesion(){const {data:{session}}=await supabaseClient.auth.getSession(); if(session){$("pantallaLogin").classList.add("oculto");$("sistema").classList.remove("oculto");cargarVehiculos();}}
-async function cargarVehiculos(){const user=await obtenerUsuario(); if(!user)return; const {data}=await supabaseClient.from("vehiculos").select("*").eq("user_id",user.id).order("patente");vehiculos=data||[];}
-
-$("btnLogin").addEventListener("click", async ()=>{
-  const email=$("loginEmail").value.trim(); const pass=$("loginPassword").value; const msg=$("mensajeLogin");
-  if(!email||!pass){msg.innerHTML='<div class="mensaje-error">Falta email o contraseña</div>';return;}
-  msg.innerHTML='<div class="cargando">⏳ Verificando...</div>';
-  console.log("Login:",email);
-  const {data, error}=await supabaseClient.auth.signInWithPassword({email, password:pass});
-  console.log("Resultado login",data,error);
-  if(error){msg.innerHTML='<div class="mensaje-error">❌ '+escaparHTML(error.message)+'</div>';return;}
-  $("pantallaLogin").classList.add("oculto");$("sistema").classList.remove("oculto");cargarVehiculos();
-});
-
-$("btnCerrarSesion").addEventListener("click", async()=>{await supabaseClient.auth.signOut();location.reload();});
-$("btnMenuBuscar").addEventListener("click", ()=>mostrarSeccion("buscar"));
-$("btnMenuNuevoVeh").addEventListener("click", ()=>mostrarSeccion("nuevoVehiculo"));
-$("btnMenuNuevaInterv").addEventListener("click", ()=>{ $("fecha").valueAsDate=new Date(); mostrarSeccion("nuevaIntervencion");});
-$("btnVolverBuscar").addEventListener("click", volverInicio);
-$("btnVolverNuevoVeh").addEventListener("click", volverInicio);
-$("btnVolverInterv").addEventListener("click", volverInicio);
-$("btnCancelarEdicion").addEventListener("click", volverInicio);
-$("loginPassword").addEventListener("keydown", e=>{if(e.key==="Enter")$("btnLogin").click();});
-
-$("btnGuardarVeh").addEventListener("click", async()=>{
-  const user=await obtenerUsuario(); const patente=$("patente").value.trim().toUpperCase(); if(!patente)return alert("Patente obligatoria");
-  const {error}=await supabaseClient.from("vehiculos").insert({user_id:user.id, patente, marca:$("marca").value, modelo:$("modelo").value, anio:$("anio").value?Number($("anio").value):null, kilometraje:$("kilometraje").value?Number($("kilometraje").value):null, cliente:$("cliente").value, telefono:$("telefono").value});
-  if(error)alert(error.message); else {alert("Guardado"); volverInicio(); cargarVehiculos();}
-});
-
-$("btnBuscarAhora").addEventListener("click", async()=>{
-  const user=await obtenerUsuario(); const pat=$("patenteBuscar").value.trim().toUpperCase(); $("resultadoBusqueda").innerHTML='<div class="cargando">Buscando...</div>';
-  const {data:veh}=await supabaseClient.from("vehiculos").select("*").eq("user_id",user.id).eq("patente",pat).maybeSingle();
-  if(!veh){$("resultadoBusqueda").innerHTML='<div class="mensaje-error">No encontrado</div>';return;}
-  const {data:ints}=await supabaseClient.from("intervenciones").select("*").eq("user_id",user.id).eq("vehiculo_id",veh.id).order("fecha",{ascending:false});
-  let html=`<div class="info-vehiculo"><b>${veh.patente}</b> ${escaparHTML(veh.marca)} ${escaparHTML(veh.modelo)}<br>Cliente: ${escaparHTML(veh.cliente)} Tel: ${escaparHTML(veh.telefono)}</div><button class="boton-editar" id="btnEditarVeh">✏️ Editar</button><h3>Historial (${ints?.length||0})</h3>`;
-  (ints||[]).forEach(i=>{ let d={}; try{d=JSON.parse(i.descripcion||'{}')}catch(e){} html+=`<div class="detalle-intervencion"><b>${i.fecha}</b> - ${i.tipo}<br>Motivo: ${escaparHTML(d.motivo||'')}<br>Trabajo: ${escaparHTML(d.trabajo||'')}${d.repuestos?'<br>Repuestos: '+escaparHTML(d.repuestos):''}${i.fotos?.length?'<div class="fotos-guardadas">'+i.fotos.map(f=>`<img src="${f}">`).join('')+'</div>':''}</div>`; });
-  $("resultadoBusqueda").innerHTML=html;
-  document.getElementById("btnEditarVeh")?.addEventListener("click", ()=>{ vehiculoEditandoId=veh.id; $("editarPatente").value=veh.patente; $("editarMarca").value=veh.marca||''; $("editarModelo").value=veh.modelo||''; $("editarAnio").value=veh.anio||''; $("editarKilometraje").value=veh.kilometraje||''; $("editarCliente").value=veh.cliente||''; $("editarTelefono").value=veh.telefono||''; mostrarSeccion("editarVehiculo"); });
-});
-
-$("btnGuardarEdicion").addEventListener("click", async()=>{
-  const user=await obtenerUsuario(); const {error}=await supabaseClient.from("vehiculos").update({marca:$("editarMarca").value, modelo:$("editarModelo").value, anio:$("editarAnio").value?Number($("editarAnio").value):null, kilometraje:$("editarKilometraje").value?Number($("editarKilometraje").value):null, cliente:$("editarCliente").value, telefono:$("editarTelefono").value}).eq("id",vehiculoEditandoId).eq("user_id",user.id);
-  if(error)alert(error.message); else {alert("Actualizado"); volverInicio(); cargarVehiculos();}
-});
-
-$("btnAgregarFotos").addEventListener("click", ()=>$("fotos").click());
-$("fotos").addEventListener("change", async e=>{
-  for(const file of Array.from(e.target.files||[])){
-    const b64=await new Promise(r=>{ const fr=new FileReader(); fr.onload=()=>r(fr.result); fr.readAsDataURL(file); });
-    fotosSeleccionadas.push(b64);
-  }
-  $("vistaPreviaFotos").innerHTML=fotosSeleccionadas.map((f,i)=>`<div class="foto-preview"><img src="${f}"><button class="boton-eliminar-foto" data-i="${i}">×</button></div>`).join('');
-  document.querySelectorAll(".boton-eliminar-foto").forEach(b=>b.addEventListener("click", ev=>{ fotosSeleccionadas.splice(Number(ev.target.dataset.i),1); ev.target.parentElement.remove(); }));
-  e.target.value="";
-});
-
-$("btnGuardarInterv").addEventListener("click", async()=>{
-  const user=await obtenerUsuario(); const pat=$("patenteIntervencion").value.trim().toUpperCase();
-  const {data:veh}=await supabaseClient.from("vehiculos").select("id").eq("user_id",user.id).eq("patente",pat).maybeSingle();
-  if(!veh)return alert("Esa patente no existe");
-  const {error}=await supabaseClient.from("intervenciones").insert({user_id:user.id, vehiculo_id:veh.id, fecha:$("fecha").value||new Date().toISOString().slice(0,10), tipo:$("tipo").value, descripcion:JSON.stringify({kilometraje:$("kmIntervencion").value, motivo:$("motivo").value, trabajo:$("trabajo").value, repuestos:$("repuestos").value, observaciones:$("observaciones").value}), fotos:fotosSeleccionadas});
-  if(error)alert(error.message); else {alert("Guardada"); fotosSeleccionadas=[]; $("vistaPreviaFotos").innerHTML=""; volverInicio();}
-});
-
-verificarSesion();
-</script>
-</body>
-</html>
+    <h2>🔐 Iniciar sesión</h
