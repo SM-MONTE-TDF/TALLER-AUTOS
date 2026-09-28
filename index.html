@@ -2,23 +2,66 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SM MONTENEGRO</title>
 <style>
-body{background:#111;color:#fff;font-family:Arial;text-align:center;margin:0;padding:20px}
-.logo{width:300px;max-width:90%;margin:20px auto;display:block;border-radius:12px}
-.btn{display:block;background:#06b6d4;color:#000;padding:16px;margin:12px auto;max-width:340px;border-radius:12px;font-weight:bold;text-decoration:none;font-size:18px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff}
+.top{padding:20px 16px;text-align:center}
+.logo{width:100%;max-width:380px;margin:0 auto 14px;display:block;border-radius:14px}
+h1{color:#00c2ff;font-size:24px;letter-spacing:1px}
+.sub{color:#aaa;font-size:14px;margin:4px 0 16px}
+.btn{display:block;width:100%;max-width:380px;margin:10px auto;padding:15px;border:none;border-radius:12px;font-weight:800;font-size:16px}
 .btn-w{background:#25D366;color:#fff}
-h1{color:#06b6d4}
+.btn-c{background:#00c2ff;color:#000}
+.btn-c2{background:#00c2ff;color:#000}
+.btn-r{background:#7a1e1e;color:#fff}
+hr{border:0;border-top:1px solid #222;margin:18px auto;max-width:380px}
+.section{max-width:500px;margin:0 auto;padding:0 16px 80px}
+.hidden{display:none}
+input,textarea{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;color:#fff;font-size:15px}
+.card{background:#111;border:1px solid #222;border-radius:14px;padding:14px;margin:10px 0;border-left:4px solid #00c2ff}
+.patente{background:#fff;color:#000;font-weight:900;padding:4px 10px;border-radius:6px;display:inline-block}
 </style>
 </head>
 <body>
-<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" class="logo">
+<div class="top">
+<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" onerror="this.src='./logo.png'" class="logo">
 <h1>SM MONTENEGRO</h1>
-<p>Taller Mecánico - Río Grande</p>
-<a class="btn btn-w" href="https://wa.me/5492964535280">📱 WhatsApp</a>
-<a class="btn" href="tel:+542964535280">📞 Llamar</a>
-<a class="btn" href="#">📍 Ubicación</a>
-<a class="btn" href="#">🔧 Servicios</a>
+<p class="sub">Taller Mecánico - Río Grande</p>
+<a class="btn btn-w" href="https://wa.me/5492964535280" style="text-decoration:none">📱 WhatsApp</a>
+<a class="btn btn-c" href="tel:+542964535280" style="text-decoration:none">📞 Llamar</a>
+<a class="btn btn-c" href="https://maps.google.com/?q=Rio+Grande+Tierra+del+Fuego" style="text-decoration:none">📍 Ubicación</a>
+<a class="btn btn-c" href="#servicios" style="text-decoration:none">🔧 Servicios</a>
+<hr>
+<button class="btn btn-c2" onclick="show('buscar')">🔍 Buscar</button>
+<button class="btn btn-c2" onclick="show('nuevoV')">🚗 Nuevo vehículo</button>
+<button class="btn btn-c2" onclick="show('nuevaI')">🛠️ Nueva intervención</button>
+<button class="btn btn-c2" onclick="show('recuperar')">♻️ Recuperar viejos</button>
+<button class="btn btn-r" onclick="localStorage.clear();alert('Sesión cerrada');location.reload()">Cerrar sesión</button>
+<hr>
+</div>
+<div class="section">
+<div id="s-buscar"><h3>Buscar</h3><input id="q" placeholder="Patente, marca, cliente..." oninput="buscar()"><div id="rBuscar"></div></div>
+<div id="s-nuevoV" class="hidden"><h3>Nuevo vehículo</h3><input id="vPat" placeholder="PATENTE AB123CD" style="text-transform:uppercase"><input id="vMarca" placeholder="Marca"><input id="vMod" placeholder="Modelo"><input id="vCli" placeholder="Cliente"><input id="vTel" placeholder="Tel"><input id="vKm" type="number" placeholder="KM"><button class="btn btn-c2" onclick="saveV()">💾 Guardar vehículo</button></div>
+<div id="s-nuevaI" class="hidden"><h3>Nueva intervención</h3><input id="iPat" placeholder="Patente" style="text-transform:uppercase"><input id="iFecha" type="date"><input id="iKm" type="number" placeholder="KM"><textarea id="iTrab" placeholder="Trabajo realizado"></textarea><input id="iCosto" type="number" placeholder="Costo $"><button class="btn btn-c2" onclick="saveI()">💾 Guardar intervención</button></div>
+<div id="s-recuperar" class="hidden"><h3>Recuperar viejos</h3><div id="rPapelera"></div></div>
+<div id="servicios" style="margin-top:30px"><h3>Servicios</h3><div class="card">🔧 Diagnóstico computarizado</div><div class="card">🛢️ Cambio de aceite y filtros</div><div class="card">🛞 Frenos y suspensión</div></div>
+</div>
+<script>
+let vehiculos=JSON.parse(localStorage.getItem('sm_vehiculos')||'[]');
+let intervenciones=JSON.parse(localStorage.getItem('sm_interv')||'[]');
+let papelera=JSON.parse(localStorage.getItem('sm_papelera')||'[]');
+function save(){localStorage.setItem('sm_vehiculos',JSON.stringify(vehiculos));localStorage.setItem('sm_interv',JSON.stringify(intervenciones));localStorage.setItem('sm_papelera',JSON.stringify(papelera))}
+function show(id){document.querySelectorAll('[id^=s-]').forEach(e=>e.classList.add('hidden'));document.getElementById('s-'+id).classList.remove('hidden');if(id=='buscar')buscar();if(id=='recuperar')renderPap()}
+function buscar(){let q=(document.getElementById('q').value||'').toLowerCase();let c=document.getElementById('rBuscar');let f=vehiculos.filter(v=>(v.patente+v.marca+v.modelo+v.cliente).toLowerCase().includes(q));if(!q){c.innerHTML='<p style="color:#555;text-align:center;margin-top:20px">Escribí patente, marca o cliente</p>';return}c.innerHTML=f.map(v=>'<div class="card" onclick="ver(\''+v.patente+'\')"><span class="patente">'+v.patente+'</span> <b>'+v.marca+' '+v.modelo+'</b><div style="color:#888">👤 '+v.cliente+'</div></div>').join('')||'<p style="color:#555">Sin resultados</p>'}
+function saveV(){let p=document.getElementById('vPat').value.trim().toUpperCase();if(!p)return alert('Patente');let o={patente:p,marca:document.getElementById('vMarca').value,modelo:document.getElementById('vMod').value,cliente:document.getElementById('vCli').value,tel:document.getElementById('vTel').value,km:document.getElementById('vKm').value};let ex=vehiculos.find(v=>v.patente==p);if(ex)Object.assign(ex,o);else vehiculos.unshift(o);save();alert('Vehículo '+p+' guardado');show('buscar');document.getElementById('q').value=p;buscar()}
+function saveI(){let p=document.getElementById('iPat').value.trim().toUpperCase();if(!p)return alert('Patente');intervenciones.unshift({id:Date.now(),patente:p,fecha:document.getElementById('iFecha').value||new Date().toISOString().slice(0,10),km:document.getElementById('iKm').value,trabajo:document.getElementById('iTrab').value,costo:document.getElementById('iCosto').value});save();alert('Intervención guardada');show('buscar');document.getElementById('q').value=p;buscar()}
+function ver(pat){let v=vehiculos.find(x=>x.patente==pat);let inters=intervenciones.filter(i=>i.patente==pat);document.getElementById('rBuscar').innerHTML='<div class="card"><span class="patente">'+v.patente+'</span><h3>'+v.marca+' '+v.modelo+'</h3><div>Cliente: '+v.cliente+' - '+v.tel+'</div><button class="btn btn-c2" style="margin-top:12px" onclick="document.getElementById(\'iPat\').value=\''+pat+'\';show(\'nuevaI\')">+ Nueva intervención</button><button class="btn" style="background:#222;color:#aaa;margin-top:8px" onclick="archivar(\''+pat+'\')">Archivar</button></div><h3>Historial ('+inters.length+')</h3>'+inters.map(i=>'<div class="card" style="border-left-color:#25D366"><b>'+i.fecha+'</b> - '+i.trabajo+'<br><span style="color:#25D366">$'+(i.costo||0)+'</span></div>').join('')}
+function archivar(pat){let v=vehiculos.find(x=>x.patente==pat);papelera.unshift(v);vehiculos=vehiculos.filter(x=>x.patente!=pat);save();buscar()}
+function renderPap(){let c=document.getElementById('rPapelera');c.innerHTML=papelera.map(v=>'<div class="card"><span class="patente">'+v.patente+'</span> '+v.marca+'<button class="btn btn-c2" style="padding:8px;margin-top:8px" onclick="rest(\''+v.patente+'\')">Restaurar</button></div>').join('')||'Vacía'}
+function rest(pat){let v=papelera.find(x=>x.patente==pat);vehiculos.unshift(v);papelera=papelera.filter(x=>x.patente!=pat);save();renderPap()}
+document.getElementById('iFecha').valueAsDate=new Date();buscar();
+</script>
 </body>
 </html>
