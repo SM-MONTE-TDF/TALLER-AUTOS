@@ -18,16 +18,15 @@ input:focus{border-color:#00e5ff}
 .back{background:#111;border:1px solid #333;color:#aaa;padding:8px 12px;border-radius:10px;font-size:13px;cursor:pointer}
 .add{background:#081a1a;border:1px solid #00e5ff;color:#00e5ff;padding:10px 12px;border-radius:10px;width:100%;cursor:pointer;font-weight:700}
 .vehicle-btn{background:#0e0e0e;border:1px solid #222;border-radius:14px;padding:12px 14px;margin:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;color:#fff}
-.vehicle-btn:hover{border-color:#00e5ff;background:#0f1f22}
 .vehicle-btn b{color:#00e5ff}
 .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.thumb{width:76px;height:76px;border-radius:10px;object-fit:cover;border:1px solid #333}
-.thumb-wrap{position:relative;display:inline-block}.thumb-del{position:absolute;top:-6px;right:-6px;background:#ff2a2a;color:#fff;border:0;width:22px;height:22px;border-radius:50%;font-size:12px;cursor:pointer}
+.thumb-wrap{position:relative;display:inline-block}.thumb-del{position:absolute;top:-6px;right:-6px;background:#ff2a2a;color:#fff;border:0;width:22px;height:22px;border-radius:50%}
 .small{color:#888;font-size:12px}
 .tab{background:#0e0e0e;border:1px solid #222;border-radius:12px;padding:11px 12px;margin:6px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .tab b{color:#00e5ff;font-size:13px}.tab.active{border-color:#00e5ff;background:#0f1f22}
 .detail{background:#0c0c0c;border:1px dashed #222;border-radius:12px;padding:10px;margin:0 0 10px;display:none}
 .detail.open{display:block}
-.detail p{margin:5px 0;font-size:13px;line-height:1.35}
+.detail p{margin:5px 0;font-size:13px}
 .detail img{width:80px;height:80px;object-fit:cover;border-radius:8px;margin:4px;border:1px solid #333}
 .view{display:none}.view.active{display:block}
 </style></head><body>
@@ -35,14 +34,14 @@ input:focus{border-color:#00e5ff}
 <div class="logo"><span>SM</span> <b>MONTENEGRO</b></div>
 <div class="sub">TALLER AUTOS - PRIVADO</div>
 <form onsubmit="return false" style="width:100%;max-width:340px" autocomplete="on">
-<input id="u" type="text" name="username" autocomplete="username" placeholder="Usuario" autocapitalize="off" autocorrect="off" spellcheck="false">
-<input id="p" type="password" name="password" autocomplete="current-password" placeholder="Contraseña">
+<input id="u" type="text" autocomplete="username" placeholder="Usuario" autocapitalize="off">
+<input id="p" type="password" autocomplete="current-password" placeholder="Contraseña">
 <button class="btn" onclick="login()">ENTRAR</button>
 <div id="msg" class="msg"></div>
 </form>
 </div>
 <div id="app">
-<div class="topbar"><div><b style="color:#00e5ff;letter-spacing:1px">SM MONTENEGRO</b><div class="small" id="path">Inicio</div></div><button class="del" onclick="salir()">Salir</button></div>
+<div class="topbar"><div><b style="color:#00e5ff">SM MONTENEGRO</b><div class="small" id="path">Inicio</div></div><button class="del" onclick="salir()">Salir</button></div>
 <div id="view-lista" class="view active">
 <div class="card">
 <h3 style="color:#00e5ff;margin:0 0 10px">🚗 Nuevo vehículo</h3>
@@ -79,10 +78,7 @@ let data=JSON.parse(localStorage.getItem(LS)||localStorage.getItem("sm_montenegr
 let selected=-1;let fotoCache=[];
 function today(){return new Date().toISOString().slice(0,10)}
 document.getElementById('v_fecha').value=today();
-function login(){
- let u=document.getElementById('u').value.trim();let p=document.getElementById('p').value;
- if(u===USER_OK&&p===PASS_OK){localStorage.setItem("auth","1");show();}else{document.getElementById('msg').innerText="Usuario o clave incorrectos";}
-}
+function login(){let u=document.getElementById('u').value.trim();let p=document.getElementById('p').value;if(u===USER_OK&&p===PASS_OK){localStorage.setItem("auth","1");show();}else{document.getElementById('msg').innerText="Usuario o clave incorrectos";}}
 function salir(){localStorage.removeItem("auth");selected=-1;location.reload();}
 function show(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';renderLista();}
 function save(){localStorage.setItem(LS,JSON.stringify(data));renderLista();if(selected>=0)renderDetalle();}
@@ -105,10 +101,7 @@ function renderLista(){
  });
  document.getElementById('path').innerText=`Vehículos (${data.length})`;
 }
-function abrirVeh(idx){
- selected=idx;document.getElementById('view-lista').classList.remove('active');document.getElementById('view-detalle').classList.add('active');
- renderDetalle();
-}
+function abrirVeh(idx){selected=idx;document.getElementById('view-lista').classList.remove('active');document.getElementById('view-detalle').classList.add('active');renderDetalle();}
 function volverLista(){selected=-1;document.getElementById('view-detalle').classList.remove('active');document.getElementById('view-lista').classList.add('active');renderLista();}
 function renderDetalle(){
  if(selected<0)return;
