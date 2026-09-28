@@ -4,49 +4,49 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taller Mecánico</title>
+<link rel="icon" href="data:,">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f2f2f2;color:#222}
-.contenedor{max-width:800px;margin:auto}h1{text-align:center;margin-bottom:25px}h2{margin-top:0}
+.contenedor{max-width:800px;margin:auto}h1{text-align:center}h2{margin-top:0}
 .tarjeta{background:white;padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:8px;background:#222;color:white;font-size:16px;cursor:pointer}
-button:hover{background:#444}button:disabled{opacity:.6;cursor:not-allowed}
-.boton-secundario{background:#777}.boton-cerrar{background:#a00000}.boton-editar{background:#555;margin-top:15px}.boton-migrar{background:#0b6b3a}
+button:hover{background:#444}.boton-secundario{background:#777}.boton-cerrar{background:#a00000}.boton-editar{background:#555;margin-top:15px}
 input,select,textarea{width:100%;padding:12px;margin-top:6px;margin-bottom:15px;border:1px solid #ccc;border-radius:7px;font-size:15px}
-textarea{min-height:90px;resize:vertical}label{font-weight:bold}.oculto{display:none!important}
+textarea{min-height:90px}.oculto{display:none!important}
 .info-vehiculo{background:#f5f5f5;padding:15px;border-radius:8px;margin-bottom:15px}
-.historial-fechas{display:flex;flex-direction:column;gap:10px;margin-top:15px}
-.boton-fecha{width:100%;margin:0;padding:13px 15px;background:#333;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .detalle-intervencion{background:#f7f7f7;padding:15px;border-radius:8px;margin-top:15px}
-.fotos-guardadas{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-.fotos-guardadas img{width:120px;height:120px;object-fit:cover;border-radius:8px;cursor:pointer}
-.vista-previa-fotos{display:flex;flex-wrap:wrap;gap:12px;margin-top:15px}
-.foto-preview{position:relative;width:110px;height:110px}.foto-preview img{width:100%;height:100%;object-fit:cover;border-radius:8px}
-.boton-eliminar-foto{position:absolute;top:-8px;right:-8px;width:28px;height:28px;padding:0;margin:0;border-radius:50%;background:#d00;color:white;font-size:16px}
-.mensaje{padding:15px;background:#fff3cd;border-radius:8px;margin-top:15px}.mensaje-error{padding:15px;background:#f8d7da;color:#842029;border-radius:8px;margin-top:15px}.mensaje-exito{padding:15px;background:#d1e7dd;color:#0f5132;border-radius:8px;margin-top:15px}.cargando{padding:15px;background:#eee;border-radius:8px;margin-top:15px;text-align:center}
-small{display:block;color:#666;margin-bottom:10px}.separador{height:1px;background:#ddd;margin:20px 0}
-#panelMigracion{border:2px solid #198754;background:#e9f7ef}
+.fotos-guardadas{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.fotos-guardadas img{width:120px;height:120px;object-fit:cover;border-radius:8px}
+.vista-previa-fotos{display:flex;flex-wrap:wrap;gap:12px;margin-top:15px}.foto-preview{position:relative;width:110px;height:110px}.foto-preview img{width:100%;height:100%;object-fit:cover;border-radius:8px}.boton-eliminar-foto{position:absolute;top:-8px;right:-8px;width:28px;height:28px;padding:0;margin:0;border-radius:50%;background:#d00;color:white}
+.mensaje-error{padding:15px;background:#f8d7da;color:#842029;border-radius:8px;margin-top:15px;white-space:pre-wrap}.mensaje-exito{padding:15px;background:#d1e7dd;color:#0f5132;border-radius:8px;margin-top:15px}.cargando{padding:15px;background:#eee;border-radius:8px;margin-top:15px;text-align:center}
 </style>
 </head>
 <body>
 
 <div id="pantallaLogin" class="contenedor">
-  <div class="tarjeta"><h1>🔧 Taller Mecánico</h1><h2>🔐 Iniciar sesión</h2>
-    <label>Correo electrónico</label><input type="email" id="loginEmail" autocomplete="username">
-    <label>Contraseña</label><input type="password" id="loginPassword" autocomplete="current-password">
-    <button id="btnLogin">🔐 Ingresar</button><div id="mensajeLogin"></div>
+  <div class="tarjeta">
+    <h1>🔧 Taller Mecánico</h1>
+    <h2>🔐 Iniciar sesión</h2>
+    <label>Correo</label><input type="email" id="loginEmail" value="maxi_boca46@hotmail.com">
+    <label>Contraseña</label><input type="password" id="loginPassword">
+    <button id="btnLogin">🔐 Ingresar</button>
+    <div id="mensajeLogin"></div>
   </div>
 </div>
 
 <div id="sistema" class="contenedor oculto">
   <h1>🔧 Taller Mecánico</h1>
   <div id="menuPrincipal" class="tarjeta">
-    <div id="panelMigracion" class="tarjeta oculto"><h2>📦 Datos antiguos encontrados</h2><p>Se encontraron vehículos en este navegador que no están en Supabase.</p><div id="textoMigracion" style="font-weight:bold;margin:10px 0"></div><button class="boton-migrar" id="btnMigrar">📦 Migrar todos los datos</button><div id="resultadoMigracion"></div></div>
     <button id="btnMenuBuscar">🔎 Buscar vehículo</button>
     <button id="btnMenuNuevoVeh">🚗 Nuevo vehículo</button>
     <button id="btnMenuNuevaInterv">🛠️ Nueva intervención</button>
     <button class="boton-cerrar" id="btnCerrarSesion">🔒 Cerrar sesión</button>
   </div>
+  <div id="buscar" class="tarjeta oculto"><h2>🔎 Buscar</h2><input type="text" id="patenteBuscar" placeholder="AB123CD"><button id="btnBuscarAhora">🔎 Buscar</button><div id="resultadoBusqueda"></div><button class="boton-secundario" id="btnVolverBuscar">← Volver</button></div>
+  <div id="nuevoVehiculo" class="tarjeta oculto"><h2>🚗 Nuevo vehículo</h2><input id="patente" placeholder="Patente"><input id="marca" placeholder="Marca"><input id="modelo" placeholder="Modelo"><input type="number" id="anio" placeholder="Año"><input type="number" id="kilometraje" placeholder="Km"><input id="cliente" placeholder="Cliente"><input id="telefono" placeholder="Teléfono"><button id="btnGuardarVeh">💾 Guardar</button><button class="boton-secundario" id="btnVolverNuevoVeh">← Volver</button></div>
+  <div id="editarVehiculo" class="tarjeta oculto"><h2>✏️ Editar</h2><input id="editarPatente" disabled><input id="editarMarca" placeholder="Marca"><input id="editarModelo" placeholder="Modelo"><input type="number" id="editarAnio" placeholder="Año"><input type="number" id="editarKilometraje" placeholder="Km"><input id="editarCliente" placeholder="Cliente"><input id="editarTelefono" placeholder="Teléfono"><button id="btnGuardarEdicion">💾 Guardar cambios</button><button class="boton-secundario" id="btnCancelarEdicion">← Cancelar</button></div>
+  <div id="nuevaIntervencion" class="tarjeta oculto"><h2>🛠️ Nueva intervención</h2><input id="patenteIntervencion" placeholder="Patente"><input type="date" id="fecha"><select id="tipo"><option>Service</option><option>Reparación</option><option>Diagnóstico</option><option>Otro</option></select><input type="number" id="kmIntervencion" placeholder="Km"><textarea id="motivo" placeholder="Motivo"></textarea><textarea id="trabajo" placeholder="Trabajo"></textarea><textarea id="repuestos" placeholder="Repuestos"></textarea><textarea id="observaciones" placeholder="Observaciones"></textarea><input type="file" id="fotos" accept="image/*" multiple style="display:none"><button type="button" class="boton-secundario" id="btnAgregarFotos">📷 Agregar fotos</button><div id="vistaPreviaFotos" class="vista-previa-fotos"></div><button id="btnGuardarInterv">💾 Guardar intervención</button><button class="boton-secundario" id="btnVolverInterv">← Volver</button></div>
+</div>
 
-  <div id="buscar" class="tarjeta oculto"><h2>🔎 Buscar vehículo</h2><label>Patente</label><input type="text" id="patenteBuscar" placeholder="AB123CD"><button id="btnBuscarAhora">🔎 Buscar</button><div id="resultadoBusqueda"></div><button class="boton-secundario" id="btnVolverBuscar">← Volver al inicio</button></div>
-
-  <div id="nuevoVehiculo" class="tarjeta oculto"><h2>🚗 Nuevo vehículo</h2><label>Patente</label><input type
+<script>
+const SUPABASE_URL = "https://sljknzpyx
