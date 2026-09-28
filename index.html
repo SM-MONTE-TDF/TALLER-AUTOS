@@ -59,6 +59,11 @@ button:hover{
     background:#444;
 }
 
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
 .boton-secundario{
     background:#777;
 }
@@ -302,6 +307,7 @@ small{
             type="email"
             id="loginEmail"
             placeholder="Tu correo electrónico"
+            autocomplete="username"
         >
 
         <label>Contraseña</label>
@@ -310,6 +316,8 @@ small{
             type="password"
             id="loginPassword"
             placeholder="Tu contraseña"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter') iniciarSesion()"
         >
 
         <button onclick="iniciarSesion()">
@@ -721,11 +729,39 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI";
 
-const supabaseClient =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
+let supabaseClient = null;
+
+
+/*
+   Crear conexión con Supabase.
+*/
+
+try{
+
+    if(
+        typeof supabase === "undefined"
+    ){
+
+        throw new Error(
+            "No se pudo cargar la biblioteca de Supabase."
+        );
+
+    }
+
+    supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+}catch(error){
+
+    console.error(
+        "ERROR CREANDO SUPABASE:",
+        error
     );
+
+}
 
 
 /* =========================================================
@@ -759,15 +795,49 @@ window.addEventListener(
 
 async function verificarSesion(){
 
+    if(!supabaseClient){
+
+        mostrarLogin();
+
+        document.getElementById(
+            "mensajeLogin"
+        ).innerHTML =
+            '<div class="mensaje-error">' +
+            '❌ No se pudo conectar con Supabase.<br><br>' +
+            'Verificá que tengas conexión a Internet y que la biblioteca de Supabase esté cargando.' +
+            '</div>';
+
+        return;
+    }
+
     try{
 
         const resultado =
             await supabaseClient.auth.getSession();
 
         if(
+            resultado.error
+        ){
+
+            console.error(
+                "ERROR OBTENIENDO SESIÓN:",
+                resultado.error
+            );
+
+            mostrarLogin();
+
+            return;
+        }
+
+        if(
             resultado.data &&
             resultado.data.session
         ){
+
+            /*
+               Si ya había una sesión guardada,
+               entramos al sistema.
+            */
 
             await mostrarSistema();
 
@@ -820,14 +890,51 @@ async function mostrarSistema(){
         .getElementById("sistema")
         .classList.remove("oculto");
 
-    await cargarVehiculosDesdeSupabase();
-
     /*
-       NUEVO:
-       Buscar datos antiguos después de cargar Supabase.
+       IMPORTANTE:
+       El usuario entra al sistema inmediatamente.
+
+       La carga de vehículos y la comprobación de
+       migración NO bloquean el inicio de sesión.
     */
 
-    await prepararMigracion();
+    try{
+
+        await cargarVehiculosDesdeSupabase();
+
+    }catch(error){
+
+        console.error(
+            "ERROR CARGANDO VEHÍCULOS:",
+            error
+        );
+
+    }
+
+
+    /*
+       La migración se revisa después.
+    */
+
+    setTimeout(
+        async function(){
+
+            try{
+
+                await prepararMigracion();
+
+            }catch(error){
+
+                console.error(
+                    "ERROR PREPARANDO MIGRACIÓN:",
+                    error
+                );
+
+            }
+
+        },
+        300
+    );
 
 }
 
@@ -854,62 +961,122 @@ async function iniciarSesion(){
             "mensajeLogin"
         );
 
+
     mensaje.innerHTML = "";
+
 
     if(!email){
 
         mensaje.innerHTML =
-            '<div class="mensaje-error">Ingresá tu correo electrónico.</div>';
+            '<div class="mensaje-error">' +
+            'Ingresá tu correo electrónico.' +
+            '</div>';
 
         return;
     }
+
 
     if(!password){
 
         mensaje.innerHTML =
-            '<div class="mensaje-error">Ingresá tu contraseña.</div>';
+            '<div class="mensaje-error">' +
+            'Ingresá tu contraseña.' +
+            '</div>';
 
         return;
     }
 
+
+    if(!supabaseClient){
+
+        mensaje.innerHTML =
+            '<div class="mensaje-error">' +
+            '❌ Supabase no está disponible.' +
+            '</div>';
+
+        return;
+    }
+
+
     try{
 
+        mensaje.innerHTML =
+            '<div class="cargando">' +
+            '⏳ Iniciando sesión...' +
+            '</div>';
+
+
         const resultado =
-            await supabaseClient.auth
-                .signInWithPassword({
+            await supabaseClient.auth.signInWithPassword({
 
-                    email:email,
+                email:email,
 
-                    password:password
+                password:password
 
-                });
+            });
+
 
         if(resultado.error){
 
             console.error(
+                "ERROR DE LOGIN:",
                 resultado.error
             );
 
             mensaje.innerHTML =
-                '<div class="mensaje-error">Correo o contraseña incorrectos.</div>';
+                '<div class="mensaje-error">' +
+                '❌ ' +
+                escaparHTML(
+                    resultado.error.message
+                ) +
+                '</div>';
 
             return;
         }
+
+
+        if(
+            !resultado.data ||
+            !resultado.data.session
+        ){
+
+            mensaje.innerHTML =
+                '<div class="mensaje-error">' +
+                '❌ Supabase no devolvió una sesión válida.' +
+                '</div>';
+
+            return;
+        }
+
 
         document
             .getElementById("loginPassword")
             .value = "";
 
+
+        /*
+           Entrar inmediatamente.
+           NO esperamos la migración.
+        */
+
         await mostrarSistema();
+
 
     }catch(error){
 
         console.error(
+            "ERROR GENERAL DE LOGIN:",
             error
         );
 
         mensaje.innerHTML =
-            '<div class="mensaje-error">No se pudo iniciar sesión.</div>';
+            '<div class="mensaje-error">' +
+            '❌ No se pudo iniciar sesión.<br><br>' +
+            escaparHTML(
+                error.message ||
+                String(error)
+            ) +
+            '</div>';
 
     }
 }
@@ -923,7 +1090,11 @@ async function cerrarSesion(){
 
     try{
 
-        await supabaseClient.auth.signOut();
+        if(supabaseClient){
+
+            await supabaseClient.auth.signOut();
+
+        }
 
     }catch(error){
 
@@ -933,9 +1104,17 @@ async function cerrarSesion(){
 
     }
 
+
     vehiculos = [];
 
     historialActual = [];
+
+    fotosSeleccionadas = [];
+
+    patenteVehiculoEditando = "";
+
+    vehiculoEditandoId = null;
+
 
     mostrarLogin();
 
@@ -948,19 +1127,37 @@ async function cerrarSesion(){
 
 async function obtenerUsuario(){
 
-    const resultado =
-        await supabaseClient.auth.getUser();
-
-    if(
-        resultado.error ||
-        !resultado.data ||
-        !resultado.data.user
-    ){
+    if(!supabaseClient){
 
         return null;
     }
 
-    return resultado.data.user;
+    try{
+
+        const resultado =
+            await supabaseClient.auth.getUser();
+
+        if(
+            resultado.error ||
+            !resultado.data ||
+            !resultado.data.user
+        ){
+
+            return null;
+        }
+
+        return resultado.data.user;
+
+    }catch(error){
+
+        console.error(
+            "ERROR OBTENIENDO USUARIO:",
+            error
+        );
+
+        return null;
+
+    }
 }
 
 
@@ -973,12 +1170,12 @@ async function cargarVehiculosDesdeSupabase(){
     const usuario =
         await obtenerUsuario();
 
-    if(!usuario){
 
-        mostrarLogin();
+    if(!usuario){
 
         return;
     }
+
 
     try{
 
@@ -986,8 +1183,17 @@ async function cargarVehiculosDesdeSupabase(){
             await supabaseClient
                 .from("vehiculos")
                 .select("*")
-                .eq("user_id",usuario.id)
-                .order("patente",{ascending:true});
+                .eq(
+                    "user_id",
+                    usuario.id
+                )
+                .order(
+                    "patente",
+                    {
+                        ascending:true
+                    }
+                );
+
 
         if(resultado.error){
 
@@ -996,38 +1202,38 @@ async function cargarVehiculosDesdeSupabase(){
                 resultado.error
             );
 
-            alert(
-                "No se pudieron cargar los vehículos desde la base de datos.\n\n" +
-                resultado.error.message
-            );
+            /*
+               Ya NO mostramos alert acá porque un error
+               de carga no debe impedir entrar al sistema.
+            */
 
             vehiculos = [];
 
             return;
         }
 
+
         vehiculos =
             Array.isArray(resultado.data)
                 ? resultado.data
                 : [];
+
 
         console.log(
             "VEHÍCULOS CARGADOS:",
             vehiculos
         );
 
+
     }catch(error){
 
         console.error(
-            "ERROR:",
+            "ERROR CARGANDO VEHÍCULOS:",
             error
         );
 
-        alert(
-            "Ocurrió un error al cargar los vehículos."
-        );
-
         vehiculos = [];
+
     }
 }
 
@@ -1053,6 +1259,7 @@ function normalizarPatente(patente){
         return "";
     }
 
+
     return String(patente)
         .trim()
         .toUpperCase()
@@ -1075,6 +1282,7 @@ function obtenerCampo(objeto,nombres){
         return "";
     }
 
+
     for(
         const nombre of nombres
     ){
@@ -1089,6 +1297,7 @@ function obtenerCampo(objeto,nombres){
             const valor =
                 objeto[nombre];
 
+
             if(
                 valor !== null &&
                 valor !== undefined &&
@@ -1096,20 +1305,20 @@ function obtenerCampo(objeto,nombres){
             ){
 
                 return valor;
+
             }
+
         }
+
     }
+
 
     return "";
 }
 
 
 /*
-   Determina si un objeto parece ser un vehículo
-   antiguo.
-
-   No considera solamente la patente, para evitar
-   confundir una intervención con un vehículo.
+   Determina si un objeto parece ser un vehículo.
 */
 
 function pareceVehiculo(objeto){
@@ -1122,6 +1331,7 @@ function pareceVehiculo(objeto){
 
         return false;
     }
+
 
     const patente =
         obtenerCampo(
@@ -1137,9 +1347,7 @@ function pareceVehiculo(objeto){
         );
 
 
-    if(
-        !patente
-    ){
+    if(!patente){
 
         return false;
     }
@@ -1278,25 +1486,23 @@ function recolectarVehiculosLocales(){
                 encontrados.has(patente)
             ){
 
-                /*
-                   Si aparece dos veces la misma patente,
-                   preferimos el objeto que tenga más datos.
-                */
-
                 const anterior =
                     encontrados.get(
                         patente
                     );
+
 
                 const cantidadAnterior =
                     Object.keys(
                         anterior || {}
                     ).length;
 
+
                 const cantidadNuevo =
                     Object.keys(
                         valor || {}
                     ).length;
+
 
                 if(
                     cantidadNuevo >
@@ -1307,8 +1513,11 @@ function recolectarVehiculosLocales(){
                         patente,
                         valor
                     );
+
                 }
+
             }
+
         }
 
 
@@ -1345,9 +1554,8 @@ function recolectarVehiculosLocales(){
         const clave =
             localStorage.key(i);
 
-        if(
-            !clave
-        ){
+
+        if(!clave){
 
             continue;
         }
@@ -1360,17 +1568,12 @@ function recolectarVehiculosLocales(){
                     clave
                 );
 
-            if(
-                !contenido
-            ){
+
+            if(!contenido){
 
                 continue;
             }
 
-
-            /*
-               Solamente intentamos interpretar JSON.
-            */
 
             const datos =
                 JSON.parse(
@@ -1382,11 +1585,11 @@ function recolectarVehiculosLocales(){
                 datos
             );
 
+
         }catch(error){
 
             /*
-               Puede haber valores de localStorage
-               que no sean JSON. Los ignoramos.
+               Ignorar valores que no sean JSON.
             */
 
         }
@@ -1473,8 +1676,8 @@ function extraerIntervencionesDeVehiculo(
 
 
 /*
-   Busca intervenciones que estén guardadas
-   directamente en localStorage y que tengan patente.
+   Busca intervenciones guardadas directamente
+   en localStorage y que tengan patente.
 */
 
 function recolectarIntervencionesSueltas(){
@@ -1523,9 +1726,7 @@ function recolectarIntervencionesSueltas(){
             );
 
 
-        if(
-            !patente
-        ){
+        if(!patente){
 
             return false;
         }
@@ -1580,6 +1781,7 @@ function recolectarIntervencionesSueltas(){
             resultado.push(
                 valor
             );
+
         }
 
 
@@ -1611,9 +1813,8 @@ function recolectarIntervencionesSueltas(){
         const clave =
             localStorage.key(i);
 
-        if(
-            !clave
-        ){
+
+        if(!clave){
 
             continue;
         }
@@ -1626,9 +1827,8 @@ function recolectarIntervencionesSueltas(){
                     clave
                 );
 
-            if(
-                !contenido
-            ){
+
+            if(!contenido){
 
                 continue;
             }
@@ -1643,6 +1843,7 @@ function recolectarIntervencionesSueltas(){
             recorrer(
                 datos
             );
+
 
         }catch(error){
 
@@ -1702,16 +1903,14 @@ function obtenerIntervencionesSueltasParaPatente(
 
 /*
    Convierte distintos formatos posibles de fecha
-   al formato YYYY-MM-DD que espera Supabase.
+   al formato YYYY-MM-DD.
 */
 
 function normalizarFechaMigracion(
     fecha
 ){
 
-    if(
-        !fecha
-    ){
+    if(!fecha){
 
         return null;
     }
@@ -1727,6 +1926,7 @@ function normalizarFechaMigracion(
                 0,
                 10
             );
+
     }
 
 
@@ -1751,9 +1951,7 @@ function normalizarFechaMigracion(
         );
 
 
-    if(
-        coincidencia
-    ){
+    if(coincidencia){
 
         return (
             coincidencia[3] +
@@ -1762,6 +1960,7 @@ function normalizarFechaMigracion(
             "-" +
             coincidencia[1]
         );
+
     }
 
 
@@ -1771,9 +1970,7 @@ function normalizarFechaMigracion(
         );
 
 
-    if(
-        coincidencia
-    ){
+    if(coincidencia){
 
         return (
             coincidencia[3] +
@@ -1782,12 +1979,9 @@ function normalizarFechaMigracion(
             "-" +
             coincidencia[1]
         );
+
     }
 
-
-    /*
-       Intentar interpretar fechas completas.
-    */
 
     const fechaConvertida =
         new Date(texto);
@@ -1805,6 +1999,7 @@ function normalizarFechaMigracion(
                 0,
                 10
             );
+
     }
 
 
@@ -1844,9 +2039,7 @@ function numeroMigracion(
         );
 
 
-    if(
-        isNaN(numero)
-    ){
+    if(isNaN(numero)){
 
         return null;
     }
@@ -1857,7 +2050,7 @@ function numeroMigracion(
 
 
 /*
-   Extrae fotos de distintos formatos.
+   Extrae fotos.
 */
 
 function obtenerFotosMigracion(
@@ -1876,9 +2069,7 @@ function obtenerFotosMigracion(
         );
 
 
-    if(
-        !fotos
-    ){
+    if(!fotos){
 
         return [];
     }
@@ -1897,6 +2088,7 @@ function obtenerFotosMigracion(
                     ){
 
                         return foto;
+
                     }
 
 
@@ -1932,13 +2124,10 @@ function obtenerFotosMigracion(
         typeof fotos === "string"
     ){
 
-        /*
-           Puede ser una única foto base64.
-        */
-
         return [
             fotos
         ];
+
     }
 
 
@@ -1947,8 +2136,7 @@ function obtenerFotosMigracion(
 
 
 /*
-   Convierte una intervención antigua al formato
-   utilizado actualmente por la aplicación.
+   Convierte una intervención antigua.
 */
 
 function convertirIntervencionMigracion(
@@ -1966,11 +2154,6 @@ function convertirIntervencionMigracion(
 
     let descripcionOriginal = {};
 
-
-    /*
-       Si ya tenía una descripción JSON,
-       intentamos conservarla.
-    */
 
     const descripcion =
         obtenerCampo(
@@ -2002,6 +2185,7 @@ function convertirIntervencionMigracion(
 
                 descripcionOriginal =
                     parsed;
+
             }
 
         }catch(error){
@@ -2160,7 +2344,7 @@ function convertirIntervencionMigracion(
 
 
 /*
-   Devuelve una fecha de hoy como último recurso.
+   Fecha de hoy.
 */
 
 function fechaHoyMigracion(){
@@ -2202,8 +2386,7 @@ function fechaHoyMigracion(){
 
 
 /*
-   Determina si dos intervenciones son iguales
-   para evitar duplicarlas.
+   Determina si dos intervenciones son iguales.
 */
 
 function intervencionesSonIguales(
@@ -2275,11 +2458,13 @@ function intervencionesSonIguales(
                 JSON.parse(
                     existente.descripcion
                 );
+
         }
 
     }catch(error){
 
         descripcionExistente = {};
+
     }
 
 
@@ -2307,8 +2492,7 @@ function intervencionesSonIguales(
 
 
 /*
-   Cuenta cuántos vehículos antiguos realmente
-   faltan en Supabase.
+   Comprueba si hay datos antiguos pendientes.
 */
 
 async function prepararMigracion(){
@@ -2343,9 +2527,7 @@ async function prepararMigracion(){
         await obtenerUsuario();
 
 
-    if(
-        !usuario
-    ){
+    if(!usuario){
 
         return;
     }
@@ -2374,130 +2556,3 @@ async function prepararMigracion(){
 
             const patente =
                 normalizarPatente(
-                    obtenerCampo(
-                        vehiculo,
-                        [
-                            "patente",
-                            "Patente",
-                            "PATENTE",
-                            "plate",
-                            "matricula",
-                            "matrícula"
-                        ]
-                    )
-                );
-
-
-            if(
-                !patente
-            ){
-
-                continue;
-            }
-
-
-            const resultado =
-                await supabaseClient
-                    .from("vehiculos")
-                    .select("id")
-                    .eq(
-                        "user_id",
-                        usuario.id
-                    )
-                    .eq(
-                        "patente",
-                        patente
-                    )
-                    .maybeSingle();
-
-
-            if(
-                resultado.error
-            ){
-
-                console.error(
-                    "ERROR REVISANDO MIGRACIÓN:",
-                    resultado.error
-                );
-
-                continue;
-            }
-
-
-            if(
-                !resultado.data
-            ){
-
-                faltantes++;
-            }
-
-        }
-
-
-        if(
-            faltantes === 0
-        ){
-
-            return;
-        }
-
-
-        texto.innerHTML =
-            "🚗 Se encontraron " +
-            faltantes +
-            (
-                faltantes === 1
-                    ? " vehículo antiguo pendiente."
-                    : " vehículos antiguos pendientes."
-            );
-
-
-        panel.classList.remove(
-            "oculto"
-        );
-
-
-    }catch(error){
-
-        console.error(
-            "ERROR PREPARANDO MIGRACIÓN:",
-            error
-        );
-
-    }
-}
-
-
-/*
-   MIGRACIÓN PRINCIPAL.
-*/
-
-async function migrarDatosAntiguos(){
-
-    const boton =
-        document.querySelector(
-            ".boton-migrar"
-        );
-
-
-    const resultado =
-        document.getElementById(
-            "resultadoMigracion"
-        );
-
-
-    if(
-        resultado
-    ){
-
-        resultado.innerHTML =
-            '<div class="cargando">⏳ Analizando y migrando los datos antiguos...</div>';
-    }
-
-
-    if(
-        boton
-    ){
-
-        boton.disabled =
-            true;
