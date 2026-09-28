@@ -1,7 +1,30 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SM</title><style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#000;color:#fff}.hidden{display:none!important}.wrap{max-width:480px;margin:0 auto;padding:14px}.btn{width:100%;padding:16px;border:none;border-radius:12px;font-weight:900;margin:8px 0}.btn-blue{background:#00c8ff;color:#000}#login{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}.box{width:100%;max-width:360px;text-align:center}input,textarea,select{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;color:#fff}</style></head><body>
-<div id="login"><div class="box"><img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px;margin-bottom:16px"><h2 style="color:#00c8ff">SM MONTENEGRO</h2><p style="color:#888;margin:10px 0">Usuario: SM-MONTE- / Clave: Taller.monte1.</p><input id="user" placeholder="Usuario"><input id="pass" type="password" placeholder="Contraseña"><button class="btn btn-blue" onclick="doLogin()">Entrar</button><p id="err" style="color:#f55;display:none;margin-top:10px"></p><button onclick="localStorage.clear();alert('Borrado, recargá');location.reload()" style="background:none;border:none;color:#444;margin-top:20px;font-size:12px">¿No entra? Tocá acá para resetear</button></div></div>
-<div id="app" class="hidden"><div class="wrap"><img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px"><h2 style="color:#0ff;margin:14px 0">¡ENTRASTE! ✅</h2><p style="color:#888">Ahora pegá el código completo con fotos que te pasé antes. Este era solo para desbloquearte.</p><button class="btn btn-blue" onclick="localStorage.setItem('sm_user','SM-MONTE-');localStorage.setItem('sm_pass','Taller.monte1.');alert('Usuario forzado a SM-MONTE- / Taller.monte1.')">Forzar usuario SM-MONTE-</button></div></div>
-<script>
-localStorage.setItem('sm_user','SM-MONTE-');localStorage.setItem('sm_pass','Taller.monte1.');
-function doLogin(){let u=document.getElementById('user').value.trim();let p=document.getElementById('pass').value;let su=localStorage.getItem('sm_user');let sp=localStorage.getItem('sm_pass');if(u===su&&p===sp){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden')}else{let e=document.getElementById('err');e.style.display='block';e.innerText='Incorrecto. Tenés que poner:\nUsuario: '+su+'\nClave: '+sp}}
-</script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SM MONTENEGRO</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff}
+.hidden{display:none!important}
+.wrap{max-width:480px;margin:0 auto;padding:14px 14px 90px}
+.logo{width:100%;border-radius:14px;margin-bottom:18px;display:block}
+.btn{width:100%;padding:16px;border:none;border-radius:12px;font-weight:900;font-size:16px;margin:8px 0;cursor:pointer}
+.btn-blue{background:#00c8ff;color:#000}
+.btn-dark{background:#1a1a1a;color:#fff;border:1px solid #333}
+.btn-red{background:#7a1f1f;color:#fff}
+#login{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.box{width:100%;max-width:360px;text-align:center}
+input,textarea,select{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;color:#fff;font-size:15px}
+.card{background:#111;border:1px solid #222;border-radius:12px;padding:14px;margin:10px 0;border-left:4px solid #00c8ff}
+.patente{background:#fff;color:#000;font-weight:900;padding:4px 10px;border-radius:6px;display:inline-block}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.badge{background:#111;border:1px solid #222;padding:6px 10px;border-radius:20px;font-size:12px;color:#888}
+label{color:#888;font-size:13px;margin-top:12px;display:block;text-align:left}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.thumbs img{width:75px;height:75px;object-fit:cover;border-radius:8px;border:1px solid #333}
+.fotoBox{border:2px dashed #333;border-radius:12px;padding:14px;text-align:center;margin:8px 0;background:#0a0a0a}
+#imgModal{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;padding:10px}
+#imgModal.hidden{display:none!important}
+#imgModal
