@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Taller Mecánico</title>
-<style>*{box-sizing:border-box}body{margin:0;padding:20px;font-family:Arial;background:#f2f2f2}.contenedor{max-width:800px;margin:auto}.tarjeta{background:white;padding:20px;border-radius:12px;margin-bottom:20px}button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:8px;background:#222;color:white;cursor:pointer}input{width:100%;padding:12px;margin:6px 0 15px;border:1px solid #ccc;border-radius:7px}.oculto{display:none!important}.error{background:#f8d7da;color:#842029;padding:15px;border-radius:8px;margin-top:15px}.ok{background:#eee;padding:15px;border-radius:8px;margin-top:15px}</style>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller Mecánico</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f2f2f2;color:#222}
+.contenedor{max-width:800px;margin:auto}h1{text-align:center;margin-bottom:25px}h2{margin-top:0}
+.tarjeta{background:white;padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:8px;background:#222;color:white;font-size:16px;cursor:pointer}
+button:hover{background:#444}.boton-secundario{background:#777}.boton-cerrar{background:#a00000}
+input,select,textarea{width:100%;padding:12px;margin-top:6px;margin-bottom:15px;border:1px solid #ccc;border-radius:7px;font-size:15px}
+textarea{min-height:90px}.oculto{display:none!important}
+.mensaje-error{padding:15px;background:#f8d7da;color:#842029;border-radius:8px;margin-top:15px}
+.mensaje-exito{padding:15px;background:#d1e7dd;color:#0f5132;border-radius:8px;margin-top:15px}
+.cargando{padding:15px;background:#eee;border-radius:8px;margin-top:15px;text-align:center}
+.info-vehiculo{background:#f5f5f5;padding:15px;border-radius:8px;margin-bottom:15px}
+.fotos-guardadas{display:flex;flex-wrap:wrap;gap:10px}
+.fotos-guardadas img{width:120px;height:120px;object-fit:cover;border-radius:8px}
+</style>
 </head>
 <body>
-<div id="login" class="contenedor"><div class="tarjeta"><h1>🔧 Taller Mecánico</h1><h2>Iniciar sesión</h2><input type="email" id="email" placeholder="Email" value="maxi_boca46@hotmail.com"><input type="password" id="pass" placeholder="Contraseña"><button id="btnLogin">Ingresar</button><div id="msg"></div></div></div>
-<div id="sistema" class="contenedor oculto"><div class="tarjeta"><h1>✅ Entraste bien!</h1><p>El login ya funciona. Ahora seguimos con el taller.</p><button id="btnLogout">Cerrar sesión</button></div></div>
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-const supabase = createClient("https://sljknzpyxmpfnkcaoksu.supabase.co","sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI");
-const $ = id => document.getElementById(id);
-$("btnLogin").addEventListener("click", async () => {
-  const email = $("email").value.trim(); const password = $("pass").value;
-  $("msg").innerHTML = '<div class="ok">⏳ Verificando...</div>';
-  const { data, error } = await supabase.auth.signInWithPassword({email, password});
-  if(error){ $("msg").innerHTML = `<div class="error">❌ ${error.message}</div>`; console.error(error); return; }
-  $("login").classList.add("oculto"); $("sistema").classList.remove("oculto");
-});
-$("btnLogout").addEventListener("click", async () => { await supabase.auth.signOut(); location.reload(); });
-const { data: { session } } = await supabase.auth.getSession();
-if(session){ $("login").classList.add("oculto"); $("sistema").classList.remove("oculto"); }
-</script>
-</body>
-</html>
+
+<div id="pantallaLogin" class="contenedor">
+  <div class="tarjeta">
+    <h1>🔧 Taller Mecánico</h1>
+    <h2>🔐 Iniciar sesión</h2>
+    <label>Correo</label><input type="email" id="loginEmail" value="maxi_boca46@hotmail.com">
+    <label>Contraseña</label><input type="password" id="loginPassword">
+    <button id="btnLogin">🔐 Ingresar</button>
+    <div id="mensajeLogin"></div>
+  </div>
+</div>
+
+<div id="sistema" class="contenedor oculto">
+  <h1>🔧 Taller Mecánico</h1>
+  <div id="menuPrincipal" class="tarjeta">
+    <button id="btnBuscar">🔎 Buscar vehículo</button>
+    <button id="btnNuevoVeh">🚗 Nuevo vehículo</button>
+    <button id="btnNuevaInterv">🛠️ Nueva intervención</button>
+    <button class="boton-cerrar" id="btnCerrarSesion">🔒 Cerrar sesión</button>
+  </div>
+
+  <div id="buscar" class="tarjeta oculto">
+    <h2>
