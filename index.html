@@ -1,31 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SM MONTE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TALLER MONTE</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;color:#fff}
-.hidden{display:none!important}
-.wrap{max-width:480px;margin:0 auto;padding:12px}
-.btn{width:100%;padding:14px;border:0;border-radius:10px;font-weight:900;margin:6px 0}
-.b{background:#00c8ff;color:#000}
-.r{background:#7a1f1f;color:#fff}
-#login{position:fixed;inset:0;background:#000;z-index:9;display:flex;align-items:center;justify-content:center;padding:20px}
-.box{width:100%;max-width:320px;text-align:center}
-input,textarea{width:100%;padding:12px;margin:6px 0;background:#111;border:1px solid #333;border-radius:8px;color:#fff}
-.card{background:#111;border:1px solid #222;border-radius:10px;padding:10px;margin:8px 0;border-left:3px solid #00c8ff}
+*{box-sizing:border-box;font-family:system-ui,Arial}
+body{margin:0;background:#0f172a;color:#fff;padding:16px}
+.card{background:#1e293b;padding:16px;border-radius:12px;margin-bottom:16px}
+input,select{width:100%;padding:10px;border-radius:8px;margin:6px 0;background:#0f172a;color:#fff;border:1px solid #334155}
+button{padding:10px 16px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+.btn-add{background:#22c55e;color:#000;width:100%;margin-top:8px}
+.btn-del{background:#ef4444;color:#fff}
+.item{background:#0f172a;border:1px solid #334155;padding:12px;border-radius:10px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+small{color:#94a3b8}
 </style>
 </head>
 <body>
-<div id="login"><div class="box">
-<img src="./logo_montenegro.png" style="width:100%;border-radius:12px;margin-bottom:12px">
-<h3 style="color:#00c8ff">SM MONTE</h3>
-<input id="user" placeholder="Usuario">
-<input id="pass" type="password" placeholder="Clave">
-<button class="btn b" onclick="loginOk()">Entrar</button>
-</div></div>
+<h1>🔧 TALLER MONTE - TDF</h1>
+<div class="card">
+<input id="cliente" placeholder="Cliente">
+<input id="patente" placeholder="Patente">
+<input id="trabajo" placeholder="Trabajo">
+<input id="costo" placeholder="Costo" type="number">
+<select id="estado"><option>En espera</option><option>En proceso</option><option>Terminado</option><option>Entregado</option></select>
+<button class="btn-add" id="btnGuardar">GUARDAR</button>
+</div>
+<div class="card"><h3>Pedidos</h3><div id="lista">Cargando...</div></div>
 
-<div id="app" class="hidden"><div class="wrap">
-<img src="./logo_montenegro.png" style="width:100%;
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// PEGA TU CONFIG REAL ACA ABAJO - LA QUE COPIASTE EN EL PASO 1
+const firebaseConfig = {
+  apiKey: "PEGA TU APIKEY ACA",
+  authDomain: "taller-monte.firebaseapp.com",
+  projectId: "taller-monte",
+  storageBucket: "taller-monte.appspot.com",
+  messagingSenderId: "PEGA ACA",
+  appId: "PEGA ACA"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const colRef = collection(db, "pedidos");
+const $ = id => document.getElementById(id);
+
+$("btnGuardar").onclick = async () => {
+  try{
+    await addDoc(colRef, {
+      cliente: $("cliente").value,
+      patente: $("patente").value,
+      trabajo: $("trabajo").value,
+      costo: $("costo").value,
+      estado: $("estado").value,
+      creado: serverTimestamp()
+    });
+    $("cliente").value="";$("patente").value="";$("trabajo").value="";$("costo").value="";
+  }catch(e){ alert("Error guardar: "+e.message); }
+};
+
+onSnapshot(colRef, (snap)=>{
+  const lista = $("lista");
+  if(snap.empty){ lista.innerHTML="<small>Sin pedidos</small>"; return; }
+  lista.innerHTML="";
+  snap.forEach(d=>{
+    const p = d.data();
+    const div = document.createElement("div");
+    div.className="item";
+    div.innerHTML = `<div><b>${p.cliente}</b> - ${p.patente}<br><small>${p.trabajo} | $${p.costo}</small></div><button class="btn-del">Borrar</button>`;
+    div.querySelector("button").onclick = async ()=>{
+      if(!confirm("¿Borrar "+p.cliente+"?")) return;
+      try{ await deleteDoc(doc(db,"pedidos",d.id)); }
+      catch(e){ alert("No borra: "+e.message); }
+    };
+    lista.appendChild(div);
+  });
+});
+</script>
+</body>
+</html>
