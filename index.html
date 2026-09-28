@@ -1,49 +1,53 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Taller v109 FINAL</title>
-<style>
-*{box-sizing:border-box}body{margin:0;padding:20px;font-family:Arial;background:#f2f2f2}
-.contenedor{max-width:800px;margin:auto}.tarjeta{background:#fff;padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:8px;background:#222;color:#fff;font-size:16px;cursor:pointer}input,select,textarea{width:100%;padding:12px;margin:6px 0 15px;border:1px solid #ccc;border-radius:7px}
-.oculto{display:none!important}.boton-recuperar{background:#0066cc}.boton-secundario{background:#777}.boton-cerrar{background:#a00000}
-.info-vehiculo{background:#f5f5f5;padding:15px;border-radius:8px}.detalle-intervencion{background:#f7f7f7;padding:12px;border-radius:8px;margin-top:10px}
-</style>
-</head>
-<body>
-<div id="pantallaLogin" class="contenedor"><div class="tarjeta"><h1>🔧 Taller Mecánico v109</h1><h2>🔐 Entrar</h2>
-<label>Email</label><input id="loginEmail" value="maxi_boca46@hotmail.com"><label>Contraseña</label><input type="password" id="loginPassword">
-<button id="btnLogin">🔐 Ingresar</button><div id="mensajeLogin" style="margin-top:10px;white-space:pre-wrap;font-weight:bold"></div></div></div>
-<div id="sistema" class="contenedor oculto">
-<h1>🔧 Taller Mecánico</h1>
-<div id="menuPrincipal" class="tarjeta">
-<button id="btnMenuBuscar">🔎 Buscar vehículo</button>
-<button id="btnMenuNuevoVeh">🚗 Nuevo vehículo</button>
-<button id="btnMenuNuevaInterv">🛠️ Nueva intervención</button>
-<button id="btnRecuperar" class="boton-recuperar">♻️ Recuperar vehículos viejos (USAR 1 VEZ)</button>
-<button class="boton-cerrar" id="btnCerrarSesion">🔒 Cerrar sesión</button>
-<div id="estadoRecupero" style="margin-top:15px;font-weight:bold"></div>
-</div>
-<div id="buscar" class="tarjeta oculto"><h2>🔎 Buscar</h2><input id="patenteBuscar" placeholder="AB123CD"><button id="btnBuscarAhora">🔎 Buscar</button><div id="resultadoBusqueda"></div><button class="boton-secundario" id="btnVolverBuscar">← Volver</button></div>
-<div id="nuevoVehiculo" class="tarjeta oculto"><h2>🚗 Nuevo vehículo</h2><input id="patente" placeholder="Patente"><input id="marca" placeholder="Marca"><input id="modelo" placeholder="Modelo"><input id="anio" type="number" placeholder="Año"><input id="kilometraje" type="number" placeholder="Km"><input id="cliente" placeholder="Cliente"><input id="telefono" placeholder="Tel"><button id="btnGuardarVeh">💾 Guardar</button><button class="boton-secundario" id="btnVolverNuevoVeh">← Volver</button></div>
-<div id="nuevaIntervencion" class="tarjeta oculto"><h2>🛠️ Nueva intervención</h2><input id="patenteIntervencion" placeholder="Patente"><input type="date" id="fecha"><select id="tipo"><option>Service</option><option>Reparación</option><option>Diagnóstico</option><option>Otro</option></select><textarea id="motivo" placeholder="Motivo"></textarea><textarea id="trabajo" placeholder="Trabajo"></textarea><button id="btnGuardarInterv">💾 Guardar intervención</button><button class="boton-secundario" id="btnVolverInterv">← Volver</button></div>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Taller v110 CELU</title>
+<style>body{margin:0;padding:15px;font-family:Arial;background:#f2f2f2}.tarjeta{background:#fff;padding:20px;border-radius:12px;max-width:800px;margin:auto}button{width:100%;padding:16px;margin-top:10px;border:none;border-radius:8px;background:#222;color:#fff;font-size:18px}input,select,textarea{width:100%;padding:12px;margin:6px 0 15px;border:1px solid #ccc;border-radius:7px;font-size:16px}.oculto{display:none!important}.boton-recuperar{background:#0066cc}.boton-secundario{background:#777}.boton-cerrar{background:#a00000}</style></head><body>
+<div id="pantallaLogin" class="tarjeta"><h1>🔧 Taller v110</h1><h2>Entrar</h2><label>Email</label><input id="loginEmail" value="maxi_boca46@hotmail.com"><label>Contraseña</label><input type="password" id="loginPassword"><button id="btnLogin" type="button">🔐 Ingresar</button><div id="mensajeLogin" style="margin-top:15px;font-weight:bold;color:red;white-space:pre-wrap"></div></div>
+<div id="sistema" class="tarjeta oculto"><h1>🔧 Taller</h1><button id="btnMenuBuscar">🔎 Buscar</button><button id="btnMenuNuevoVeh">🚗 Nuevo veh</button><button id="btnMenuNuevaInterv">🛠️ Nueva interv</button><button id="btnRecuperar" class="boton-recuperar">♻️ Recuperar viejos</button><button id="btnCerrarSesion" class="boton-cerrar">Cerrar</button><div id="estadoRecupero" style="font-weight:bold;margin-top:10px"></div>
+<div id="buscar" class="oculto"><hr><h2>Buscar</h2><input id="patenteBuscar" placeholder="Patente"><button id="btnBuscarAhora">Buscar</button><div id="resultadoBusqueda"></div></div>
+<div id="nuevoVehiculo" class="oculto"><hr><h2>Nuevo veh</h2><input id="patente" placeholder="Patente"><input id="marca" placeholder="Marca"><input id="modelo" placeholder="Modelo"><input id="cliente" placeholder="Cliente"><button id="btnGuardarVeh">Guardar</button></div>
+<div id="nuevaIntervencion" class="oculto"><hr><h2>Nueva interv</h2><input id="patenteIntervencion" placeholder="Patente"><input type="date" id="fecha"><textarea id="motivo" placeholder="Motivo"></textarea><button id="btnGuardarInterv">Guardar</button></div>
 </div>
 <script>
-const URL_SUPA="https://sljknzpyxmpfnkcaoksu.supabase.co";
-const KEY="sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI";
+const URL_SUPA="https://sljknzpyxmpfnkcaoksu.supabase.co"; const KEY="sb_publishable_3oidhuHVin61bwlZBTW41w_fuF_rqPI";
 let TOKEN=localStorage.getItem("token"); let UID=localStorage.getItem("uid");
-const $=id=>document.getElementById(id);
-const esc=t=>String(t||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-const headers=()=>({"apikey":KEY,"Authorization":"Bearer "+TOKEN,"Content-Type":"application/json"});
-function mostrarOK(id){["menuPrincipal","buscar","nuevoVehiculo","nuevaIntervencion"].forEach(s=>$(s).classList.add("oculto"));$(id).classList.remove("oculto");}
-function volver(){["buscar","nuevoVehiculo","nuevaIntervencion"].forEach(s=>$(s).classList.add("oculto"));$("menuPrincipal").classList.remove("oculto");}
-function checkLogin(){ if(TOKEN && UID){ $("pantallaLogin").classList.add("oculto"); $("sistema").classList.remove("oculto"); } }
-checkLogin();
-$("btnLogin").onclick=async()=>{
+function $(id){return document.getElementById(id);}
+function headers(){return {"apikey":KEY,"Authorization":"Bearer "+TOKEN,"Content-Type":"application/json"};}
+if(TOKEN&&UID){$("pantallaLogin").classList.add("oculto");$("sistema").classList.remove("oculto");}
+$("btnLogin").addEventListener("click", async function(){
+  $("mensajeLogin").textContent="⏳ Tocaste el botón, ingresando...";
   const email=$("loginEmail").value.trim(); const pass=$("loginPassword").value;
-  $("mensajeLogin").textContent="⏳ Ingresando...";
+  if(!pass){$("mensajeLogin").textContent="❌ Poné contraseña"; return;}
   try{
     const r=await fetch(URL_SUPA+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+KEY,"Content-Type":"application/json"},body:JSON.stringify({email,password:pass})});
-    const txt=await r.text(); let j={}; try{j=JSON.parse(txt)}catch(e){j={msg:txt}}
-    if(!r.ok){ $("mensajeLogin").
+    const t=await r.text(); let j={}; try{j=JSON.parse(t)}catch(e){j={error:t}}
+    if(!r.ok){$("mensajeLogin").textContent="❌ Error: "+(j.error_description||j.error||t); return;}
+    TOKEN=j.access_token; UID=j.user.id; localStorage.setItem("token",TOKEN); localStorage.setItem("uid",UID);
+    $("pantallaLogin").classList.add("oculto"); $("sistema").classList.remove("oculto");
+  }catch(e){$("mensajeLogin").textContent="❌ Error celular: "+e.message+" - Probá con WiFi";}
+});
+$("btnCerrarSesion").onclick=function(){localStorage.clear();location.reload();};
+$("btnMenuBuscar").onclick=function(){$("buscar").classList.remove("oculto");}
+$("btnMenuNuevoVeh").onclick=function(){$("nuevoVehiculo").classList.remove("oculto");}
+$("btnMenuNuevaInterv").onclick=function(){$("fecha").valueAsDate=new Date();$("nuevaIntervencion").classList.remove("oculto");}
+$("btnRecuperar").onclick=async function(){
+  $("estadoRecupero").textContent="⏳ Recuperando..."; let cv=0,ci=0;
+  const rv=await fetch(URL_SUPA+"/rest/v1/vehiculos?user_id=is.null&select=*",{headers:headers()}); const veh=await rv.json();
+  for(let v of (veh||[])){const rr=await fetch(URL_SUPA+"/rest/v1/vehiculos?id=eq."+v.id,{method:"PATCH",headers:{...headers(),"Prefer":"return=minimal"},body:JSON.stringify({user_id:UID})}); if(rr.ok) cv++;}
+  const ri=await fetch(URL_SUPA+"/rest/v1/intervenciones?user_id=is.null&select=*",{headers:headers()}); const inter=await ri.json();
+  for(let it of (inter||[])){const rr=await fetch(URL_SUPA+"/rest/v1/intervenciones?id=eq."+it.id,{method:"PATCH",headers:{...headers(),"Prefer":"return=minimal"},body:JSON.stringify({user_id:UID})}); if(rr.ok) ci++;}
+  $("estadoRecupero").textContent="✅ Veh: "+cv+" Interv: "+ci;
+};
+$("btnGuardarVeh").onclick=async function(){
+  const p=$("patente").value.toUpperCase().trim(); const r=await fetch(URL_SUPA+"/rest/v1/vehiculos",{method:"POST",headers:{...headers(),"Prefer":"return=minimal"},body:JSON.stringify({user_id:UID,patente:p,marca:$("marca").value,modelo:$("modelo").value,cliente:$("cliente").value})}); alert(r.ok?"Guardado":"Error "+await r.text());
+};
+$("btnBuscarAhora").onclick=async function(){
+  const p=$("patenteBuscar").value.toUpperCase().trim(); const r=await fetch(URL_SUPA+"/rest/v1/vehiculos?user_id=eq."+UID+"&patente=eq."+p+"&select=*",{headers:headers()}); const d=await r.json();
+  $("resultadoBusqueda").textContent=d[0]?JSON.stringify(d[0]):"No encontrado. Apretá RECUPERAR si es viejo";
+};
+$("btnGuardarInterv").onclick=async function(){
+  const p=$("patenteIntervencion").value.toUpperCase().trim(); const r=await fetch(URL_SUPA+"/rest/v1/vehiculos?user_id=eq."+UID+"&patente=eq."+p+"&select=id",{headers:headers()}); const v=await r.json();
+  if(!v[0]){alert("Patente no existe");return;}
+  const rr=await fetch(URL_SUPA+"/rest/v1/intervenciones",{method:"POST",headers:headers(),body:JSON.stringify({user_id:UID,vehiculo_id:v[0].id,fecha:$("fecha").value||new Date().toISOString().slice(0,10),tipo:"Service",descripcion:JSON.stringify({motivo:$("motivo").value})})});
+  alert(rr.ok?"Guardada":"Error "+await rr.text());
+};
+</script></body></html>
