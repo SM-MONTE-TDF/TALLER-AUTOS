@@ -13,54 +13,75 @@ body{background:#000;color:#fff}
 .btn-blue{background:#00c8ff;color:#000}
 .btn-red{background:#7a1f1f;color:#fff;margin-top:14px}
 h2{font-size:22px;margin:18px 0 10px}
-input,textarea{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #2a2a2a;border-radius:10px;color:#fff}
+input,textarea{width:100%;padding:14px;margin:8px 0;background:#111;border:1px solid #2a2a2a;border-radius:10px;color:#fff;font-size:15px}
 .card{background:#111;border:1px solid #222;border-radius:12px;padding:14px;margin:10px 0;border-left:4px solid #00c8ff}
 .patente{background:#fff;color:#000;font-weight:900;padding:4px 10px;border-radius:6px;display:inline-block}
 .hidden{display:none}
-hr{border:0;border-top:1px solid #1e1e1e;margin:16px 0}
+#login{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px}
+#login .box{width:100%;max-width:360px;text-align:center}
 </style>
 </head>
 <body>
+
+<div id="login">
+<div class="box">
+<img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" style="width:100%;border-radius:14px;margin-bottom:20px" onerror="this.style.display='none'">
+<h2 style="color:#00c8ff">SM MONTENEGRO</h2>
+<p style="color:#888;margin-bottom:20px">Ingresá para continuar</p>
+<input id="pass" type="password" placeholder="Contraseña" style="text-align:center">
+<button class="btn btn-blue" onclick="doLogin()">Entrar</button>
+<p style="color:#444;font-size:12px;margin-top:12px">Clave por defecto: 1234</p>
+</div>
+</div>
+
+<div id="app" class="hidden">
 <div class="wrap">
 <img src="./ff2ace8e-276f-47cf-8eb8-9f8eedf27a89.jpeg" class="logo" onerror="this.style.display='none'">
-
 <button class="btn btn-blue" onclick="show('buscar')">🔍 Buscar</button>
 <button class="btn btn-blue" onclick="show('nuevoV')">🚗 Nuevo vehículo</button>
 <button class="btn btn-blue" onclick="show('nuevaI')">🛠️ Nueva intervención</button>
 <button class="btn btn-blue" onclick="show('recuperar')">♻️ Recuperar viejos</button>
 <button class="btn btn-red" onclick="cerrarSesion()">Cerrar sesión</button>
-<hr>
+<hr style="border:0;border-top:1px solid #1e1e1e;margin:16px 0">
 <div id="sec-buscar"><h2>Buscar <span id="contador" style="font-size:12px;color:#666"></span></h2><input id="q" placeholder="Patente, marca, cliente..." oninput="doBuscar()"><div id="rBuscar"></div></div>
 <div id="sec-nuevoV" class="hidden"><h2>🚗 Nuevo vehículo</h2><input id="vPat" placeholder="PATENTE AB123CD" style="text-transform:uppercase"><input id="vMarca" placeholder="Marca"><input id="vModelo" placeholder="Modelo"><input id="vCli" placeholder="Cliente"><input id="vTel" placeholder="Tel"><input id="vKm" type="number" placeholder="KM"><button class="btn btn-blue" onclick="saveV()">💾 Guardar</button></div>
 <div id="sec-nuevaI" class="hidden"><h2>🛠️ Nueva intervención</h2><input id="iPat" placeholder="Patente" style="text-transform:uppercase"><input id="iFecha" type="date"><input id="iKm" type="number" placeholder="KM"><textarea id="iTrab" placeholder="Trabajo"></textarea><input id="iCosto" type="number" placeholder="Costo $"><button class="btn btn-blue" onclick="saveI()">💾 Guardar intervención</button></div>
 <div id="sec-recuperar" class="hidden"><h2>♻️ Recuperar viejos</h2><div id="rPapelera"></div></div>
 </div>
+</div>
+
 <script>
-function loadData(){
-  // Intenta cargar de todas las claves posibles viejas
-  let keys=['sm_vehiculos','vehiculos','taller_vehiculos'];
-  let v=null;
-  for(let k of keys){let d=localStorage.getItem(k);if(d){try{v=JSON.parse(d);if(v&&v.length>0)break;}catch(e){}}}
-  return v||[];
-}
-function loadInter(){let d=localStorage.getItem('sm_interv')||localStorage.getItem('intervenciones')||'[]';try{return JSON.parse(d)}catch(e){return []}}
-let vehiculos=loadData();
-let intervenciones=loadInter();
+let vehiculos=JSON.parse(localStorage.getItem('sm_vehiculos')||'[]');
+let intervenciones=JSON.parse(localStorage.getItem('sm_interv')||'[]');
 let papelera=JSON.parse(localStorage.getItem('sm_papelera')||'[]');
-// Si encontro con clave vieja, guardalo en la nueva
-if(vehiculos.length>0)localStorage.setItem('sm_vehiculos',JSON.stringify(vehiculos));
-if(intervenciones.length>0)localStorage.setItem('sm_interv',JSON.stringify(intervenciones));
 
 function save(){localStorage.setItem('sm_vehiculos',JSON.stringify(vehiculos));localStorage.setItem('sm_interv',JSON.stringify(intervenciones));localStorage.setItem('sm_papelera',JSON.stringify(papelera))}
+
+function doLogin(){
+ let p=document.getElementById('pass').value;
+ let saved=localStorage.getItem('sm_pass')||'1234';
+ if(p==saved){
+  localStorage.setItem('sm_logged','1');
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  doBuscar();
+ }else{alert('Clave incorrecta. Probá 1234')}
+}
+function cerrarSesion(){
+ localStorage.removeItem('sm_logged');
+ document.getElementById('app').classList.add('hidden');
+ document.getElementById('login').classList.remove('hidden');
+ document.getElementById('pass').value='';
+}
 function show(id){document.querySelectorAll('[id^=sec-]').forEach(e=>e.classList.add('hidden'));document.getElementById('sec-'+id).classList.remove('hidden');if(id=='buscar')doBuscar();if(id=='recuperar')renderPap()}
-function doBuscar(){let q=(document.getElementById('q').value||'').toLowerCase();let c=document.getElementById('rBuscar');document.getElementById('contador').innerText='('+vehiculos.length+' guardados)';let f=q?vehiculos.filter(v=>(v.patente+v.marca+v.modelo+v.cliente).toLowerCase().includes(q)):vehiculos;if(f.length==0){c.innerHTML='<p style="color:#555;text-align:center;margin-top:20px">'+(q?'Sin resultados para '+q:'No hay vehículos cargados todavía.<br>Tocá Nuevo vehículo para empezar')+'</p>';return}c.innerHTML=f.map(v=>'<div class="card" onclick="ver(\''+v.patente+'\')"><span class="patente">'+v.patente+'</span> <b>'+(v.marca||'')+' '+(v.modelo||'')+'</b><div style="color:#888">👤 '+(v.cliente||'')+' • '+(v.km||'')+'km</div></div>').join('')}
-function saveV(){let p=document.getElementById('vPat').value.trim().toUpperCase().replace(/\s/g,'');if(!p)return alert('Patente obligatoria');let o={patente:p,marca:document.getElementById('vMarca').value,modelo:document.getElementById('vModelo').value,cliente:document.getElementById('vCli').value,tel:document.getElementById('vTel').value,km:document.getElementById('vKm').value};let ex=vehiculos.find(v=>v.patente==p);if(ex)Object.assign(ex,o);else vehiculos.unshift(o);save();alert('✅ '+p+' guardado');show('buscar');document.getElementById('q').value='';doBuscar();['vPat','vMarca','vModelo','vCli','vTel','vKm'].forEach(i=>document.getElementById(i).value='')}
-function saveI(){let p=document.getElementById('iPat').value.trim().toUpperCase().replace(/\s/g,'');if(!p||!document.getElementById('iTrab').value)return alert('Patente y trabajo');intervenciones.unshift({id:Date.now(),patente:p,fecha:document.getElementById('iFecha').value||new Date().toISOString().slice(0,10),km:document.getElementById('iKm').value,trabajo:document.getElementById('iTrab').value,costo:document.getElementById('iCosto').value});save();alert('✅ Intervención '+p);show('buscar');document.getElementById('q').value=p;doBuscar()}
-function ver(pat){let v=vehiculos.find(x=>x.patente==pat);let inters=intervenciones.filter(i=>i.patente==pat);document.getElementById('rBuscar').innerHTML='<div class="card"><span class="patente">'+v.patente+'</span><h3 style="margin-top:8px">'+(v.marca||'')+' '+(v.modelo||'')+'</h3><div>Cliente: '+(v.cliente||'')+'<br>Tel: '+(v.tel||'-')+'<br>KM: '+(v.km||'-')+'</div><button class="btn btn-blue" style="margin-top:12px" onclick="document.getElementById(\'iPat\').value=\''+pat+'\';show(\'nuevaI\')">+ Nueva intervención</button><button class="btn" style="background:#222;color:#aaa;margin-top:8px" onclick="archivar(\''+pat+'\')">📦 Archivar</button></div><h2>Historial ('+inters.length+')</h2>'+inters.map(i=>'<div class="card" style="border-left-color:#25D366"><b>'+i.fecha+'</b> '+(i.km?' - '+i.km+'km':'')+'<br>'+i.trabajo+'<br><span style="color:#25D366;font-weight:900">$'+(i.costo||0)+'</span></div>').join('')}
+function doBuscar(){let q=(document.getElementById('q').value||'').toLowerCase();let c=document.getElementById('rBuscar');document.getElementById('contador').innerText='('+vehiculos.length+' guardados)';let f=q?vehiculos.filter(v=>(v.patente+v.marca+v.modelo+v.cliente).toLowerCase().includes(q)):vehiculos;if(f.length==0){c.innerHTML='<p style="color:#555;text-align:center;margin-top:20px">'+(q?'Sin resultados':'No hay vehículos. Tocá Nuevo vehículo')+'</p>';return}c.innerHTML=f.map(v=>'<div class="card" onclick="ver(\''+v.patente+'\')"><span class="patente">'+v.patente+'</span> <b>'+(v.marca||'')+' '+(v.modelo||'')+'</b><div style="color:#888">👤 '+(v.cliente||'')+'</div></div>').join('')}
+function saveV(){let p=document.getElementById('vPat').value.trim().toUpperCase().replace(/\s/g,'');if(!p)return alert('Patente');let o={patente:p,marca:document.getElementById('vMarca').value,modelo:document.getElementById('vModelo').value,cliente:document.getElementById('vCli').value,tel:document.getElementById('vTel').value,km:document.getElementById('vKm').value};let ex=vehiculos.find(v=>v.patente==p);if(ex)Object.assign(ex,o);else vehiculos.unshift(o);save();alert('✅ '+p);show('buscar');document.getElementById('q').value='';doBuscar();['vPat','vMarca','vModelo','vCli','vTel','vKm'].forEach(i=>document.getElementById(i).value='')}
+function saveI(){let p=document.getElementById('iPat').value.trim().toUpperCase();if(!p)return alert('Patente');intervenciones.unshift({id:Date.now(),patente:p,fecha:document.getElementById('iFecha').value||new Date().toISOString().slice(0,10),km:document.getElementById('iKm').value,trabajo:document.getElementById('iTrab').value,costo:document.getElementById('iCosto').value});save();alert('✅ '+p);show('buscar');document.getElementById('q').value=p;doBuscar()}
+function ver(pat){let v=vehiculos.find(x=>x.patente==pat);let inters=intervenciones.filter(i=>i.patente==pat);document.getElementById('rBuscar').innerHTML='<div class="card"><span class="patente">'+v.patente+'</span><h3>'+(v.marca||'')+' '+(v.modelo||'')+'</h3><div>'+(v.cliente||'')+'</div><button class="btn btn-blue" style="margin-top:12px" onclick="document.getElementById(\'iPat\').value=\''+pat+'\';show(\'nuevaI\')">+ Nueva intervención</button><button class="btn" style="background:#222;color:#aaa;margin-top:8px" onclick="archivar(\''+pat+'\')">📦 Archivar</button></div><h2>Historial ('+inters.length+')</h2>'+inters.map(i=>'<div class="card" style="border-left-color:#25D366"><b>'+i.fecha+'</b><br>'+i.trabajo+'<br><span style="color:#25D366">$'+(i.costo||0)+'</span></div>').join('')}
 function archivar(pat){if(!confirm('¿Archivar '+pat+'?'))return;let v=vehiculos.find(x=>x.patente==pat);papelera.unshift(v);vehiculos=vehiculos.filter(x=>x.patente!=pat);save();doBuscar()}
-function renderPap(){let c=document.getElementById('rPapelera');c.innerHTML=papelera.map(v=>'<div class="card"><span class="patente">'+v.patente+'</span> '+(v.marca||'')+' '+(v.modelo||'')+'<button class="btn btn-blue" style="padding:10px;margin-top:8px" onclick="rest(\''+v.patente+'\')">♻️ Restaurar</button></div>').join('')||'<p style="color:#555">Papelera vacía</p>'}
-function rest(pat){let v=papelera.find(x=>x.patente==pat);vehiculos.unshift(v);papelera=papelera.filter(x=>x.patente!=pat);save();renderPap();doBuscar()}
-function cerrarSesion(){if(confirm('¿Cerrar sesión? (No borra vehículos)')){alert('Sesión cerrada');location.reload()} }
+function renderPap(){let c=document.getElementById('rPapelera');c.innerHTML=papelera.map(v=>'<div class="card"><span class="patente">'+v.patente+'</span> <button class="btn btn-blue" style="padding:10px;margin-top:8px" onclick="rest(\''+v.patente+'\')">♻️ Restaurar</button></div>').join('')||'<p style="color:#555">Vacía</p>'}
+function rest(pat){let v=papelera.find(x=>x.patente==pat);vehiculos.unshift(v);papelera=papelera.filter(x=>x.patente!=pat);save();renderPap()}
+if(localStorage.getItem('sm_logged')=='1'){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden')}
 document.getElementById('iFecha').valueAsDate=new Date();doBuscar();
 </script>
 </body>
